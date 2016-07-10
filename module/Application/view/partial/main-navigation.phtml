@@ -1,0 +1,24 @@
+<?
+/* @var $container Zend\Navigation\Navigation */
+$container = $this->container;
+?>
+<ul class="<?=$this->navigation($container)->menu()->getUlClass(); ?>">
+    <? foreach ($container as $page): ?>
+        <? if (!$this->navigation()->accept($page)) continue; ?>
+        <? /* @var $page Zend\Navigation\Page\Mvc */ ?>
+            <li>
+                <a
+                    <? if ($page->isActive() || ($page->getHref() == $_SERVER['REQUEST_URI'])) echo ' class="active-link-header"' ?>
+                    href="<?=$page->getHref() ?>"
+                    <? if ($page->getTarget() != ""): ?>
+                        target="<?=$page->getTarget(); ?>"
+                    <? endif; ?>
+                    >
+                    <?=$this->escapeHtml($page->getLabel()); ?>
+                </a>
+            </li>
+    <? endforeach; ?>
+</ul>
+<?/*
+
+*/?>

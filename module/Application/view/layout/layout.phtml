@@ -1,0 +1,68 @@
+<center><h1>layout.phtml</h1></center>
+<br>
+<?=$this->content; ?>
+
+<?/*=$this->doctype(); ?>
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <?=$this->headTitle($this->getSiteParam('main_title'))->setSeparator(' | ')->setAutoEscape(false) ?>
+
+    <?=$this->headMeta()
+        ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+        ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+    ?>
+
+    <!-- Le styles -->
+    <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.png'))
+        ->appendStylesheet($this->basePath('css/font-awesome.min.css'))
+        ->appendStylesheet($this->basePath('css/style.css'))
+    ?>
+
+    <!--[if lt IE 9]>
+    <script src="<?=$this->basePath('js/html5shiv.js'); ?>"></script>
+    <script src="<?=$this->basePath('js/respond.min.js'); ?>"></script>
+    <![endif]-->
+</head>
+<body>
+    <div class="wrap">
+        <header>
+            <nav class="main-menu">
+                <?=$this->navigation('mainNavigation')->menu()->setPartial('partial/main-navigation.phtml'); ?>
+            </nav>
+            <div class="section">
+                <a class="logo" href="<?=$this->basePath('/'); ?>"></a>
+            </div>
+            <div class="search-block">
+                <form class="search-form" method="get" action="<?=$this->url('search'); ?>">
+                    <input type="text" class="search-field" name="search_number">
+                    <input type="submit" class="submit" value="Найти">
+                    <label class="description">Поиск по артикулу детали</label>
+                </form>
+            </div>
+        </header>
+        <!--Конец шапки сайта-->
+        <!--Основной контент-->
+        <nav class="sidebar-menu">
+            <?=$this->navigation('dbNavigation')->menu()->setPartial('partial/db-navigation.phtml'); ?>
+        </nav>
+        <div class="wrap-content">
+            <?=$this->content; ?>
+        </div>
+        <footer>
+            <nav class="footer-menu">
+                <?=$this->navigation('mainNavigation')->menu()->setPartial('partial/main-navigation.phtml'); ?>
+            </nav>
+        </footer>
+    </div>
+    <?=$this->inlineScript() ?>
+
+    <? if ($this->getSiteParam('yandex_metrika_enabled')) echo $this->getSiteParam('yandex_metrika_javascript'); ?>
+
+    <?=$this->headScript()
+        ->prependFile($this->basePath('js/main.js'))
+        ->prependFile($this->basePath('js/jquery.min.js'))
+    ?>
+</body>
+</html>
+*/?>

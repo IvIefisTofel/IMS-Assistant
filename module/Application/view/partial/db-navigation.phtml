@@ -1,0 +1,19 @@
+<?php
+/* @var $container Zend\Navigation\Navigation */
+/* @var $page Zend\Navigation\Page\Mvc */
+?>
+<? foreach ($container as $page): ?>
+    <? if (!$this->navigation()->accept($page)) continue; ?>
+        <li<? if ($page->isActive()) echo ' class="active"' ?>>
+            <? $image = '/img/manuf/30/placeholder.png';
+            if ($page->get('imageId') != null && file_exists('./public/img/manuf/30/' . $page->get('imageId') . '.png'))
+                $image = '/img/manuf/30/' . $page->get('imageId') . '.png'; ?>
+            <a
+                href="<?=$page->getHref(); ?>"
+                <?=($page->getTarget() != "") ? ' target="' . $page->getTarget() . '"' : ''; ?>
+                style="background: url(<?=$image?>) no-repeat 20px -1px; background-size: 30px;"
+            >
+                <?=$this->escapeHtml($page->getLabel()); ?>
+            </a>
+        </li>
+<?php endforeach ?>

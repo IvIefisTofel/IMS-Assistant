@@ -1,0 +1,55 @@
+<? $this->headTitle('Все пользователи'); ?>
+<? if (isset($users) && $users != null): ?>
+<div class="ibox">
+    <div class="ibox-title">
+        <h5>Список пользователей</h5>
+        <div class="ibox-tools">
+            <a href="<?=$this->url('admin-users', ['action' => 'addprofile']);?>" class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> Добавить пользователя</a>
+        </div>
+    </div>
+    <div class="ibox-content">
+        <table class="table table-hover">
+            <thead style="font-size: 14px; font-weight: bold;">
+            <tr>
+                <td></td>
+                <td>ФИО</td>
+                <td>Логин</td>
+                <td>Email</td>
+                <td>Дата регистрации</td>
+                <td>Права доступа</td>
+                <td></td>
+            </tr>
+            </thead>
+            <tbody>
+                <? foreach ($users as $user): ?>
+                    <? /* @var $user \Users\Entity\User */ ?>
+                    <tr>
+                        <td>
+                            <? if ($user->getUserActive()) {
+                                $status = 'Активен';
+                                $activeClass = 'label-primary';
+                            } else {
+                                $status = 'Не активен';
+                                $activeClass = 'label-default';
+                            }
+                            ?>
+                            <span class="label <?=$activeClass?>"><?=$status?></span>
+                        </td>
+                        <td><?=$user->getUserFullName(); ?></td>
+                        <td><?=$user->getUserName(); ?></td>
+                        <td><?=$user->getUserEmail(); ?></td>
+                        <td><?=date_format($user->getUserRegistrationDate(), 'd.m.Y'); ?></td>
+                        <td><?=$user->getUserRoleLabel(); ?></td>
+                        <td style="text-align: right">
+                            <a href="<?=$this->url('admin-users', ['action' => 'editprofile', 'id' => $user->getUserId()]);?>" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i> Редактировать</a>
+                            <? if ($user != $this->identity()): ?>
+                                <a href="<?=$this->url('admin-users', ['action' => 'deleteprofile', 'id' => $user->getUserId()]);?>" class="btn btn-danger btn-xs"><i class="fa fa-times"></i> Удалить</a>
+                            <? endif; ?>
+                        </td>
+                    </tr>
+                <? endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<? endif; ?>

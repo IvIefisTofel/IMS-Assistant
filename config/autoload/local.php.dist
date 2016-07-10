@@ -1,0 +1,24 @@
+<?php
+return [
+    'doctrine' => [
+        'connection' => [
+            'orm_default' => [
+                'driverClass' =>'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'params' => [
+                    'host'     => 'localhost',      // Default 'localhost'
+                    'port'     => '3306',           // Default '3306'
+                    'user'     => 'root',           // Default 'root'
+                    'password' => '',               // Default ''
+                    'dbname'   => 'ims_assistant',  // Default 'ims_assistant'
+                    'charset'  => 'utf8',
+                    'driverOptions' => [
+                        1002 => 'SET NAMES utf8 COLLATE utf8_general_ci'
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'view_manager' => [
+        'base_path' => '/'                      // Default '/'
+    ],
+];

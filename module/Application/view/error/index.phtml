@@ -1,0 +1,71 @@
+<?
+$header = "Ошибка на сайте " . $this->getSiteParam('main_title') . ".";
+$msg  = "<h1>" .  $this->translate('An error occurred') . "</h1>\n";
+$msg .= "<h2>" .  $this->translate($this->message) . "</h2>\n";
+
+if (isset($this->display_exceptions) && $this->display_exceptions) {
+    if (isset($this->exception) && $this->exception instanceof Exception) {
+        $message = "<hr/>";
+        $message .= "<h2>" .  $this->translate('Additional information') . ":</h2>\n";
+        $message .= "<h3>" .  get_class($this->exception) . "</h3>\n";
+        $message .= "<dl>\n";
+        $message .= "<dt>" .  $this->translate('File') . ":</dt>\n";
+        $message .= "<dd>\n";
+        $message .= "<pre class=\"prettyprint linenums\">" .  $this->exception->getFile() . " :" .  $this->exception->getLine() . "</pre>\n";
+        $message .= "</dd>\n";
+        $message .= "<dt>" .  $this->translate('Message') . ":</dt>\n";
+        $message .= "<dd>\n";
+        $message .= "<pre class=\"prettyprint linenums\">" .  $this->escapeHtml($this->exception->getMessage()) . "</pre>\n";
+        $message .= "</dd>\n";
+        $message .= "<dt>" .  $this->translate('Stack trace') . ":</dt>\n";
+        $message .= "<dd>\n";
+        $message .= "<pre class=\"prettyprint linenums\">" .  $this->escapeHtml($this->exception->getTraceAsString()) . "</pre>\n";
+        $message .= "</dd>\n";
+        $message .= "</dl>\n";
+
+        $e = $this->exception->getPrevious();
+        if ($e) {
+            $message .= "<hr/>\n";
+            $message .= "<h2>" .  $this->translate('Previous exceptions') . ":</h2>\n";
+            $message .= "<ul class=\"unstyled\">\n";
+            while ($e) {
+                $message .= "<li>\n";
+                $message .= "<h3>" .  get_class($e) . "</h3>\n";
+                $message .= "<dl>\n";
+                $message .= "<dt>" .  $this->translate('File') . ":</dt>\n";
+                $message .= "<dd>\n";
+                $message .= "<pre class=\"prettyprint linenums\">" .  $e->getFile() . ":" .  $e->getLine() . "</pre>\n";
+                $message .= "</dd>\n";
+                $message .= "<dt>" .  $this->translate('Message') . ":</dt>\n";
+                $message .= "<dd>\n";
+                $message .= "<pre class=\"prettyprint linenums\">" .  $this->escapeHtml($e->getMessage()) . "</pre>\n";
+                $message .= "</dd>\n";
+                $message .= "<dt>" .  $this->translate('Stack trace') . ":</dt>\n";
+                $message .= "<dd>\n";
+                $message .= "<pre class=\"prettyprint linenums\">" .  $this->escapeHtml($e->getTraceAsString()) . "</pre>\n";
+                $message .= "</dd>\n";
+                $message .= "</dl>\n";
+                $message .= "</li>\n";
+
+                $e = $e->getPrevious();
+            }
+            $message .= "</ul>\n";
+        }
+
+    } else {
+        $message .= "<h3>" .  $this->translate('No Exception available') . "</h3>\n";
+    }
+}
+
+$env = (getenv('APP_ENV') == 'development') ? true : false;
+if ($env) {
+    echo $msg . $message;
+} else {
+    echo $msg;
+    $this->sendMessage(
+        \Emails\Entity\Email::TYPE_ERROR,
+        [\Emails\Entity\Email::TYPE_ERROR => true],
+        $header,
+        $msg . $message
+    );
+}

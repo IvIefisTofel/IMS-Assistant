@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IMS-Assistant | Login</title>
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900&subset=latin,greek,greek-ext,vietnamese,cyrillic-ext,latin-ext,cyrillic' rel='stylesheet' type='text/css'>
+
+    <link rel="icon" type="image/png" sizes="16x16" href="<?=$this->basePath('/img/favicon-16x16.png'); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?=$this->basePath('/img/favicon-32x32.png'); ?>">
+    <link rel="icon" type="image/png" sizes="96x96" href="<?=$this->basePath('/img/favicon-96x96.png'); ?>">
+
+    <?=$this->headLink()
+        ->appendStylesheet($this->basePath('/bower/Ionicons/css/ionicons.css'))
+        ->appendStylesheet($this->basePath('/bower/animate.css/animate.css'))
+        ->appendStylesheet($this->basePath('/bower/bootstrap/dist/css/bootstrap.min.css'))
+        ->appendStylesheet($this->basePath('/bower/jstree/dist/themes/default/style.css'))
+        ->appendStylesheet($this->basePath('/bower/toastr/toastr.min.css'))
+        ->appendStylesheet($this->basePath('/css/auth.css'))
+    /* @todo: Добавить login.core.css */
+    ?>
+
+</head>
+<body>
+<main class="auth-main">
+    <div class="auth-block">
+        <h1>Авторизация в</h1>
+        <h2>IMS Assistant</h2>
+
+        <? /* @var $loginForm \Zend\Form\Form */ ?>
+        <?=$this->form($loginForm, TwbBundle\Form\View\Helper\TwbBundleForm::LAYOUT_HORIZONTAL);?>
+    </div>
+</main>
+</body>
+</html>
+<?=$this->headScript()
+    ->prependFile($this->basePath('/bower/toastr/toastr.min.js'))
+    ->prependFile($this->basePath('/bower/jquery/dist/jquery.js'))
+/* @todo: Добавить login.core.js */
+?>
+<? if (isset($authErrors['auth'])): ?>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setTimeout(function () {
+                toastr.options = {
+                    autoDismiss: false,
+                    positionClass: "toast-top-right",
+                    type: "success",
+                    timeOut: "5000",
+                    extendedTimeOut: 2000,
+                    allowHtml: false,
+                    closeButton: false,
+                    tapToDismiss: true,
+                    progressBar: true,
+                    newestOnTop: true,
+                    maxOpened: 0,
+                    preventDuplicates: true,
+                    preventOpenDuplicates: false
+                };
+                toastr.error("<?=$authErrors['auth']; ?>", 'Ошибка авторизации');
+
+            }, 1000);
+        });
+    </script>
+<? endif; ?>

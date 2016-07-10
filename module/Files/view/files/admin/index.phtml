@@ -1,0 +1,102 @@
+<?
+$this->headTitle('Файлы');
+
+$this->headLink()->appendStylesheet($this->basePath('/admin/css/plugins/sweetalert/sweetalert.css'));
+$this->headScript()->appendFile($this->basePath('admin/js/plugins/sweetalert/sweetalert.min.js'));
+$this->headScript()->appendFile($this->basePath('admin/js/files.js'));
+?>
+
+<div class="row">
+    <div class="col-lg-6" style="margin-bottom: 20px;">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Добавить файл
+            </div>
+            <div class="panel-body">
+                <? /* @var $form \Zend\Form\Form */ ?>
+                <? $form->get('submit')->setAttributes(['class' => 'btn-primary']) ?>
+                <?=$this->form($form, \TwbBundle\Form\View\Helper\TwbBundleForm::LAYOUT_INLINE);?>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6" style="margin-bottom: 20px;">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                Работа с файлами
+            </div>
+            <div class="panel-body">
+                <button id="sel-all" type="button" class="btn-primary btn">Выделить все</button>
+                <button id="sel-inverse" type="button" class="btn-info btn">Инверсия выделения</button>
+                <button id="sel-delete" type="button" class="btn-danger btn">Удалить выбранные</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <? /* @var $file \Fields\Entity\FieldsValues */ ?>
+        <? foreach($arrFiles as $file): ?>
+            <div class="file-box">
+                <? if ((file_exists($file->getValue()))): ?>
+                <div class="litControlButtons">
+                    <a class="litFileEditButton btn btn-info" data-toggle="modal" data-target="#litEditFile" data-alias="<?=$file->getAlias(); ?>">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                    <a class="litFileDeleteButton btn btn-danger" data-filealias="<?=$file->getAlias(); ?>"><i class="fa fa-times"></i></a>
+                </div>
+                <? else: ?>
+                    <div class="litControlButtons">
+                        <a class="litFileDeleteButton btn btn-warning" data-filealias="<?=$file->getAlias(); ?>"><i class="fa fa-times"></i></a>
+                    </div>
+                <? endif; ?>
+                <div class="file<?=(file_exists($file->getValue())) ? '' : ' error'; ?>">
+                    <a class="litFileLink" href="<?=(file_exists($file->getValue())) ? $this->basePath($file->getAlias()) . '" target="_blank' : '#';?>">
+                        <span class="corner"></span>
+                        <? if (file_exists($file->getValue())): ?>
+                            <? if ($arrValidIndexes['image'] == $file->getFieldID()): ?>
+                                <div class="image">
+                                    <img alt="image" class="img-responsive" src="<?=$this->basePath($file->getAlias());?>">
+                                </div>
+                            <? else: ?>
+                                <div class="icon">
+                                    <i class="fa fa-file"></i>
+                                </div>
+                            <? endif; ?>
+                        <? else: ?>
+                            <div class="icon">
+                                <i class="fa fa-ban"></i><br>
+                                <span>Файл не найден</span>
+                            </div>
+                        <? endif; ?>
+                        <div class="file-name">
+                            <?=$file->getAlias(); ?>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        <? endforeach; ?>
+    </div>
+</div>
+<div class="modal inmodal fade" id="litEditFile" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-pencil modal-icon"></i>
+                <h4 id="litFileTitle" class="modal-title"></h4>
+            </div>
+            <form id="litEditFileForm" method="post" action="<?=$this->url('admin-files', ['action' => 'ajaxfileedit']); ?>">
+                <input id="litFileAlias" type="hidden" name="fileAlias">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="litFileNewAlias">Новое имя файла</label>
+                        <input id="litFileNewAlias" name="fileNewAlias" type="text" class="form-control" placeholder="Новое имя файла">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

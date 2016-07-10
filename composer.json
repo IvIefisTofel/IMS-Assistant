@@ -1,0 +1,30 @@
+{
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^5.6 || ^7.0",
+        "zendframework/zendframework": "~2.5",
+        "doctrine/doctrine-orm-module": "~0.9",
+        "zendframework/zftool": "dev-master",
+        "neilime/zf2-twb-bundle": "~2.6",
+        "rwoverdijk/assetmanager": "~1.5",
+        "phpoffice/phpexcel": "~1.8"
+    },
+    "require-dev": {
+        "cgm/zf2-file-upload-examples": "~1"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "rm -rf data/cache/*",
+            "cp upload/.gitignore data/cache/.gitignore",
+            "bower install"
+        ],
+        "post-update-cmd": [
+            "rm -rf data/cache/*",
+            "cp upload/.gitignore data/cache/.gitignore"
+        ],
+        "c-clear": [
+            "rm -rf data/cache/*"
+        ]
+    }
+}
