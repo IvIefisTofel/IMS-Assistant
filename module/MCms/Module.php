@@ -45,8 +45,19 @@ class Module implements ConsoleUsageProviderInterface
 
         $imagePlugin = new \ImagePlugin();
         $litHelper = new \LitHelperPlugin();
-        $e->getApplication()->getServiceManager()->setService('imagePlugin', $imagePlugin);
-        $e->getApplication()->getServiceManager()->setService('litHelper', $litHelper);
+        $sm = $e->getApplication()->getServiceManager();
+        $sm->setService('imagePlugin', $imagePlugin);
+        $sm->setService('litHelper', $litHelper);
+
+
+        // Table Prefix
+        $tablePrefix = $sm->get('Config')['doctrine']['table_prefix'] ?? null;
+        if ($tablePrefix !== null) {
+            $evm = $sm->get('doctrine.eventmanager.orm_default');
+
+            $tablePrefixExt = new \MCms\DoctrineExtension\TablePrefix($tablePrefix);
+            $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefixExt);
+        }
     }
 
     /**

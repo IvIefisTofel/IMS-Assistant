@@ -3,12 +3,10 @@
     "prefer-stable": true,
     "require": {
         "php": "^5.6 || ^7.0",
-        "zendframework/zendframework": "~2.5",
-        "doctrine/doctrine-orm-module": "~0.9",
-        "zendframework/zftool": "dev-master",
+        "zendframework/zendframework": "^2.5",
+        "doctrine/doctrine-orm-module": "^0.10",
         "neilime/zf2-twb-bundle": "~2.6",
-        "rwoverdijk/assetmanager": "~1.5",
-        "phpoffice/phpexcel": "~1.8"
+        "rwoverdijk/assetmanager": "~1.5"
     },
     "require-dev": {
         "cgm/zf2-file-upload-examples": "~1"

@@ -75,9 +75,10 @@ return [
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
         'template_map' => [
-            'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
-            'error/404'               => __DIR__ . '/../view/error/404.phtml',
-            'error/index'             => __DIR__ . '/../view/error/index.phtml',
+            'layout/layout'        => __DIR__ . '/../view/layout/layout.phtml',
+            'error/layout'         => __DIR__ . '/../view/error/layout.phtml',
+            'error/404'            => __DIR__ . '/../view/error/404.phtml',
+            'error/index'          => __DIR__ . '/../view/error/index.phtml',
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
@@ -85,10 +86,6 @@ return [
         'strategies' => [
             'ViewJsonStrategy',
         ],
-    ],
-
-    'doctrine_factories' => [
-        'entitymanager' => 'Common\Service\EntityManagerFactory',
     ],
     
     'asset_manager' => [

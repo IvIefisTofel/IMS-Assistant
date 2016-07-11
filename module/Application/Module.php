@@ -33,12 +33,16 @@ class Module
         $moduleRouteListener->attach($eventManager);
 
         $eventManager->attach('route', array($this, 'onRoute'), -100);
+        $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, function(MvcEvent $event) {
+            $viewModel = $event->getViewModel();
+            $viewModel->setTemplate('error/layout');
+        }, -200);
     }
 
     public function getServiceConfig()
     {
         return array(
-            'factories' => array(
+            'factories' => [
                 'doctrine.connection.orm_default'           => new \DoctrineORMModule\Service\DBALConnectionFactory('orm_default'),
                 'doctrine.configuration.orm_default'        => new \DoctrineORMModule\Service\ConfigurationFactory('orm_default'),
                 'doctrine.entitymanager.orm_default'        => new \DoctrineORMModule\Service\EntityManagerFactory('orm_default'),
@@ -51,7 +55,7 @@ class Module
                 'DoctrineORMModule\Form\Annotation\AnnotationBuilder' => function(\Zend\ServiceManager\ServiceLocatorInterface $sl) {
                     return new \DoctrineORMModule\Form\Annotation\AnnotationBuilder($sl->get('doctrine.entitymanager.orm_default'));
                 },
-            ),
+            ],
         );
     }
 

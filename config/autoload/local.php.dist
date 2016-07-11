@@ -17,6 +17,7 @@ return [
                 ],
             ],
         ],
+        'table_prefix' => 'cms_',                   // Default table prefix
     ],
     'view_manager' => [
         'base_path' => '/'                      // Default '/'

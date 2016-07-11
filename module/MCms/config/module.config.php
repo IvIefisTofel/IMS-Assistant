@@ -2,7 +2,7 @@
 
 namespace MCms;
 
-return array(
+return [
     'controller_plugins' => [
         'invokables' => [
             'LitHelperPlugin' => Controller\Plugin\HelperPlugin::class,
@@ -40,4 +40,4 @@ return array(
             ],
         ],
     ],
-);
+];

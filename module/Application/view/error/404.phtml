@@ -1,5 +1,5 @@
 <?
-$header = "Ошибка 404 на сайте " . $this->getSiteParam('main_title') . ".";
+//$header = "Ошибка 404 на сайте " . $this->getSiteParam('main_title') . ".";
 $msg  = "<h1>" . $this->translate('A 404 error occurred') . "</h1>\n";
 $msg .= "<h2>" . $this->translate('Page not found.') . "</h2>\n";
 
@@ -99,11 +99,11 @@ $env = (getenv('APP_ENV') == 'development') ? true : false;
 if ($env) {
     echo $msg . $message;
 } else {
-    echo $msg;
+    /*echo $msg;
     $this->sendMessage(
         \Emails\Entity\Email::TYPE_ERROR,
         [\Emails\Entity\Email::TYPE_ERROR => true],
         $header,
         $msg . $message
-    );
+    );*/
 }
