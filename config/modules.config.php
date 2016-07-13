@@ -13,6 +13,10 @@ return [
 
     // Модули с моделями базы данных
     'Users',
+    'Clients',
+    'Files',
+    'Nomenclature',
+    'Orders',
 
     // Модули, в основном отвечающие за вывод (Admin/Client)
     'Application',

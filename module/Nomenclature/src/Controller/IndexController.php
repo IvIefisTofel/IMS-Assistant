@@ -1,6 +1,6 @@
 <?php
 
-namespace Files\Controller;
+namespace Nomenclature\Controller;
 
 use MCms\Controller\MCmsController;
 use Zend\View\Model\JsonModel;

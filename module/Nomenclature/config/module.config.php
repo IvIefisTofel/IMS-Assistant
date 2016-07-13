@@ -1,21 +1,21 @@
 <?php
 
-namespace Files;
+namespace Nomenclature;
 
 $env = (getenv('APP_ENV') == 'development') ? true : false;
 return [
     'router' => [
         'routes' => [
-            'api-files' => [
+            'api-nomenclature' => [
                 'type'    => 'Segment',
                 'options' => [
-                    'route'    => '/api/files[/:action[/:id]]',
+                    'route'    => '/api/nomenclature[/:action[/:id]]',
                     'constraints' => [
                         'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id'         => '[0-9]+',
                     ],
                     'defaults' => [
-                        '__NAMESPACE__' => 'Files\Controller',
+                        '__NAMESPACE__' => 'Clients\Controller',
                         'controller'    => 'Index',
                         'action'        => 'index',
                     ],
@@ -27,14 +27,14 @@ return [
 
     'controllers' => [
         'invokables' => [
-            'Files\Controller\Index' => Controller\IndexController::class,
+            'Nomenclature\Controller\Index' => Controller\IndexController::class,
         ],
     ],
 
     'acl' => [
         'resources' => [
             'allow' => [
-                'Files\Controller\Index' => [
+                'Nomenclature\Controller\Index' => [
                     GUEST_ROLE,
                 ],
             ],

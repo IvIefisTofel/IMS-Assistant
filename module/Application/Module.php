@@ -33,10 +33,6 @@ class Module
         $moduleRouteListener->attach($eventManager);
 
         $eventManager->attach('route', array($this, 'onRoute'), -100);
-        $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, function(MvcEvent $event) {
-            $viewModel = $event->getViewModel();
-            $viewModel->setTemplate('error/layout');
-        }, -200);
     }
 
     public function getServiceConfig()
@@ -61,6 +57,16 @@ class Module
 
     public function onRoute(\Zend\EventManager\EventInterface $e)
     {
+        $baseModel = $e->getViewModel();
+        $baseModel->setTemplate('error/layout');
+        if ($e->getResponse()->getStatusCode() == 404) {
+            $viewModel = new ViewModel();
+            $viewModel->setTemplate('error/404');
+
+            $baseModel->addChild($viewModel);
+            $baseModel->setTerminal(true);
+        }
+
         $application = $e->getApplication();
         $routeMatch = $e->getRouteMatch();
         $serviceManager = $application->getServiceManager();
@@ -112,14 +118,14 @@ class Module
                             return;
                         }
 
-                        $baseModel = $e->getViewModel();
+                        /*$baseModel = $e->getViewModel();
                         $baseModel->setTemplate('layout/admin');
 
                         $model = new ViewModel();
                         $model->setTemplate('error/accessdenied');
 
                         $baseModel->addChild($model);
-                        $baseModel->setTerminal(true);
+                        $baseModel->setTerminal(true);*/
                     }
                 }
             }, 1000);

@@ -32,10 +32,6 @@ return [
         ],
     ],
 
-    'admin' => [
-        'Users\Controller\Admin' => [],
-    ],
-
     'acl' => [
         'resources' => [
             'allow' => [
@@ -56,19 +52,6 @@ return [
         ],
         'strategies' => [
             'ViewJsonStrategy',
-        ],
-    ],
-
-    'navigation' => [
-        'default' => [
-            [
-                'label'     => 'Пользоватли',
-                'route'     => 'admin-users',
-                'icon'      => 'fa fa-users',
-                'resource'	=> 'Users\Controller\Admin',
-                'privilege'	=> 'index',
-                'order'     => 80,
-            ],
         ],
     ],
 

@@ -1,5 +1,5 @@
 <?php
-namespace Files;
+namespace Orders;
 
 class Module
 {

@@ -11,12 +11,13 @@ return [
                 'options' => [
                     'route'    => '/',
                     'defaults' => [
-                        'controller' => 'Application\Controller\Index',
+                        '__NAMESPACE__' => 'Application\Controller',
+                        'controller' => 'Index',
                         'action'     => 'index',
                     ],
                 ],
             ],
-            'application' => [
+            /*'application' => [
                 'type'    => 'Literal',
                 'options' => [
                     'route'    => '/app',
@@ -41,7 +42,7 @@ return [
                         ],
                     ],
                 ],
-            ],
+            ],*/
         ],
     ],
     'service_manager' => [

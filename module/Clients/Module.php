@@ -1,5 +1,5 @@
 <?php
-namespace Files;
+namespace Clients;
 
 class Module
 {

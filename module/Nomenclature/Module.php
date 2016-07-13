@@ -1,5 +1,5 @@
 <?php
-namespace Files;
+namespace Nomenclature;
 
 class Module
 {

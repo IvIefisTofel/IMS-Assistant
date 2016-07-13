@@ -7,7 +7,9 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 abstract class MCmsController extends AbstractActionController
 {
+    /* @var $serviceLocator \Zend\ServiceManager\ServiceManager */
     protected $serviceLocator;
+    /* @var $entityManager \Doctrine\ORM\EntityManager */
     protected $entityManager;
 
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
