@@ -33,6 +33,10 @@ class Module
         $moduleRouteListener->attach($eventManager);
 
         $eventManager->attach('route', array($this, 'onRoute'), -100);
+        $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, function(MvcEvent $event) {
+            $baseModel = $event->getViewModel();
+            $baseModel->setTemplate('error/layout');
+        }, -200);
     }
 
     public function getServiceConfig()
@@ -57,16 +61,6 @@ class Module
 
     public function onRoute(\Zend\EventManager\EventInterface $e)
     {
-        $baseModel = $e->getViewModel();
-        $baseModel->setTemplate('error/layout');
-        if ($e->getResponse()->getStatusCode() == 404) {
-            $viewModel = new ViewModel();
-            $viewModel->setTemplate('error/404');
-
-            $baseModel->addChild($viewModel);
-            $baseModel->setTerminal(true);
-        }
-
         $application = $e->getApplication();
         $routeMatch = $e->getRouteMatch();
         $serviceManager = $application->getServiceManager();
