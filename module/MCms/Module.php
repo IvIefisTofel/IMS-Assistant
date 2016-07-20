@@ -27,6 +27,7 @@ class Module implements ConsoleUsageProviderInterface
     {
         return array(
             'invokables' => array(
+                'siteYear' => View\Helper\GetSiteYear::class,
                 'numEnding' => View\Helper\NumEnding::class,
                 'phoneFormat' => View\Helper\PhoneFormat::class,
                 'ucfirst' => View\Helper\UcFirst::class,

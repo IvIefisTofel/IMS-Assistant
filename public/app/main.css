@@ -4329,8 +4329,10 @@ a.al-logo {
   float: left;
   outline: none !important;
   line-height: 60px; }
-  a.al-logo span {
-    color: #209e91; }
+  a.al-logo img {
+    height: 50px; }
+  a.al-logo img:hover {
+    -webkit-filter: blur(1px); }
 
 .user-profile {
   float: right;

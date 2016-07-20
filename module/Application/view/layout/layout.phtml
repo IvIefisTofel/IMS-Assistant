@@ -1,4 +1,8 @@
-<?=$this->doctype(); ?>
+<?
+$title = $this->getHelperPluginManager()->getServiceLocator()->get('config')['siteTitle'];
+$copyright = $this->getHelperPluginManager()->getServiceLocator()->get('config')['siteCopyright'];
+echo $this->doctype();
+?>
 <html lang="en" ng-app="BlurAdmin">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -9,11 +13,12 @@
         ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
     ?>
     
-    <?=$this->headTitle('IMS-Assistant')->setSeparator(' | ')->setAutoEscape(false) ?>
+    <?=$this->headTitle($title)->setSeparator(' | ')->setAutoEscape(false) ?>
 
     <link rel="icon" type="image/png" sizes="16x16" href="<?=$this->basePath('/img/favicon-16x16.png'); ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?=$this->basePath('/img/favicon-32x32.png'); ?>">
     <link rel="icon" type="image/png" sizes="96x96" href="<?=$this->basePath('/img/favicon-96x96.png'); ?>">
+    <link rel="icon" type="image/png" sizes="128x128" href="<?=$this->basePath('/img/favicon-128x128.png'); ?>">
     
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900&subset=latin,greek,greek-ext,vietnamese,cyrillic-ext,latin-ext,cyrillic' rel='stylesheet' type='text/css'>
     
@@ -52,7 +57,7 @@
 
     <footer class="al-footer clearfix">
         <div class="al-footer-main clearfix">
-            <div class="al-copy"><strong>Copyright</strong> &copy; 2015-2016 <strong>IMS</strong> (developed by MefisTofel)</div>
+            <div class="al-copy"><strong>Copyright</strong> &copy; <?=$this->siteYear() . ' ' . $copyright; ?></div>
         </div>
     </footer>
 
