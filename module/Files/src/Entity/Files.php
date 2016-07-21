@@ -3,6 +3,7 @@
 namespace Files\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use MCms\Entity\MCmsEntity;
 
 /**
  * Files
@@ -10,88 +11,126 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="files")
  * @ORM\Entity
  */
-class Files
+class Files extends MCmsEntity
 {
     /**
      * @var integer
      *
-     * @ORM\Column(name="fileId", type="integer", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="fileId", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $fileId;
+    protected $id;
+
+    /**
+     * @var \Files\Entity\FileVersion
+     *
+     * @ORM\OneToMany(targetEntity="Files\Entity\FileVersion", mappedBy="file")
+     * @ORM\OrderBy({"date" = "ASC"})
+     */
+    protected $versions;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="fileName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="fileName", type="string", length=255, nullable=false)
      */
-    private $fileName;
+    protected $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="fileExtension", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="fileExtension", type="string", length=255, nullable=false)
      */
-    private $fileExtension;
-
+    protected $ext;
 
     /**
-     * Get fileId
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->versions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get id
      *
      * @return integer
      */
     public function getId()
     {
-        return $this->fileId;
+        return $this->id;
     }
 
     /**
-     * Set fileName
+     * Set name
      *
-     * @param string $fileName
+     * @param string $name
      *
      * @return Files
      */
-    public function setName($fileName)
+    public function setName($name)
     {
-        $this->fileName = $fileName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get fileName
+     * Get name
      *
      * @return string
      */
     public function getName()
     {
-        return $this->fileName;
+        return $this->name;
     }
 
     /**
-     * Set fileExtension
+     * Set extension
      *
-     * @param string $fileExtension
+     * @param string $ext
      *
      * @return Files
      */
-    public function setExtension($fileExtension)
+    public function setExt($ext)
     {
-        $this->fileExtension = $fileExtension;
+        $this->ext = $ext;
 
         return $this;
     }
 
     /**
-     * Get fileExtension
+     * Get ext
      *
      * @return string
      */
-    public function getExtension()
+    public function getExt()
     {
-        return $this->fileExtension;
+        return $this->ext;
+    }
+
+    /**
+     * Get versions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getVersions()
+    {
+        return $this->versions;
+    }
+
+    public function toArray()
+    {
+        $result = parent::toArray();
+        $result['lastVersion'] = $result['versions']->last()->toArray();
+        $result['versions'] = $result['versions']->toArray();
+        $versions = [];
+        foreach ($result['versions'] as $version) {
+            $versions[] = $version->toArray();
+        }
+        $result['versions'] = $versions;
+
+        return $result;
     }
 }
-

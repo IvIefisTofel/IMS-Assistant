@@ -3,6 +3,7 @@
 namespace Clients\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use MCms\Entity\MCmsEntity;
 
 /**
  * Clients
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="clients")
  * @ORM\Entity
  */
-class Clients
+class Clients extends MCmsEntity
 {
     /**
      * @var integer
@@ -19,110 +20,167 @@ class Clients
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $clientId;
+    protected $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="clientName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    private $clientName;
+    protected $name;
+
+    /**
+     * @var \Orders\Entity\Orders
+     *
+     * @ORM\OneToMany(targetEntity="Orders\Entity\Orders", mappedBy="client")
+     */
+    protected $orders;
 
     /**
      * @var string
      *
      * @ORM\Column(name="clientDescription", type="text", length=65535, precision=0, scale=0, nullable=true, unique=false)
      */
-    private $clientDescription;
+    protected $description;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="clientAdditions", type="text", length=65535, precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="clientAdditions", type="text", length=65535, precision=0, scale=0, nullable=true, unique=false)
      */
-    private $clientAdditions;
+    protected $additions;
 
 
     /**
-     * Get clientId
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->orders = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get client Id
      *
      * @return integer
      */
     public function getId()
     {
-        return $this->clientId;
+        return $this->id;
     }
 
     /**
-     * Set clientName
+     * Set client Name
      *
-     * @param string $clientName
+     * @param string $name
      *
      * @return Clients
      */
-    public function setName($clientName)
+    public function setName($name)
     {
-        $this->clientName = $clientName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get clientName
+     * Get client Name
      *
      * @return string
      */
     public function getName()
     {
-        return $this->clientName;
+        return $this->name;
+    }
+
+// TODO Реализовать addOrder && removeOrder
+//    /**
+//     * Add order
+//     *
+//     * @param \Orders\Entity\Orders $order
+//     *
+//     * @return Clients
+//     */
+//    public function addOrder(\Orders\Entity\Orders $order)
+//    {
+//        $this->orders[] = $order;
+//
+//        return $this;
+//    }
+//
+//    /**
+//     * Remove order
+//     *
+//     * @param \Orders\Entity\Orders $order
+//     */
+//    public function removeOrder(\Orders\Entity\Orders $order)
+//    {
+//        $this->orders->removeElement($order);
+//    }
+
+    /**
+     * Get orders
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOrders()
+    {
+        return $this->orders;
     }
 
     /**
-     * Set clientDescription
+     * Set client Description
      *
-     * @param string $clientDescription
+     * @param string $description
      *
      * @return Clients
      */
-    public function setDescription($clientDescription)
+    public function setDescription($description)
     {
-        $this->clientDescription = $clientDescription;
+        $this->description = $description;
 
         return $this;
     }
 
     /**
-     * Get clientDescription
+     * Get client Description
      *
      * @return string
      */
     public function getDescription()
     {
-        return $this->clientDescription;
+        return $this->description;
     }
 
     /**
-     * Set clientAdditions
+     * Set client Additions
      *
-     * @param string $clientAdditions
+     * @param string $additions
      *
      * @return Clients
      */
-    public function setAdditions($clientAdditions)
+    public function setAdditions($description)
     {
-        $this->clientAdditions = $clientAdditions;
+        $this->additions = $description;
 
         return $this;
     }
 
     /**
-     * Get clientAdditions
+     * Get client Additions
      *
      * @return string
      */
     public function getAdditions()
     {
-        return $this->clientAdditions;
+        return $this->additions;
+    }
+
+    public function toArray()
+    {
+        $result = parent::toArray();
+        unset($result['orders']);
+
+        return $result;
     }
 }
-

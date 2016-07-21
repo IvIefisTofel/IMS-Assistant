@@ -12,17 +12,24 @@
         "cgm/zf2-file-upload-examples": "~1"
     },
     "scripts": {
+        "pre-update-cmd": [
+            "@update-git",
+            "\n"
+        ],
         "post-install-cmd": [
-            "rm -rf data/cache/*",
-            "cp upload/.gitignore data/cache/.gitignore",
-            "bower install"
+            "\n", "@clearCache", "\n",
+            "bower install", "\n",
+            "@compile-mo"
         ],
         "post-update-cmd": [
+            "\n", "@clearCache", "\n",
+            "@compile-mo"
+        ],
+        "update-git": "git pull",
+        "clearCache": [
             "rm -rf data/cache/*",
             "cp upload/.gitignore data/cache/.gitignore"
         ],
-        "c-clear": [
-            "rm -rf data/cache/*"
-        ]
+        "compile-mo": "php ./public/index.php compile-mo"
     }
 }

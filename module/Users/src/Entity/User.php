@@ -3,6 +3,7 @@
 namespace Users\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use MCms\Entity\MCmsEntity;
 
 /**
  * User
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="users")
  * @ORM\Entity
  */
-class User
+class User extends  MCmsEntity
 {
     const ADMIN_ROLE     = 1;
     const MODERATOR_ROLE = 2;
@@ -38,63 +39,63 @@ class User
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $userId;
+    protected $userId;
 
     /**
      * @var string
      *
      * @ORM\Column(name="userName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    private $userName;
+    protected $userName;
 
     /**
      * @var string
      *
      * @ORM\Column(name="userFullName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    private $userFullName;
+    protected $userFullName;
 
     /**
      * @var string
      *
      * @ORM\Column(name="userEmail", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    private $userEmail;
+    protected $userEmail;
 
     /**
      * @var string
      *
      * @ORM\Column(name="userPassword", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    private $userPassword;
+    protected $userPassword;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="userRoleId", type="integer", precision=0, scale=0, nullable=false, unique=false)
      */
-    private $userRole;
+    protected $userRole;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="userActive", type="boolean", precision=0, scale=0, nullable=false, unique=false)
      */
-    private $userActive;
+    protected $userActive;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="userRegistrationDate", type="datetime", precision=0, scale=0, nullable=false, unique=false)
      */
-    private $userRegistrationDate;
+    protected $userRegistrationDate;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="userEmailConfirmed", type="boolean", precision=0, scale=0, nullable=false, unique=false)
      */
-    private $userEmailConfirmed = false;
+    protected $userEmailConfirmed = false;
 
     public function __construct()
     {

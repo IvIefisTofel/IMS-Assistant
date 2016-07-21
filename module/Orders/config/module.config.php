@@ -9,13 +9,13 @@ return [
             'api-orders' => [
                 'type'    => 'Segment',
                 'options' => [
-                    'route'    => '/api/orders[/:action[/:id]]',
+                    'route'    => '/api/orders[/][/:task[/][/:id[/]]]',
                     'constraints' => [
                         'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id'         => '[0-9]+',
                     ],
                     'defaults' => [
-                        '__NAMESPACE__' => 'Clients\Controller',
+                        '__NAMESPACE__' => 'Orders\Controller',
                         'controller'    => 'Index',
                         'action'        => 'index',
                     ],

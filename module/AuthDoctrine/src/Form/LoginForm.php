@@ -10,8 +10,8 @@ use Zend\Validator;
 
 class LoginForm extends Form
 {
-    const NAME    = 'name';
-    const PASSWORD = 'password';
+    const NAME    = 'assistant_name';
+    const PASSWORD = 'assistant_password';
 
     public function __construct($options = [])
     {

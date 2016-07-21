@@ -3,6 +3,7 @@
 namespace Nomenclature\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use MCms\Entity\MCmsEntity;
 
 /**
  * Details
@@ -10,274 +11,365 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="details")
  * @ORM\Entity
  */
-class Details
+class Details extends MCmsEntity
 {
     /**
      * @var integer
      *
-     * @ORM\Column(name="detailId", type="integer", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="detailId", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $detailId;
+    protected $id;
+
+    /**
+     * @var \Orders\Entity\Orders
+     *
+     * @ORM\ManyToOne(targetEntity="Orders\Entity\Orders", inversedBy="details")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="detailOrderId", referencedColumnName="orderId", nullable=false)
+     * })
+     *
+     */
+    protected $order;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="detailCode", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="detailGroup", type="string", length=255, nullable=true)
      */
-    private $detailCode;
+    protected $group;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="detailName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="detailCode", type="string", length=255, nullable=false)
      */
-    private $detailName;
+    protected $code;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="detailPattern", type="integer", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="detailName", type="string", length=255, nullable=false)
      */
-    private $detailPattern;
+    protected $name;
 
     /**
-     * @var integer
+     * @var \Files\Entity\Files
      *
-     * @ORM\Column(name="detailModel", type="integer", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\ManyToOne(targetEntity="Files\Entity\Files", inversedBy="id")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="detailPattern", referencedColumnName="fileId")
+     * })
      */
-    private $detailModel;
+    protected $pattern;
 
     /**
-     * @var integer
+     * @var \Files\Entity\Files
      *
-     * @ORM\Column(name="detailProject", type="integer", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\ManyToOne(targetEntity="Files\Entity\Files", inversedBy="id")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="detailModel", referencedColumnName="fileId")
+     * })
      */
-    private $detailProject;
+    protected $model;
+
+    /**
+     * @var \Files\Entity\Files
+     *
+     * @ORM\ManyToOne(targetEntity="Files\Entity\Files", inversedBy="id")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="detailProject", referencedColumnName="fileId")
+     * })
+     */
+    protected $project;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="detailDateReceiving", type="date", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="detailCreationDate", type="date", nullable=false)
      */
-    private $detailDateReceiving;
+    protected $dateCreation;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="detailDateStart", type="date", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="detailEndDate", type="date", nullable=true)
      */
-    private $detailDateStart;
+    protected $dateEnd = null;
 
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="detailDateExercise", type="date", precision=0, scale=0, nullable=false, unique=false)
-     */
-    private $detailDateExercise;
+    public function __construct()
+    {
+        $this->dateCreation = new \DateTime();
+    }
 
 
     /**
-     * Get detailId
+     * Get id
      *
      * @return integer
      */
     public function getId()
     {
-        return $this->detailId;
+        return $this->id;
     }
 
     /**
-     * Set detailCode
+     * Set order
      *
-     * @param string $detailCode
+     * @param \Orders\Entity\Orders $order
      *
      * @return Details
      */
-    public function setCode($detailCode)
+    public function setOrder(\Orders\Entity\Orders $order)
     {
-        $this->detailCode = $detailCode;
+        $this->order = $order;
 
         return $this;
     }
 
     /**
-     * Get detailCode
+     * Get order
+     *
+     * @return \Orders\Entity\Orders
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * Set group
+     *
+     * @param string $group
+     *
+     * @return Details
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
+
+        return $this;
+    }
+
+    /**
+     * Get group
+     *
+     * @return string
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * Set code
+     *
+     * @param string $code
+     *
+     * @return Details
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    /**
+     * Get code
      *
      * @return string
      */
     public function getCode()
     {
-        return $this->detailCode;
+        return $this->code;
     }
 
     /**
-     * Set detailName
+     * Set name
      *
-     * @param string $detailName
+     * @param string $name
      *
      * @return Details
      */
-    public function setName($detailName)
+    public function setName($name)
     {
-        $this->detailName = $detailName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get detailName
+     * Get name
      *
      * @return string
      */
     public function getName()
     {
-        return $this->detailName;
+        return $this->name;
     }
 
     /**
-     * Set detailPattern
+     * Set pattern
      *
-     * @param integer $detailPattern
+     * @param \Files\Entity\Files $pattern
      *
      * @return Details
      */
-    public function setPattern($detailPattern)
+    public function setPattern(\Files\Entity\Files $pattern = null)
     {
-        $this->detailPattern = $detailPattern;
+        $this->pattern = $pattern;
 
         return $this;
     }
 
     /**
-     * Get detailPattern
+     * Get pattern
      *
-     * @return integer
+     * @return \Files\Entity\Files
      */
     public function getPattern()
     {
-        return $this->detailPattern;
+        return $this->pattern;
     }
 
     /**
-     * Set detailModel
+     * Set model
      *
-     * @param integer $detailModel
+     * @param \Files\Entity\Files $model
      *
      * @return Details
      */
-    public function setModel($detailModel)
+    public function setModel(\Files\Entity\Files $model = null)
     {
-        $this->detailModel = $detailModel;
+        $this->model = $model;
 
         return $this;
     }
 
     /**
-     * Get detailModel
+     * Get model
      *
-     * @return integer
+     * @return \Files\Entity\Files
      */
     public function getModel()
     {
-        return $this->detailModel;
+        return $this->model;
     }
 
     /**
-     * Set detailProject
+     * Set project
      *
-     * @param integer $detailProject
+     * @param \Files\Entity\Files $project
      *
      * @return Details
      */
-    public function setProject($detailProject)
+    public function setProject(\Files\Entity\Files $project = null)
     {
-        $this->detailProject = $detailProject;
+        $this->project = $project;
 
         return $this;
     }
 
     /**
-     * Get detailProject
+     * Get project
      *
-     * @return integer
+     * @return \Files\Entity\Files
      */
     public function getProject()
     {
-        return $this->detailProject;
+        return $this->project;
     }
 
     /**
-     * Set detailDateReceiving
+     * Get dateCreation
      *
-     * @param \DateTime $detailDateReceiving
+     * @param bool $formatted
+     *
+     * @return \DateTime
+     */
+    public function getDateCreation($formatted = true)
+    {
+        if ($formatted)
+            return $this->getDateCreationFormat();
+        else
+            return $this->dateCreation;
+    }
+
+    /**
+     * Get Formatted End Date
+     *
+     * @param string $format
+     *
+     * @return \DateTime
+     */
+    public function getDateCreationFormat($format = "d.m.Y")
+    {
+        if ($this->dateCreation != null)
+            return date_format($this->dateCreation, $format);
+        else
+            return null;
+    }
+
+    /**
+     * Set dateEnd
+     *
+     * @param \DateTime $dateEnd
      *
      * @return Details
      */
-    public function setDateReceiving($detailDateReceiving)
+    public function setDateEnd($dateEnd)
     {
-        $this->detailDateReceiving = $detailDateReceiving;
+        $this->dateEnd = $dateEnd;
 
         return $this;
     }
 
     /**
-     * Get detailDateReceiving
+     * Get dateEnd
+     *
+     * @param bool $formatted
      *
      * @return \DateTime
      */
-    public function getDateReceiving()
+    public function getDateEnd($formatted = true)
     {
-        return $this->detailDateReceiving;
+        if ($formatted)
+            return $this->getDateEndFormat();
+        else
+            return $this->dateEnd;
     }
 
     /**
-     * Set detailDateStart
+     * Get Formatted End Date
      *
-     * @param \DateTime $detailDateStart
-     *
-     * @return Details
-     */
-    public function setDateStart($detailDateStart)
-    {
-        $this->detailDateStart = $detailDateStart;
-
-        return $this;
-    }
-
-    /**
-     * Get detailDateStart
+     * @param string $format
      *
      * @return \DateTime
      */
-    public function getDateStart()
+    public function getDateEndFormat($format = "d.m.Y")
     {
-        return $this->detailDateStart;
+        if ($this->dateEnd != null)
+            return date_format($this->dateEnd, $format);
+        else
+            return null;
     }
 
-    /**
-     * Set detailDateExercise
-     *
-     * @param \DateTime $detailDateExercise
-     *
-     * @return Details
-     */
-    public function setDateExercise($detailDateExercise)
+    public function toArray()
     {
-        $this->detailDateExercise = $detailDateExercise;
+        $result = parent::toArray();
 
-        return $this;
-    }
+        $result['orderId'] = $result['order']->getId();
+        $result['orderCode'] = $result['order']->getCode();
+        $result['pattern'] = ($result['pattern'] == null) ? null
+            : $result['pattern']->getName() . "." . $result['pattern']->getExt();
+        $result['model'] = ($result['model'] == null) ? null
+            : $result['model']->getName() . "." . $result['model']->getExt();
+        $result['project'] = ($result['project'] == null) ? null
+            : $result['project']->getName() . "." . $result['project']->getExt();
+        unset($result['order']);
 
-    /**
-     * Get detailDateExercise
-     *
-     * @return \DateTime
-     */
-    public function getDateExercise()
-    {
-        return $this->detailDateExercise;
+        return $result;
     }
 }
-

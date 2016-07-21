@@ -3,219 +3,327 @@
 namespace Orders\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use MCms\Entity\MCmsEntity;
 
 /**
  * Orders
  *
- * @ORM\Table(name="ims_orders")
+ * @ORM\Table(name="orders")
  * @ORM\Entity
  */
-class Orders
+class Orders extends MCmsEntity
 {
     /**
      * @var integer
      *
-     * @ORM\Column(name="orderId", type="integer", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="orderId", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $orderId;
+    protected $id;
 
     /**
-     * @var integer
+     * @var \Clients\Entity\Clients
      *
-     * @ORM\Column(name="orderClientId", type="integer", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\ManyToOne(targetEntity="Clients\Entity\Clients", inversedBy="orders")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="orderClientId", referencedColumnName="clientId", nullable=false)
+     * })
      */
-    private $orderClientId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="orderGroupId", type="integer", precision=0, scale=0, nullable=false, unique=false)
-     */
-    private $orderGroupId;
+    protected $client;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="orderCode", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="orderCode", type="string", length=255, nullable=false, unique=true)
      */
-    private $orderCode;
+    protected $code;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="orderStatus", type="integer", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="orderStatus", type="integer", nullable=false)
      */
-    private $orderStatus;
+    protected $status;
 
     /**
-     * @var string
+     * @var \Nomenclature\Entity\Details
      *
-     * @ORM\Column(name="orderNomenclature", type="text", length=65535, precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\OneToMany(targetEntity="Nomenclature\Entity\Details", mappedBy="order")
      */
-    private $orderNomenclature;
+    protected $details;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="orderDeadline", type="date", precision=0, scale=0, nullable=true, unique=false)
+     * @ORM\Column(name="orderCreationDate", type="date", nullable=false)
      */
-    private $orderDeadline;
-
+    protected $dateCreation;
 
     /**
-     * Get orderId
+     * @var \DateTime
+     *
+     * @ORM\Column(name="orderStartDate", type="date", nullable=true)
+     */
+    protected $dateStart;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="orderDeadline", type="date", nullable=true)
+     */
+    protected $deadline;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->dateCreation = new \DateTime();
+        $this->details = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get Id
      *
      * @return integer
      */
     public function getId()
     {
-        return $this->orderId;
+        return $this->id;
     }
 
     /**
-     * Set orderClientId
+     * Set client
      *
-     * @param integer $orderClientId
+     * @param \Clients\Entity\Clients $client
      *
      * @return Orders
      */
-    public function setClientId($orderClientId)
+    public function setClient(\Clients\Entity\Clients $client)
     {
-        $this->orderClientId = $orderClientId;
+        $this->client = $client;
 
         return $this;
     }
 
     /**
-     * Get orderClientId
+     * Get client
      *
-     * @return integer
+     * @return \Clients\Entity\Clients
      */
-    public function getClientId()
+    public function getClient()
     {
-        return $this->orderClientId;
+        return $this->client;
     }
 
     /**
-     * Set orderGroupId
+     * Set Code
      *
-     * @param integer $orderGroupId
+     * @param string $code
      *
      * @return Orders
      */
-    public function setGroupId($orderGroupId)
+    public function setCode($code)
     {
-        $this->orderGroupId = $orderGroupId;
+        $this->code = $code;
 
         return $this;
     }
 
     /**
-     * Get orderGroupId
-     *
-     * @return integer
-     */
-    public function getGroupId()
-    {
-        return $this->orderGroupId;
-    }
-
-    /**
-     * Set orderCode
-     *
-     * @param string $orderCode
-     *
-     * @return Orders
-     */
-    public function setCode($orderCode)
-    {
-        $this->orderCode = $orderCode;
-
-        return $this;
-    }
-
-    /**
-     * Get orderCode
+     * Get Code
      *
      * @return string
      */
     public function getCode()
     {
-        return $this->orderCode;
+        return $this->code;
     }
 
     /**
-     * Set orderStatus
+     * Set Status
      *
-     * @param integer $orderStatus
+     * @param integer $status
      *
      * @return Orders
      */
-    public function setStatus($orderStatus)
+    public function setStatus($status)
     {
-        $this->orderStatus = $orderStatus;
+        $this->status = $status;
 
         return $this;
     }
 
     /**
-     * Get orderStatus
+     * Get Status
      *
      * @return integer
      */
     public function getStatus()
     {
-        return $this->orderStatus;
+        return $this->status;
     }
 
+// TODO Реализовать addDetail && removeDetail
+//    /**
+//     * Add detail
+//     *
+//     * @param \Nomenclature\Entity\Details $detail
+//     *
+//     * @return Orders
+//     */
+//    public function addDetail(\Nomenclature\Entity\Details $detail)
+//    {
+//        $this->details[] = $detail;
+//
+//        return $this;
+//    }
+//
+//    /**
+//     * Remove detail
+//     *
+//     * @param \Nomenclature\Entity\Details $detail
+//     */
+//    public function removeDetail(\Nomenclature\Entity\Details $detail)
+//    {
+//        $this->details->removeElement($detail);
+//    }
+
     /**
-     * Set orderNomenclature
+     * Get details
      *
-     * @param string $orderNomenclature
-     *
-     * @return Orders
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function setNomenclature($orderNomenclature)
+    public function getDetails()
     {
-        $this->orderNomenclature = $orderNomenclature;
-
-        return $this;
+        return $this->details;
     }
 
     /**
-     * Get orderNomenclature
+     * Get Date Creation
      *
-     * @return string
-     */
-    public function getNomenclature()
-    {
-        return $this->orderNomenclature;
-    }
-
-    /**
-     * Set orderDeadline
-     *
-     * @param \DateTime $orderDeadline
-     *
-     * @return Orders
-     */
-    public function setDeadline($orderDeadline)
-    {
-        $this->orderDeadline = $orderDeadline;
-
-        return $this;
-    }
-
-    /**
-     * Get orderDeadline
+     * @param bool $formatted
      *
      * @return \DateTime
      */
-    public function getDeadline()
+    public function getDateCreation($formatted = true)
     {
-        return $this->orderDeadline;
+        if ($formatted)
+            return $this->getDateCreationFormat();
+        else
+            return $this->dateCreation;
+    }
+
+    /**
+     * Get Formatted Date Creation
+     *
+     * @param string $format
+     *
+     * @return \DateTime
+     */
+    public function getDateCreationFormat($format = "d.m.Y")
+    {
+        return date_format($this->dateCreation, $format);
+    }
+
+    /**
+     * Set Date Start
+     *
+     * @param \DateTime $date
+     *
+     * @return Orders
+     */
+    public function setDateStart($date)
+    {
+        $this->dateCreation = $date;
+
+        return $this;
+    }
+
+    /**
+     * Get Date Start
+     *
+     * @param bool $formatted
+     *
+     * @return \DateTime
+     */
+    public function getDateStart($formatted = true)
+    {
+        if ($formatted)
+            return $this->getDateStartFormat();
+        else
+            return $this->dateStart;
+    }
+
+    /**
+     * Get Formatted Date Start
+     *
+     * @param string $format
+     *
+     * @return \DateTime
+     */
+    public function getDateStartFormat($format = "d.m.Y")
+    {
+
+        if ($this->deadline != null)
+            return date_format($this->dateStart, $format);
+        else
+            return null;
+    }
+
+    /**
+     * Set Deadline
+     *
+     * @param \DateTime $deadline
+     *
+     * @return Orders
+     */
+    public function setDeadline($deadline)
+    {
+        $this->deadline = $deadline;
+
+        return $this;
+    }
+
+    /**
+     * Get Deadline
+     *
+     * @param bool $formatted
+     *
+     * @return \DateTime
+     */
+    public function getDeadline($formatted = true)
+    {
+        if ($formatted)
+            return $this->getDeadlineFormat();
+        else
+            return $this->deadline;
+    }
+
+    /**
+     * Get Formatted Deadline
+     *
+     * @param string $format
+     *
+     * @return \DateTime
+     */
+    public function getDeadlineFormat($format = "d.m.Y")
+    {
+        if ($this->deadline != null)
+            return date_format($this->deadline, $format);
+        else
+            return null;
+    }
+
+    public function toArray()
+    {
+        $result = parent::toArray();
+
+        $result['clientId'] = $result['client']->getId();
+        $result['clientName'] = $result['client']->getName();
+        unset($result['client'], $result['details']);
+
+        return $result;
     }
 }
-

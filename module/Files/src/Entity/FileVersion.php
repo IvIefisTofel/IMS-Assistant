@@ -3,6 +3,7 @@
 namespace Files\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use MCms\Entity\MCmsEntity;
 
 /**
  * FileVersion
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="fileversion")
  * @ORM\Entity
  */
-class FileVersion
+class FileVersion extends MCmsEntity
 {
     /**
      * @var integer
@@ -19,110 +20,136 @@ class FileVersion
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $versionId;
+    protected $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="versionFileId", type="integer", precision=0, scale=0, nullable=false, unique=false)
+     * @var \Files\Entity\Files
+     * @ORM\ManyToOne(targetEntity="Files\Entity\Files", inversedBy="versions")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="versionFileId", referencedColumnName="fileId", nullable=false)
+     * })
      */
-    private $versionFileId;
+    protected $file;
 
     /**
      * @var string
      *
      * @ORM\Column(name="versionPath", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    private $versionPath;
+    protected $path;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="versionDate", type="date", precision=0, scale=0, nullable=false, unique=false)
      */
-    private $versionDate;
+    protected $date;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->date = new \DateTime();
+    }
 
 
     /**
-     * Get versionId
+     * Get id
      *
      * @return integer
      */
     public function getId()
     {
-        return $this->versionId;
+        return $this->id;
     }
 
     /**
-     * Set versionFileId
+     * Set file
      *
-     * @param integer $versionFileId
+     * @param \Files\Entity\Files $file
      *
      * @return FileVersion
      */
-    public function setFileId($versionFileId)
+    public function setFile(\Files\Entity\Files $file)
     {
-        $this->versionFileId = $versionFileId;
+        $this->file = $file;
 
         return $this;
     }
 
     /**
-     * Get versionFileId
+     * Get file
      *
-     * @return integer
+     * @return \Files\Entity\Files
      */
-    public function getFileId()
+    public function getFile()
     {
-        return $this->versionFileId;
+        return $this->file;
     }
 
     /**
-     * Set versionPath
+     * Set path
      *
-     * @param string $versionPath
+     * @param string $path
      *
      * @return FileVersion
      */
-    public function setPath($versionPath)
+    public function setPath($path)
     {
-        $this->versionPath = $versionPath;
+        $this->path = $path;
 
         return $this;
     }
 
     /**
-     * Get versionPath
+     * Get path
      *
      * @return string
      */
     public function getPath()
     {
-        return $this->versionPath;
+        return $this->path;
     }
 
     /**
-     * Set versionDate
+     * Get date
      *
-     * @param \DateTime $versionDate
-     *
-     * @return FileVersion
-     */
-    public function setDate($versionDate)
-    {
-        $this->versionDate = $versionDate;
-
-        return $this;
-    }
-
-    /**
-     * Get versionDate
+     * @param bool $formatted
      *
      * @return \DateTime
      */
-    public function getDate()
+    public function getDate($formatted = true)
     {
-        return $this->versionDate;
+        if ($formatted)
+            return $this->getDateFormat();
+        else
+            return $this->date;
+    }
+
+    /**
+     * Get Formatted End Date
+     *
+     * @param string $format
+     *
+     * @return \DateTime
+     */
+    public function getDateFormat($format = "d.m.Y")
+    {
+        if ($this->date != null)
+            return date_format($this->date, $format);
+        else
+            return null;
+    }
+
+    public function toArray()
+    {
+        $result = parent::toArray();
+
+        $result['fileId'] = $result['file']->getId();
+        $result['fileName'] = $result['file']->getName() . "." . $result['file']->getExt();
+        unset($result['file']);
+
+        return $result;
     }
 }
-

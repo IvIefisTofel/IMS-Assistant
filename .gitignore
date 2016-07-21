@@ -10,6 +10,7 @@ nbproject
 .settings
 composer.phar
 config/development.config.php
+languages/*.mo
 vendor/
 bower_components/
 public/.htaccess

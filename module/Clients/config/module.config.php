@@ -9,7 +9,7 @@ return [
             'api-clients' => [
                 'type'    => 'Segment',
                 'options' => [
-                    'route'    => '/api/clients[/:task[/:id]]',
+                    'route'    => '/api/clients[/][/:task[/][/:id[/]]]',
                     'constraints' => [
                         'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id'         => '[0-9]+',

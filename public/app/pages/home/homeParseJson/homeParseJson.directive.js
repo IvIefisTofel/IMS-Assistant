@@ -6,14 +6,14 @@
   'use strict';
 
   angular.module('BlurAdmin.pages.home')
-      .directive('homePieChart', homePieChart);
+      .directive('homeParseJson', homeParseJson);
 
   /** @ngInject */
-  function homePieChart() {
+  function homeParseJson() {
     return {
       restrict: 'E',
-      controller: 'HomePieChartCtrl',
-      templateUrl: 'app/pages/home/homePieChart/homePieChart.html'
+      controller: 'HomeParseJsonCtrl',
+      templateUrl: 'app/pages/home/homeParseJson/homeParseJson.html'
     };
   }
 })();
