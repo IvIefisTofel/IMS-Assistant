@@ -33,9 +33,11 @@ class Module
 
         $eventManager->attach(MvcEvent::EVENT_ROUTE, [$this, 'onRoute'], -100);
         $eventManager->attach(MvcEvent::EVENT_DISPATCH, function (MvcEvent $e) {
-            if ($e->getResponse()->getStatusCode() == 404) {
-                $baseModel = $e->getViewModel();
-                $baseModel->setTemplate('error/layout');
+            if (method_exists($e->getResponse(), 'getStatusCode')) {
+                if ($e->getResponse()->getStatusCode() == 404) {
+                    $baseModel = $e->getViewModel();
+                    $baseModel->setTemplate('error/layout');
+                }
             }
         }, -100);
         $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, [$this, 'onDispatchError'], -100);
