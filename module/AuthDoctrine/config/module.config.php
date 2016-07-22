@@ -63,25 +63,25 @@ return [
         ],
     ],
 
-    'asset_manager' => [
-        'resolver_configs' => [
-            'collections' => [
-                'css/login-core.css' => [
-                    'css/bootstrap.min.css',
-                    'css/font-awesome.min.css',
-                    'admin/css/plugins/toastr/toastr.css',
-                    'admin/css/animate.css',
-                    'admin/css/inspinia.css',
-                    'admin/css/style.css',
-                ],
-                'js/login-core.js' => [
-                    'js/jquery.min.js',
-                    'js/bootstrap.min.js',
-                    'admin/js/plugins/toastr/toastr.min.js',
-                ],
-            ],
-        ],
-    ],
+//    'asset_manager' => [
+//        'resolver_configs' => [
+//            'collections' => [
+//                'css/login-core.css' => [
+//                    'css/bootstrap.min.css',
+//                    'css/font-awesome.min.css',
+//                    'admin/css/plugins/toastr/toastr.css',
+//                    'admin/css/animate.css',
+//                    'admin/css/inspinia.css',
+//                    'admin/css/style.css',
+//                ],
+//                'js/login-core.js' => [
+//                    'js/jquery.min.js',
+//                    'js/bootstrap.min.js',
+//                    'admin/js/plugins/toastr/toastr.min.js',
+//                ],
+//            ],
+//        ],
+//    ],
 
     'doctrine' => [
         'authentication' => [

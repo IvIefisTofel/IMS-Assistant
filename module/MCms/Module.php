@@ -7,9 +7,13 @@ use Zend\Console\Adapter\AdapterInterface as Console;
 
 class Module implements ConsoleUsageProviderInterface
 {
+    private $assets;
+
     public function getConfig()
     {
-        return include __DIR__ . '/config/module.config.php';
+        require_once ('Libs/AssetsGenerator.php');
+        $this->assets = new \AssetsGenerator();
+        return array_merge(include __DIR__ . '/config/module.config.php', $this->assets->getAssets());
     }
 	
     public function getAutoloaderConfig()
@@ -27,6 +31,8 @@ class Module implements ConsoleUsageProviderInterface
     {
         return array(
             'invokables' => array(
+                'getCssCollection' => View\Helper\GetCssCollection::class,
+                'getJsCollection' => View\Helper\GetJsCollection::class,
                 'siteYear' => View\Helper\GetSiteYear::class,
                 'numEnding' => View\Helper\NumEnding::class,
                 'phoneFormat' => View\Helper\PhoneFormat::class,
@@ -49,7 +55,9 @@ class Module implements ConsoleUsageProviderInterface
         $sm = $e->getApplication()->getServiceManager();
         $sm->setService('imagePlugin', $imagePlugin);
         $sm->setService('litHelper', $litHelper);
-
+        if (isset($this->assets) && $this->assets != null) {
+            $sm->setService('assets', $this->assets);
+        }
 
         // Table Prefix
         $tablePrefix = $sm->get('Config')['doctrine']['table_prefix'] ?? null;

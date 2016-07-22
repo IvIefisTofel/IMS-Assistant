@@ -5,7 +5,6 @@ use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 
 use AuthDoctrine\Acl\Acl;
-use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 
 class Module

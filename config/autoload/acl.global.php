@@ -10,10 +10,11 @@ return [
         ],
         'resources' => [
             'allow' => [
-                /**
-                 * Authentication doctrine command line
-                 */
+                // -------------------------------- Console controllers --------------------------------------------- //
                 'DoctrineModule\Controller\Cli' => [
+                    GUEST_ROLE,
+                ],
+                'AssetManager\Controller\Console' => [
                     GUEST_ROLE,
                 ],
                 // -------------------------------- Authentication -------------------------------------------------- //
