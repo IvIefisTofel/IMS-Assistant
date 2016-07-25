@@ -2,6 +2,9 @@
 
 class AssetsGenerator
 {
+    const cssCorePath = './public/css/core';
+    const jsCorePath = './public/js/core';
+
     const cssMinFilter  = [['filter' => 'CssMinFilter']];
     const jsMinFilter   = [['filter' => 'JSMin']];
 
@@ -20,8 +23,8 @@ class AssetsGenerator
     ];
 
     private static $staticProduction = [
-        'css/core.css' => ['cache' => 'FilesystemCache','options' => ['dir' => './public/css/core']],
-        'js/core.js' => ['cache' => 'FilesystemCache', 'options' => ['dir' => './public/js/core']],
+        'css/core.css' => ['cache' => 'FilesystemCache','options' => ['dir' => self::cssCorePath]],
+        'js/core.js' => ['cache' => 'FilesystemCache', 'options' => ['dir' => self::jsCorePath]],
     ];
 
     /**
@@ -45,9 +48,19 @@ class AssetsGenerator
     private $cssMin = [];
 
     /**
+     * @var string
+     */
+    private $coreCss = null;
+
+    /**
      * @var array
      */
     private $jsMin = [];
+
+    /**
+     * @var string
+     */
+    private $coreJs = null;
 
     /**
      * @var bool
@@ -81,6 +94,9 @@ class AssetsGenerator
                 $this->jsMin[$js] = self::jsMinFilter;
             }
         }
+
+        $this->coreCss = str_replace('./public/', '', self::cssCorePath) . '.css';
+        $this->coreJs = str_replace('./public/', '', self::jsCorePath) . '.js';
     }
 
     public function getAssets()
@@ -88,11 +104,28 @@ class AssetsGenerator
         $result = [];
         if ($this->development) {
             $result['asset_manager']['resolver_configs'] = self::$staticParams;
+            $result['asset_manager']['filters'] = [];
+            if ($this->alwaysMinCss) {
+                $result['asset_manager']['resolver_configs']['collections'][$this->coreCss] = $this->cssCollection;
+                $result['asset_manager']['filters'] = array_merge(
+                    $result['asset_manager']['filters'],
+                    $this->cssMin
+                );
+                $result['asset_manager']['caching'] = self::$staticProduction;
+            }
+            if ($this->alwaysMinJs) {
+                $result['asset_manager']['resolver_configs']['collections'][$this->coreJs] = array_reverse($this->jsCollection);
+                $result['asset_manager']['filters'] = array_merge(
+                    $result['asset_manager']['filters'],
+                    $this->jsMin
+                );
+                $result['asset_manager']['caching'] = self::$staticProduction;
+            }
         } else {
             $result['asset_manager']['resolver_configs'] = array_merge(self::$staticParams,
                 ["collections" => [
-                    "css/core.css" => $this->cssCollection,
-                    "js/core.js" => array_reverse($this->jsCollection),
+                    $this->coreCss => $this->cssCollection,
+                    $this->coreJs => array_reverse($this->jsCollection),
                 ]]
             );
             $result['asset_manager']['filters'] = array_merge($this->jsMin, $this->cssMin);
@@ -103,11 +136,21 @@ class AssetsGenerator
 
     public function getCssCollection()
     {
-        return $this->cssCollection;
+        if ($this->alwaysMinCss || !$this->development) {
+            return [$this->coreCss];
+        }
+        else {
+            return $this->cssCollection;
+        }
     }
 
     public function getJsCollection()
     {
-        return $this->jsCollection;
+        if ($this->alwaysMinJs || !$this->development) {
+            return [$this->coreJs];
+        }
+        else {
+            return $this->jsCollection;
+        }
     }
 }

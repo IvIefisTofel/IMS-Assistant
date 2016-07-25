@@ -109,7 +109,7 @@ function angularAppJs()
  * @return array
  */
 return [
-    'alwaysMinCss' => false,
+    'alwaysMinCss' => true,
     'alwaysMinJs' => false,
     'assetsCss' => [
         "/bower/Ionicons/css/ionicons.min.css",

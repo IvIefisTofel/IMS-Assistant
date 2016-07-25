@@ -21,11 +21,7 @@ echo $this->doctype();
     
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900&subset=latin,greek,greek-ext,vietnamese,cyrillic-ext,latin-ext,cyrillic' rel='stylesheet' type='text/css'>
     
-    <? if ($env) {
-        foreach ($this->getCssCollection() as $css) $this->headLink()->appendStylesheet($this->basePath($css));
-    } else {
-        $this->headLink()->prependStylesheet($this->basePath('css/core.css'));
-    } ?>
+    <? foreach ($this->getCssCollection() as $css) $this->headLink()->appendStylesheet($this->basePath($css)); ?>
     <?=$this->headLink(); ?>
     
 </head>
@@ -52,11 +48,7 @@ echo $this->doctype();
 </div>
 <?=$this->inlineScript() ?>
 
-<? if ($env) {
-    foreach ($this->getJsCollection() as $js) $this->headScript()->prependFile($this->basePath($js));
-} else {
-    $this->headScript()->prependFile($this->basePath('js/core.js'));
-} ?>
+<? foreach ($this->getJsCollection() as $js) $this->headScript()->prependFile($this->basePath($js)); ?>
 <?=$this->headScript(); ?>
 </body>
 </html>
