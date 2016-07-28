@@ -155,13 +155,13 @@ class Clients extends MCmsEntity
     /**
      * Set client Additions
      *
-     * @param string $additions
+     * @param array $additions
      *
      * @return Clients
      */
-    public function setAdditions($description)
+    public function setAdditions($additions)
     {
-        $this->additions = $description;
+        $this->additions = serialize($additions);
 
         return $this;
     }
@@ -173,7 +173,7 @@ class Clients extends MCmsEntity
      */
     public function getAdditions()
     {
-        return $this->additions;
+        return ($this->additions) ? unserialize($this->additions) : null;
     }
 
     public function toArray()

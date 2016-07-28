@@ -97,8 +97,10 @@ function angularAppJs()
 //        "/app/pages/charts/amCharts/amCharts.module.js",
 //        "/app/pages/charts/charts.module.js",
 
-        "/app/pages/home/homeParseJson/homeParseJson.directive.js",
-        "/app/pages/home/homeParseJson/HomeParseJsonCtrl.js",
+        "/app/pages/home/homeDashboard/HomeDashboardCtrl.js",
+        "/app/pages/home/homeDashboard/homeDashboard.directive.js",
+//        "/app/pages/home/homeParseJson/homeParseJson.directive.js",
+//        "/app/pages/home/homeParseJson/HomeParseJsonCtrl.js",
         "/app/pages/home/home.module.js",
 
         "/app/pages/pages.module.js",
@@ -109,7 +111,7 @@ function angularAppJs()
  * @return array
  */
 return [
-    'alwaysMinCss' => true,
+    'alwaysMinCss' => false,
     'alwaysMinJs' => false,
     'assetsCss' => [
         "/bower/Ionicons/css/ionicons.min.css",
