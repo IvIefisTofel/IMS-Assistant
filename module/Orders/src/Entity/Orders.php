@@ -2,6 +2,7 @@
 
 namespace Orders\Entity;
 
+use Assetic\Exception\Exception;
 use Doctrine\ORM\Mapping as ORM;
 use MCms\Entity\MCmsEntity;
 
@@ -13,6 +14,16 @@ use MCms\Entity\MCmsEntity;
  */
 class Orders extends MCmsEntity
 {
+    const STATUS_ORDER  = 1;
+    const STATUS_WORK   = 2;
+    const STATUS_DONE   = 3;
+
+    public static $STATUS = [
+        self::STATUS_ORDER  => "Заказ",
+        self::STATUS_WORK   => "В работе",
+        self::STATUS_DONE   => "Исполненно",
+    ];
+
     /**
      * @var integer
      *
@@ -147,12 +158,16 @@ class Orders extends MCmsEntity
      * @param integer $status
      *
      * @return Orders
+     * @throws \Exception
      */
     public function setStatus($status)
     {
-        $this->status = $status;
-
-        return $this;
+        if (isset(\Orders\Entity\Orders::$STATUS[$status])) {
+            $this->status = $status;
+            return $this;
+        } else {
+            throw new \Exception("Not valid status id.");
+        }
     }
 
     /**
@@ -162,7 +177,7 @@ class Orders extends MCmsEntity
      */
     public function getStatus()
     {
-        return $this->status;
+        return self::$STATUS[$this->status];
     }
 
 // TODO Реализовать addDetail && removeDetail

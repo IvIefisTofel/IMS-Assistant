@@ -1,26 +1,29 @@
 <div class="row">
     <div class="col-md-6">
-        <div class="panel panel-primary with-search with-scroll xmedium-panel animated zoomIn" zoom-in="">
+        <div class="panel panel-primary with-search with-scroll xmedium-panel animated fadeInLeft">
             <div class="panel-heading">
                 <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="panel-title">Заказчики</h3>
+                    <div class="col-md-6 hidden-sm hidden-xs">
+                        <h3>Список клиентов</h3>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-md-6 col-sm-12 col-xs-12">
                         <input ng-model="search.name" type="text" name="criteria" class="form-control" placeholder="Поиск..."/>
                     </div>
                 </div>
             </div>
             <div class="panel-body">
-                <div ng-if="list.length == 0" class="no-data">
+                <div ng-if="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
-                <table ng-if="list.length != 0" class="table table-hover">
-                    <tr ng-repeat="item in list | filter:search" class="no-top-border" ng-class="{active: item.id == current}">
+                <table ng-if="!loading" class="table table-hover">
+                    <tr ng-if="list.length == 0" class="no-top-border">
+                        <td ng-class="nowrap">Нет данных</td>
+                    </tr>
+                    <tr ng-if="list.length != 0" ng-repeat="item in list | filter:search" class="no-top-border" ng-class="{active: item.id == current}">
                         <td ng-class="nowrap">{{item.name}}</td>
                         <td class="align-right">
-                            <button class="editable-table-button btn btn-xs btn-primary" >Заказы</button>
-                            <button class="editable-table-button btn btn-xs btn-info" ng-click="showInfo(item.id)">Инфо</button>
+                            <a ng-href="#/orders/{{item.id}}" class="btn btn-xs btn-primary">Заказы</a>
+                            <button class="btn btn-xs btn-info" ng-click="showInfo(item.id)">Информация</button>
                         </td>
                     </tr>
                 </table>
@@ -28,7 +31,7 @@
         </div>
     </div>
     <div class="col-md-6">
-        <div class="panel panel-primary with-search with-scroll xmedium-panel animated zoomIn" zoom-in="">
+        <div class="panel panel-primary with-search with-scroll xmedium-panel animated fadeInRight">
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-sm-6">

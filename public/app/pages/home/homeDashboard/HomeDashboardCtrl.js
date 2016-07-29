@@ -11,14 +11,15 @@
   /** @ngInject */
   function HomeDashboardCtrl($scope) {
     $scope.list = [];
+    $scope.loading = true;
     $scope.current = null;
     $scope.client = {
       info: "Клиент не выбран.",
       files: null
     };
 
-    $scope.showInfo = function(key){
-      var item = $scope.list.filter(function( obj ) {
+    $scope.showInfo = function(key) {
+      var item = $scope.list.filter(function(obj) {
         return obj.id == key;
       });
       if (item.length > 0) {
@@ -35,24 +36,32 @@
       }
     };
 
-    $.ajax({
-      url: "/api/clients",
-      type: 'POST',
-      dataType: 'json',
-      data: {data: null},
-      success: function (data) {
-        if (data.error) {
+    $scope.refreshData = function () {
+      $scope.loading = true;
+      $.ajax({
+        url: "/api/clients",
+        type: 'POST',
+        dataType: 'json',
+        data: {data: null},
+        success: function (data) {
+          if (data.error) {
+            console.log(data);
+          } else {
+            $scope.list = data.data;
+            $scope.loading = false;
+            if ($scope.list.length > 0) {
+              $scope.current = $scope.list[0].id;
+              $scope.showInfo($scope.list[0].id);
+            }
+            $scope.$apply();
+          }
+        },
+        error: function (data) {
           console.log(data);
-        } else {
-          $scope.list = data.data;
-          $scope.current = $scope.list[0].id;
-          $scope.showInfo($scope.list[0].id);
-          $scope.$apply();
         }
-      },
-      error: function (data) {
-        console.log(data);
-      }
-    });
+      });
+    };
+
+    $scope.refreshData();
   }
 })();

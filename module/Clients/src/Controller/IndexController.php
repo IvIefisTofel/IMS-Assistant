@@ -48,8 +48,6 @@ class IndexController extends MCmsController
                     $data = $this->entityManager->getRepository('Clients\Entity\Clients')->find($id);
                     if (count($data) > 0) {
                         $data = $data->toArray();
-                    } else {
-                        $error = "No clients found.";
                     }
                 }
                 break;

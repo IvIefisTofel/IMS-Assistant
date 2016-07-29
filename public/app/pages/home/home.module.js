@@ -10,11 +10,11 @@
             .state('home', {
                 url: '/',
                 templateUrl: 'app/pages/home/home.html',
-                title: 'Главная',
+                title: 'Клиенты',
                 sidebarMeta: {
-                    icon: 'ion-android-home',
-                    order: 0,
-                },
+                    icon: 'ion-ios-people',
+                    order: 0
+                }
             });
     }
 

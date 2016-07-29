@@ -25,6 +25,7 @@ class IndexController extends MCmsController
         $task   = $this->params()->fromRoute('task', null);
         $id     = $this->params()->fromRoute('id', null);
 
+        $client = null;
         $data = [];
 
         switch ($task) {
@@ -35,8 +36,19 @@ class IndexController extends MCmsController
                     $data = $this->entityManager->getRepository('Orders\Entity\Orders')->find($id);
                     if (count($data) > 0) {
                         $data = $data->toArray();
-                    } else {
-                        $error = "No clients found.";
+                    }
+                }
+                break;
+            case 'getByClient' || "get-by-client" || 'getbyclient':
+                if ($id === null)
+                    $error = "Error: id is not valid!";
+                else {
+                    $client = $this->entityManager->getRepository('Clients\Entity\Clients')->find($id)->toArray();
+                    $data = $this->entityManager->getRepository('Orders\Entity\Orders')->findBy(['client' => $id]);
+                    if (count($data) > 0) {
+                        foreach ($data as $key => $val) {
+                            $data[$key] = $val->toArray();
+                        }
                     }
                 }
                 break;
@@ -55,6 +67,7 @@ class IndexController extends MCmsController
         } else {
             return new JsonModel([
                 "data" => $data,
+                "client" => $client,
             ]);
         }
     }
