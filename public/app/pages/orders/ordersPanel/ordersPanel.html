@@ -30,7 +30,8 @@
                         <td class="align-center">Статус</td>
                         <td class="align-center">Дата создания</td>
                         <td class="align-center">Дата начала</td>
-                        <td class="align-center">Крайний срок</td>
+                        <td class="align-center">Дата исполнения</td>
+                        <td class="align-center">Срок исполнения</td>
                         <td class="align-right"></td>
                     </tr>
                     </thead>
@@ -41,6 +42,7 @@
                         <td class="align-center">{{item.status}}</td>
                         <td class="align-center">{{item.dateCreation}}</td>
                         <td class="align-center">{{(item.dateStart == null) ? '---' : item.dateStart}}</td>
+                        <td class="align-center">calculated value</td>
                         <td class="align-center">{{(item.deadline == null) ? '---' : item.deadline}}</td>
                         <td class="align-right">
                             <a ui-sref="nomenclature-custom({id: item.id})" class="btn btn-xs btn-primary">Номенклатура</a>

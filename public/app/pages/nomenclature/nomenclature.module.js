@@ -25,7 +25,7 @@
                     }
                 },
                 templateUrl: 'app/pages/nomenclature/nomenclature.html',
-                title: 'Заказы'
+                title: 'Номенклатура'
             });
     }
 
