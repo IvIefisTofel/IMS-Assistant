@@ -26,7 +26,7 @@ class Files extends MCmsEntity
      * @var \Files\Entity\FileVersion
      *
      * @ORM\OneToMany(targetEntity="Files\Entity\FileVersion", mappedBy="file")
-     * @ORM\OrderBy({"date" = "ASC"})
+     * @ORM\OrderBy({"date" = "DESC"})
      */
     protected $versions;
 

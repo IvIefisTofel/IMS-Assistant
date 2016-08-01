@@ -2,8 +2,6 @@
 
 namespace MCms\Entity;
 
-use Zend\Server\Reflection\ReflectionClass;
-
 class MCmsEntity
 {
     public function toArray()

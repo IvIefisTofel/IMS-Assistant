@@ -3803,6 +3803,15 @@ th {
   color: #fff;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0; }
+.panel .panel-heading a, .panel-heading a:focus {
+    color: #e2e2e2;
+    text-decoration: none; }
+.panel .panel-heading a:hover {
+    color: #fff;
+    text-decoration: underline !important;
+}
+.panel .panel-heading h3 {
+    padding-top: 5px; }
 
 .panel > .panel-footer {
   color: #e6e6e6; }
@@ -4541,6 +4550,7 @@ a.al-sidebar-list-link {
     a.al-sidebar-list-link:hover b {
       color: #209e91; }
   a.al-sidebar-list-link i {
+    font-size: 14px;
     margin-right: 18px;
     width: 16px;
     display: inline-block; }

@@ -9,13 +9,13 @@ return [
             'api-nomenclature' => [
                 'type'    => 'Segment',
                 'options' => [
-                    'route'    => '/api/nomenclature[/:action[/:id]]',
+                    'route'    => '/api/nomenclature[/][/:task[/][/:id[/]]]',
                     'constraints' => [
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'task'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id'         => '[0-9]+',
                     ],
                     'defaults' => [
-                        '__NAMESPACE__' => 'Clients\Controller',
+                        '__NAMESPACE__' => 'Nomenclature\Controller',
                         'controller'    => 'Index',
                         'action'        => 'index',
                     ],

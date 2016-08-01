@@ -43,8 +43,10 @@ class IndexController extends MCmsController
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
-                    $client = $this->entityManager->getRepository('Clients\Entity\Clients')->find($id)->toArray();
-                    $data = $this->entityManager->getRepository('Orders\Entity\Orders')->findBy(['client' => $id]);
+                    /** @var $client \Clients\Entity\Clients */
+                    $client = $this->entityManager->getRepository('Clients\Entity\Clients')->find($id);
+                    $data = $client->getOrders()->toArray();
+                    $client = $client->toArray();
                     if (count($data) > 0) {
                         foreach ($data as $key => $val) {
                             $data[$key] = $val->toArray();

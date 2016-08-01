@@ -2,7 +2,6 @@
 
 namespace Orders\Entity;
 
-use Assetic\Exception\Exception;
 use Doctrine\ORM\Mapping as ORM;
 use MCms\Entity\MCmsEntity;
 
@@ -61,6 +60,7 @@ class Orders extends MCmsEntity
      * @var \Nomenclature\Entity\Details
      *
      * @ORM\OneToMany(targetEntity="Nomenclature\Entity\Details", mappedBy="order")
+     * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $details;
 

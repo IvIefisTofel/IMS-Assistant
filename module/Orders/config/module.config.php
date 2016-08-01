@@ -11,7 +11,7 @@ return [
                 'options' => [
                     'route'    => '/api/orders[/][/:task[/][/:id[/]]]',
                     'constraints' => [
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'task'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id'         => '[0-9]+',
                     ],
                     'defaults' => [

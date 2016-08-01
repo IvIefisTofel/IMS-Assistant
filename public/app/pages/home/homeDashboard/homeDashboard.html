@@ -22,7 +22,7 @@
                     <tr ng-if="list.length != 0" ng-repeat="item in list | filter:search" class="no-top-border" ng-class="{active: item.id == current}">
                         <td ng-class="nowrap">{{item.name}}</td>
                         <td class="align-right">
-                            <a ng-href="#/orders/{{item.id}}" class="btn btn-xs btn-primary">Заказы</a>
+                            <a ui-sref="orders-custom({id: item.id})" class="btn btn-xs btn-primary">Заказы</a>
                             <button class="btn btn-xs btn-info" ng-click="showInfo(item.id)">Информация</button>
                         </td>
                     </tr>

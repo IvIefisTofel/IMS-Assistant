@@ -8,7 +8,8 @@
   angular.module('BlurAdmin.pages', [
     'ui.router',
     'BlurAdmin.pages.home',
-    'BlurAdmin.pages.orders'
+    'BlurAdmin.pages.orders',
+    'BlurAdmin.pages.nomenclature'
   ])
       .config(routeConfig);
 

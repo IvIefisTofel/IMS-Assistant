@@ -97,6 +97,10 @@ function angularAppJs()
 //        "/app/pages/charts/amCharts/amCharts.module.js",
 //        "/app/pages/charts/charts.module.js",
 
+        "/app/pages/nomenclature/detailsPanel/DetailsPanelCtrl.js",
+        "/app/pages/nomenclature/detailsPanel/detailsPanel.directive.js",
+        "/app/pages/nomenclature/nomenclature.module.js",
+
         "/app/pages/orders/ordersPanel/OrdersPanelCtrl.js",
         "/app/pages/orders/ordersPanel/ordersPanel.directive.js",
         "/app/pages/orders/orders.module.js",

@@ -33,6 +33,7 @@ class Clients extends MCmsEntity
      * @var \Orders\Entity\Orders
      *
      * @ORM\OneToMany(targetEntity="Orders\Entity\Orders", mappedBy="client")
+     * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $orders;
 

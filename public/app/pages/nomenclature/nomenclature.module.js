@@ -1,30 +1,30 @@
 (function () {
     'use strict';
 
-    angular.module('BlurAdmin.pages.orders', [])
+    angular.module('BlurAdmin.pages.nomenclature', [])
         .config(routeConfig);
 
     /** @ngInject */
     function routeConfig($stateProvider) {
         $stateProvider
-            .state('orders', {
-                url: '/orders',
-                templateUrl: 'app/pages/orders/orders.html',
-                title: 'Заказы',
+            .state('nomenclature', {
+                url: '/orders/nomenclature',
+                templateUrl: 'app/pages/nomenclature/nomenclature.html',
+                title: 'Номенклатура',
                 sidebarMeta: {
-                    icon: 'fa fa-th-list',
+                    icon: 'fa fa-list',
                     order: 10
                 }
             })
-            .state('orders-custom', {
-                url: '/orders/{id:int}',
+            .state('nomenclature-custom', {
+                url: '/orders/nomenclature/{id:int}',
                 params: {
                     id: {
                         value:  null,
                         squash: true
                     }
                 },
-                templateUrl: 'app/pages/orders/orders.html',
+                templateUrl: 'app/pages/nomenclature/nomenclature.html',
                 title: 'Заказы'
             });
     }
