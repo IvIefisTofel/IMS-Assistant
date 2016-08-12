@@ -1,0 +1,15 @@
+<div ng-if="showActions" class="row">
+    <div class="col-md-12">
+        <div class="panel with-scroll content-actions animated fadeInDown">
+            <div class="panel-body">
+                <h2>Действия</h2>
+                <div class="actions">
+                    <button ng-repeat="(key, item) in buttons" type="button" class="btn" ng-class="item.class" ng-click="action(key)">
+                        <i ng-if="item.iconClass !== null" ng-class="item.iconClass"></i>
+                        {{item.text}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -6,14 +6,14 @@
   'use strict';
 
   angular.module('BlurAdmin.pages.orders')
-      .directive('ordersPanel', ordersPanel);
+      .directive('ordersList', ordersList);
 
   /** @ngInject */
-  function ordersPanel() {
+  function ordersList() {
     return {
       restrict: 'E',
-      controller: 'OrdersPanelCtrl',
-      templateUrl: 'app/pages/orders/ordersPanel/ordersPanel.html'
+      controller: 'OrdersListCtrl',
+      templateUrl: 'app/pages/orders/ordersList/ordersList.html'
     };
   }
 })();

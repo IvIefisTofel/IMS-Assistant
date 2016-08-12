@@ -1,0 +1,81 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-primary with-search animated fadeInUp">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-6 col-lg-8 hidden-sm hidden-xs">
+                        <h3>
+                            Список заказов <discription ng-if="clientName != null">(от клиента "{{clientName}}")</discription>
+                            <a ng-if="clientName != null" ui-sref="clients" class="pull-right ng-scope">Назад</a>
+                        </h3>
+                    </div>
+                    <div class="col-md-6 col-lg-4 col-sm-12 col-xs-12">
+                        <input ng-model="search.$" type="text" name="criteria" class="form-control" placeholder="Поиск..."/>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div ng-if="loading" class="no-data">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+                <div ng-if="!loading && list.length == 0" class="no-data">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    Нет данных
+                </div>
+                <div class="switches">
+                    <switch color="primary" ng-model="filter[1]">Заказ</switch>
+                    <switch color="warning" ng-model="filter[2]">В работе</switch>
+                    <switch color="success" ng-model="filter[3]">Исполненно</switch>
+                </div>
+                <table ng-if="!loading" class="table table-bordered table-hover table-with-labels">
+                    <thead>
+                    <tr ng-if="list.length != 0" class="black-muted-bg">
+                        <td class="first-fixed"></td>
+                        <td class="align-center">
+                            <button class="btn btn-link" ng-click="sortBy('code')">Шифр</button>
+                            <span class="sortorder" ng-show="propertyName === 'code'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td ng-if="showClient" class="align-center">
+                            <button class="btn btn-link" ng-click="sortBy('clientName')">Клиент</button>
+                            <span class="sortorder" ng-show="propertyName === 'clientName'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td class="align-center">
+                            <button class="btn btn-link" ng-click="sortBy('dateCreation')">Дата создания</button>
+                            <span class="sortorder" ng-show="propertyName === 'dateCreation'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td class="align-center">
+                            <button class="btn btn-link" ng-click="sortBy('dateStart')">Дата начала</button>
+                            <span class="sortorder" ng-show="propertyName === 'dateStart'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td class="align-center">
+                            <button class="btn btn-link" ng-click="sortBy('dateEnd')">Дата исполнения</button>
+                            <span class="sortorder" ng-show="propertyName === 'dateEnd'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td class="align-center">
+                            <button class="btn btn-link" ng-click="sortBy('deadline')">Срок исполнения</button>
+                            <span class="sortorder" ng-show="propertyName === 'deadline'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td class="last-fixed"></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-if="list.length != 0" ng-repeat="item in ((list | filter:filterBy) | filter:search) | orderBy:propertyName:reverse" class="no-top-border" ng-class="{active: item.id == current}">
+                        <td class="align-center" ng-init="labelClass = (item.statusCode == 1) ? 'label-primary' : (item.statusCode == 2) ? 'label-warning' : 'label-success'">
+                            <span class="label" ng-class="labelClass">{{item.status}}</span>
+                        </td>
+                        <td class="align-center">{{item.code}}</td>
+                        <td ng-if="showClient" class="align-center">{{item.clientName}}</td>
+                        <td class="align-center">{{item.dateCreation}}</td>
+                        <td class="align-center">{{(item.dateStart == null) ? '---' : item.dateStart}}</td>
+                        <td class="align-center">{{(item.dateEnd == null) ? '---' : item.dateEnd}}</td>
+                        <td class="align-center">{{(item.deadline == null) ? '---' : item.deadline}}</td>
+                        <td class="align-right">
+                            <a ui-sref="nomenclature-custom({id: item.id})" class="btn btn-xs btn-primary">Номенклатура</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

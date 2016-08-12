@@ -17,6 +17,18 @@ return [
                     ],
                 ],
             ],
+            'api-permissions' => [
+                'type'    => 'Segment',
+                'options' => [
+                    'route'    => '/api/get-permissions',
+                    'defaults' => [
+                        '__NAMESPACE__' => 'Application\Controller',
+                        'controller'    => 'Index',
+                        'action'        => 'permissions',
+                    ],
+                ],
+                'may_terminate' => true,
+            ],
             /*'application' => [
                 'type'    => 'Literal',
                 'options' => [

@@ -97,17 +97,17 @@ function angularAppJs()
 //        "/app/pages/charts/amCharts/amCharts.module.js",
 //        "/app/pages/charts/charts.module.js",
 
-        "/app/pages/nomenclature/detailsPanel/DetailsPanelCtrl.js",
-        "/app/pages/nomenclature/detailsPanel/detailsPanel.directive.js",
+        "/app/pages/nomenclature/detailsList/DetailsListCtrl.js",
+        "/app/pages/nomenclature/detailsList/detailsList.directive.js",
         "/app/pages/nomenclature/nomenclature.module.js",
 
-        "/app/pages/orders/ordersPanel/OrdersPanelCtrl.js",
-        "/app/pages/orders/ordersPanel/ordersPanel.directive.js",
+        "/app/pages/orders/ordersList/OrdersListCtrl.js",
+        "/app/pages/orders/ordersList/ordersList.directive.js",
         "/app/pages/orders/orders.module.js",
 
-        "/app/pages/home/homeDashboard/homeDashboard.directive.js",
-        "/app/pages/home/homeDashboard/HomeDashboardCtrl.js",
-        "/app/pages/home/home.module.js",
+        "/app/pages/clients/clientsList/ClientsListCtrl.js",
+        "/app/pages/clients/clientsList/clientsList.directive.js",
+        "/app/pages/clients/clients.module.js",
 
         "/app/pages/pages.module.js",
     ];
@@ -152,6 +152,8 @@ return [
         "/app/theme/components/pageTop/pageTop.directive.js",
         "/app/theme/components/msgCenter/msgCenter.directive.js",
         "/app/theme/components/msgCenter/MsgCenterCtrl.js",
+        "/app/theme/components/contentTop/contentActions/ContentActionsCtrl.js",
+        "/app/theme/components/contentTop/contentActions/contentActions.directive.js",
         "/app/theme/components/contentTop/contentTop.directive.js",
         "/app/theme/components/baWizard/baWizardStep.directive.js",
         "/app/theme/components/baWizard/baWizardCtrl.js",
@@ -171,6 +173,7 @@ return [
         "/app/theme/services/baUtil.js",
         "/app/theme/directives/zoomIn.js",
         "/app/theme/directives/trackWidth.js",
+        "/app/theme/directives/switch.js",
         "/app/theme/directives/scrollPosition.js",
         "/app/theme/directives/ngFileSelect.js",
         "/app/theme/directives/ionSlider.js",

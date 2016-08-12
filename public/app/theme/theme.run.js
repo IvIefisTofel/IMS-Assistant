@@ -36,6 +36,23 @@
     }, 7000);
 
     $rootScope.$baSidebarService = baSidebarService;
+    $rootScope.$getPermissions = function (r) {
+      var reload = typeof r !== 'undefined' ?  r : false;
+      if (reload || $rootScope.userAccess === undefined) {
+        $.ajax({
+          type: "POST",
+          url: '/api/get-permissions',
+          async: false,
+          data: {data: null}
+        }).success(function(response) {
+          $rootScope.userAccess = response.access;
+        }).error(function(response) {
+          console.log(response);
+        });
+      }
+
+      return $rootScope.userAccess;
+    };
   }
 
 })();

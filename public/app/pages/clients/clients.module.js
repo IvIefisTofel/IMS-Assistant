@@ -1,15 +1,15 @@
 (function () {
     'use strict';
 
-    angular.module('BlurAdmin.pages.home', [])
+    angular.module('BlurAdmin.pages.clients', [])
         .config(routeConfig);
 
     /** @ngInject */
     function routeConfig($stateProvider) {
         $stateProvider
-            .state('home', {
+            .state('clients', {
                 url: '/',
-                templateUrl: 'app/pages/home/home.html',
+                templateUrl: 'app/pages/clients/clients.html',
                 title: 'Клиенты',
                 sidebarMeta: {
                     icon: 'ion-ios-people',

@@ -9,7 +9,8 @@
     .config(config);
 
   /** @ngInject */
-  function config(baConfigProvider, colorHelper) {
+  function config(baConfigProvider, colorHelper, $httpProvider) {
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     //baConfigProvider.changeTheme({blur: true});
     //
     //baConfigProvider.changeColors({

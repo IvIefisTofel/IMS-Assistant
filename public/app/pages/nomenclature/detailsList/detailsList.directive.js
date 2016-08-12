@@ -6,14 +6,14 @@
   'use strict';
 
   angular.module('BlurAdmin.pages.nomenclature')
-      .directive('detailsPanel', detailsPanel);
+      .directive('detailsList', detailsList);
 
   /** @ngInject */
-  function detailsPanel() {
+  function detailsList() {
     return {
       restrict: 'E',
-      controller: 'DetailsPanelCtrl',
-      templateUrl: 'app/pages/nomenclature/detailsPanel/detailsPanel.html'
+      controller: 'DetailsListCtrl',
+      templateUrl: 'app/pages/nomenclature/detailsList/detailsList.html'
     };
   }
 })();

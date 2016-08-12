@@ -81,6 +81,13 @@ class Orders extends MCmsEntity
     /**
      * @var \DateTime
      *
+     * @ORM\Column(name="orderEndDate", type="date", nullable=true)
+     */
+    protected $dateEnd;
+
+    /**
+     * @var \DateTime
+     *
      * @ORM\Column(name="orderDeadline", type="date", nullable=true)
      */
     protected $deadline;
@@ -178,6 +185,16 @@ class Orders extends MCmsEntity
     public function getStatus()
     {
         return self::$STATUS[$this->status];
+    }
+
+    /**
+     * Get Status
+     *
+     * @return integer
+     */
+    public function getStatusCode()
+    {
+        return $this->status;
     }
 
 // TODO Реализовать addDetail && removeDetail
@@ -280,9 +297,50 @@ class Orders extends MCmsEntity
      */
     public function getDateStartFormat($format = "d.m.Y")
     {
-
         if ($this->deadline != null)
             return date_format($this->dateStart, $format);
+        else
+            return null;
+    }
+
+    /**
+     * Set Date End
+     *
+     * @param \DateTime $dateEnd
+     *
+     * @return Orders
+     */
+    public function setDateEnd($dateEnd)
+    {
+        $this->dateEnd = $dateEnd;
+    }
+
+    /**
+     * Get Date End
+     *
+     * @param bool $formatted
+     *
+     * @return \DateTime
+     */
+    public function getDateEnd($formatted = true)
+    {
+        if ($formatted)
+            return $this->getDateEndFormat();
+        else
+            return $this->dateEnd;
+    }
+
+    /**
+     * Get Formatted Date End
+     *
+     * @param string $format
+     *
+     * @return \DateTime
+     */
+    public function getDateEndFormat($format = "d.m.Y")
+    {
+        if ($this->deadline != null)
+            return date_format($this->dateEnd, $format);
         else
             return null;
     }

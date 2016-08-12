@@ -7,7 +7,7 @@
 
   angular.module('BlurAdmin.pages', [
     'ui.router',
-    'BlurAdmin.pages.home',
+    'BlurAdmin.pages.clients',
     'BlurAdmin.pages.orders',
     'BlurAdmin.pages.nomenclature'
   ])
