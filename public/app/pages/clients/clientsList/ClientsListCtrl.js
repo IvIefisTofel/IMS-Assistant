@@ -81,7 +81,7 @@
         $scope.current = item.id;
         $scope.client.files = item.additions;
 
-        if (item.description != null) {
+        if (item.description != null && item.description != "") {
           $scope.client.info = item.description;
         } else {
           $scope.client.info = "Нет информации.";

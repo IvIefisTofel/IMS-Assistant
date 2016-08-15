@@ -162,7 +162,7 @@ class Clients extends MCmsEntity
      */
     public function setAdditions($additions)
     {
-        $this->additions = serialize($additions);
+        $this->additions = implode("\n", $additions);
 
         return $this;
     }
@@ -174,7 +174,7 @@ class Clients extends MCmsEntity
      */
     public function getAdditions()
     {
-        return ($this->additions) ? unserialize($this->additions) : null;
+        return ($this->additions) ? explode("\n", $this->additions) : null;
     }
 
     public function toArray()

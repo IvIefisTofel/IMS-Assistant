@@ -52,8 +52,8 @@
                             <span class="sortorder" ng-show="propertyName === 'dateEnd'" ng-class="{reverse: reverse}"></span>
                         </td>
                         <td class="align-center">
-                            <button class="btn btn-link" ng-click="sortBy('deadline')">Срок исполнения</button>
-                            <span class="sortorder" ng-show="propertyName === 'deadline'" ng-class="{reverse: reverse}"></span>
+                            <button class="btn btn-link" ng-click="sortBy('dateDeadline')">Срок исполнения</button>
+                            <span class="sortorder" ng-show="propertyName === 'dateDeadline'" ng-class="{reverse: reverse}"></span>
                         </td>
                         <td class="last-fixed"></td>
                     </tr>
@@ -68,7 +68,7 @@
                         <td class="align-center">{{item.dateCreation}}</td>
                         <td class="align-center">{{(item.dateStart == null) ? '---' : item.dateStart}}</td>
                         <td class="align-center">{{(item.dateEnd == null) ? '---' : item.dateEnd}}</td>
-                        <td class="align-center">{{(item.deadline == null) ? '---' : item.deadline}}</td>
+                        <td class="align-center">{{(item.dateDeadline == null) ? '---' : item.dateDeadline}}</td>
                         <td class="align-right">
                             <a ui-sref="nomenclature-custom({id: item.id})" class="btn btn-xs btn-primary">Номенклатура</a>
                         </td>

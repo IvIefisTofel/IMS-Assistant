@@ -22,12 +22,9 @@
             "@compile-mo"
         ],
         "clearCache": [
-            "rm -rf data/cache/*",
-            "rm -rf public/css/core/*",
-            "rm -rf public/js/core/*",
-            "cp upload/.gitignore data/cache/.gitignore",
-            "cp upload/.gitignore public/css/core/.gitignore",
-            "cp upload/.gitignore public/js/core/.gitignore"
+            "find data/cache -mindepth 1 ! -name '.gitignore' -delete",
+            "find public/css/core -mindepth 1 ! -name '.gitignore' -delete",
+            "find public/js/core -mindepth 1 ! -name '.gitignore' -delete"
         ],
         "compile-mo": "php ./public/index.php compile-mo"
     }

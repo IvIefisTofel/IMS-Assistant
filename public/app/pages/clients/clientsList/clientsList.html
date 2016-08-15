@@ -15,15 +15,15 @@
                 <div ng-if="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
+                <div ng-if="!loading && list.length == 0" class="no-data">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    Нет данных
+                </div>
                 <table ng-if="!loading" class="table table-hover">
-                    <tr ng-if="list.length == 0" class="no-top-border">
-                        <td ng-class="nowrap">Нет данных</td>
-                    </tr>
-                    <tr ng-if="list.length != 0" ng-repeat="item in list | filter:search" class="no-top-border" ng-class="{active: item.id == current}">
+                    <tr ng-if="list.length != 0" ng-repeat="item in list | filter:search" ng-click="showInfo(item.id)" ng-class="{active: item.id == current}" class="no-top-border">
                         <td ng-class="nowrap">{{item.name}}</td>
                         <td class="align-right">
                             <a ui-sref="orders-custom({id: item.id})" class="btn btn-xs btn-primary">Заказы</a>
-                            <button class="btn btn-xs btn-info" ng-click="showInfo(item.id)">Информация</button>
                         </td>
                     </tr>
                 </table>
@@ -43,7 +43,11 @@
                 <div ng-if="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
-                <div ng-if="!loading">
+                <div ng-if="!loading && list.length == 0" class="no-data">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    Нет данных
+                </div>
+                <div ng-if="!loading && list.length != 0">
                     <div class="row">
                         <div class="col-md-12">
                             <pre class="text">{{client.info}}</pre>
@@ -51,7 +55,7 @@
                     </div>
                     <div class="row">
                         <div ng-if="(client.files != null && client.files.length != 0)" class="col-md-12 adds">
-                            <a ng-repeat="file in client.files" href="{{file.href}}">{{file.name}}</a>
+                            <a ng-repeat="file in client.files" href="{{file}}">{{file.substring(file.lastIndexOf('/')+1)}}</a>
                         </div>
                     </div>
                 </div>

@@ -90,7 +90,7 @@ class Orders extends MCmsEntity
      *
      * @ORM\Column(name="orderDeadline", type="date", nullable=true)
      */
-    protected $deadline;
+    protected $dateDeadline;
 
     /**
      * Constructor
@@ -297,7 +297,7 @@ class Orders extends MCmsEntity
      */
     public function getDateStartFormat($format = "d.m.Y")
     {
-        if ($this->deadline != null)
+        if ($this->dateStart != null)
             return date_format($this->dateStart, $format);
         else
             return null;
@@ -339,7 +339,7 @@ class Orders extends MCmsEntity
      */
     public function getDateEndFormat($format = "d.m.Y")
     {
-        if ($this->deadline != null)
+        if ($this->dateEnd != null)
             return date_format($this->dateEnd, $format);
         else
             return null;
@@ -348,13 +348,13 @@ class Orders extends MCmsEntity
     /**
      * Set Deadline
      *
-     * @param \DateTime $deadline
+     * @param \DateTime $dateDeadline
      *
      * @return Orders
      */
-    public function setDeadline($deadline)
+    public function setDateDeadline($dateDeadline)
     {
-        $this->deadline = $deadline;
+        $this->dateDeadline = $dateDeadline;
 
         return $this;
     }
@@ -366,12 +366,12 @@ class Orders extends MCmsEntity
      *
      * @return \DateTime
      */
-    public function getDeadline($formatted = true)
+    public function getDateDeadline($formatted = true)
     {
         if ($formatted)
-            return $this->getDeadlineFormat();
+            return $this->getDateDeadlineFormat();
         else
-            return $this->deadline;
+            return $this->dateDeadline;
     }
 
     /**
@@ -381,10 +381,10 @@ class Orders extends MCmsEntity
      *
      * @return \DateTime
      */
-    public function getDeadlineFormat($format = "d.m.Y")
+    public function getDateDeadlineFormat($format = "d.m.Y")
     {
-        if ($this->deadline != null)
-            return date_format($this->deadline, $format);
+        if ($this->dateDeadline != null)
+            return date_format($this->dateDeadline, $format);
         else
             return null;
     }
