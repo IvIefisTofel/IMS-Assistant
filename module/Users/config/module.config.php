@@ -4,7 +4,7 @@ namespace Users;
 
 $env = (getenv('APP_ENV') == 'development') ? true : false;
 return [
-    'router' => [
+    /*'router' => [
         'routes' => [
             'admin-users' => [
                 'type'    => 'Segment',
@@ -41,7 +41,7 @@ return [
                 ],
             ],
         ],
-    ],
+    ],*/
 
     'view_manager' => [
         'display_not_found_reason'  => $env,

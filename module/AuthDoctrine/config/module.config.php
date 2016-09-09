@@ -48,7 +48,16 @@ return [
     'controllers' => [
         'invokables' => [
             'AuthDoctrine\Controller\Index' => Controller\IndexController::class,
-            'AuthDoctrine\Controller\Admin' => Controller\AdminController::class,
+        ],
+    ],
+
+    'acl' => [
+        'resources' => [
+            'allow' => [
+                'AuthDoctrine\Controller\Index' => [
+                    GUEST_ROLE,
+                ],
+            ],
         ],
     ],
 

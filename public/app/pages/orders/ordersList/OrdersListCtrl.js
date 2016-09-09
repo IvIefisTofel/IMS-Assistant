@@ -58,15 +58,15 @@
       var $url = ($stateParams.id == null) ? "/api/orders" : "/api/orders/get-by-client/" + $stateParams.id;
       $http.post($url).then(function successCallback(response) {
         var data = response.data;
-            if (data.error) {
-              console.log(data);
-            } else {
-              $scope.list = data.data;
-              $scope.loading = false;
-              if (data.client != null) {
-                $scope.clientName = data.client.name;
-              }
+          if (data.error) {
+            console.log(data);
+          } else {
+            $scope.list = data.data;
+            $scope.loading = false;
+            if (data.clientName != null) {
+              $scope.clientName = data.clientName;
             }
+          }
       }, function errorCallback(response) {
         console.log(response.statusText);
       });

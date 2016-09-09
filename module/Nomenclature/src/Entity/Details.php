@@ -23,15 +23,11 @@ class Details extends MCmsEntity
     protected $id;
 
     /**
-     * @var \Orders\Entity\Orders
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="Orders\Entity\Orders", inversedBy="details")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="detailOrderId", referencedColumnName="orderId", nullable=false)
-     * })
-     *
+     * @ORM\Column(name="detailOrderId", type="integer", nullable=false)
      */
-    protected $order;
+    protected $orderId;
 
     /**
      * @var string
@@ -55,32 +51,23 @@ class Details extends MCmsEntity
     protected $name;
 
     /**
-     * @var \Files\Entity\Files
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="Files\Entity\Files", inversedBy="id")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="detailPattern", referencedColumnName="fileId")
-     * })
+     * @ORM\Column(name="detailPattern", type="integer", nullable=true)
      */
     protected $pattern;
 
     /**
-     * @var \Files\Entity\Files
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="Files\Entity\Files", inversedBy="id")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="detailModel", referencedColumnName="fileId")
-     * })
+     * @ORM\Column(name="detailModel", type="integer", nullable=true)
      */
     protected $model;
 
     /**
-     * @var \Files\Entity\Files
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="Files\Entity\Files", inversedBy="id")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="detailProject", referencedColumnName="fileId")
-     * })
+     * @ORM\Column(name="detailProject", type="integer", nullable=true)
      */
     protected $project;
 
@@ -115,27 +102,27 @@ class Details extends MCmsEntity
     }
 
     /**
-     * Set order
+     * Set order id
      *
-     * @param \Orders\Entity\Orders $order
+     * @param integer $orderId
      *
      * @return Details
      */
-    public function setOrder(\Orders\Entity\Orders $order)
+    public function setOrderId($orderId)
     {
-        $this->order = $order;
+        $this->orderId = $orderId;
 
         return $this;
     }
 
     /**
-     * Get order
+     * Get order id
      *
-     * @return \Orders\Entity\Orders
+     * @return integer
      */
-    public function getOrder()
+    public function getOrderId()
     {
-        return $this->order;
+        return $this->orderId;
     }
 
     /**
@@ -213,11 +200,11 @@ class Details extends MCmsEntity
     /**
      * Set pattern
      *
-     * @param \Files\Entity\Files $pattern
+     * @param integer $pattern
      *
      * @return Details
      */
-    public function setPattern(\Files\Entity\Files $pattern = null)
+    public function setPattern($pattern = null)
     {
         $this->pattern = $pattern;
 
@@ -227,7 +214,7 @@ class Details extends MCmsEntity
     /**
      * Get pattern
      *
-     * @return \Files\Entity\Files
+     * @return integer
      */
     public function getPattern()
     {
@@ -237,11 +224,11 @@ class Details extends MCmsEntity
     /**
      * Set model
      *
-     * @param \Files\Entity\Files $model
+     * @param integer $model
      *
      * @return Details
      */
-    public function setModel(\Files\Entity\Files $model = null)
+    public function setModel($model = null)
     {
         $this->model = $model;
 
@@ -251,7 +238,7 @@ class Details extends MCmsEntity
     /**
      * Get model
      *
-     * @return \Files\Entity\Files
+     * @return integer
      */
     public function getModel()
     {
@@ -261,11 +248,11 @@ class Details extends MCmsEntity
     /**
      * Set project
      *
-     * @param \Files\Entity\Files $project
+     * @param integer $project
      *
      * @return Details
      */
-    public function setProject(\Files\Entity\Files $project = null)
+    public function setProject($project = null)
     {
         $this->project = $project;
 
@@ -275,7 +262,7 @@ class Details extends MCmsEntity
     /**
      * Get project
      *
-     * @return \Files\Entity\Files
+     * @return integer
      */
     public function getProject()
     {
@@ -354,22 +341,5 @@ class Details extends MCmsEntity
             return date_format($this->dateEnd, $format);
         else
             return null;
-    }
-
-    public function toArray()
-    {
-        $result = parent::toArray();
-
-        $result['orderId'] = $result['order']->getId();
-        $result['orderCode'] = $result['order']->getCode();
-        $result['pattern'] = ($result['pattern'] == null) ? null
-            : $result['pattern']->getName() . "." . $result['pattern']->getExt();
-        $result['model'] = ($result['model'] == null) ? null
-            : $result['model']->getName() . "." . $result['model']->getExt();
-        $result['project'] = ($result['project'] == null) ? null
-            : $result['project']->getName() . "." . $result['project']->getExt();
-        unset($result['order']);
-
-        return $result;
     }
 }

@@ -31,6 +31,12 @@ return [
         ],
     ],
 
+    'controller_plugins' => [
+        'invokables' => [
+            'DetailsPlugin' => Controller\Plugin\DetailsPlugin::class,
+        ],
+    ],
+
     'acl' => [
         'resources' => [
             'allow' => [

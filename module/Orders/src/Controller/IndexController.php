@@ -19,48 +19,32 @@ class IndexController extends MCmsController
         if (!$request->isXmlHttpRequest() && !$request->isPost()) {
             $this->getResponse()->setStatusCode(404);
             return;
-//            $error = 404;
         }
 
         $task   = $this->params()->fromRoute('task', null);
         $id     = $this->params()->fromRoute('id', null);
 
-        $client = null;
-        $data = [];
 
+        $clientName = null;
+        $data = [];
         switch ($task) {
             case "get":
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
-                    $data = $this->entityManager->getRepository('Orders\Entity\Orders')->find($id);
-                    if (count($data) > 0) {
-                        $data = $data->toArray();
-                    }
+                    $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('\Orders\Entity\Orders')->find($id));
                 }
                 break;
             case 'getByClient' || "get-by-client" || 'getbyclient':
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
-                    /** @var $client \Clients\Entity\Clients */
-                    $client = $this->entityManager->getRepository('Clients\Entity\Clients')->find($id);
-                    $data = $client->getOrders()->toArray();
-                    $client = $client->toArray();
-                    if (count($data) > 0) {
-                        foreach ($data as $key => $val) {
-                            $data[$key] = $val->toArray();
-                        }
-                    }
+                    $clientName = $this->entityManager->getRepository('\Clients\Entity\Clients')->findOneById($id)->getName();
+                    $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('Orders\Entity\Orders')->findByClientId($id));
                 }
                 break;
             default:
-                $data = $this->entityManager->getRepository('Orders\Entity\Orders')->findBy([], ['dateCreation' => 'DESC']);
-                if (count($data) > 0) {
-                    foreach ($data as $key => $val) {
-                        $data[$key] = $val->toArray();
-                    }
-                }
+                $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('Orders\Entity\Orders')->findBy([], ['dateCreation' => 'DESC']));
                 break;
         }
 
@@ -69,7 +53,7 @@ class IndexController extends MCmsController
         } else {
             return new JsonModel([
                 "data" => $data,
-                "client" => $client,
+                "clientName" => $clientName,
             ]);
         }
     }

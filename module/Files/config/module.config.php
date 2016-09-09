@@ -6,7 +6,22 @@ $env = (getenv('APP_ENV') == 'development') ? true : false;
 return [
     'router' => [
         'routes' => [
-            'api-files' => [
+            'files' => [
+                'type'    => 'Segment',
+                'options' => [
+                    'route'    => '/files[/:versionId[/:fileName]]',
+                    'constraints' => [
+                        'versionId'  => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        '__NAMESPACE__' => 'Files\Controller',
+                        'controller'    => 'Index',
+                        'action'        => 'index',
+                    ],
+                ],
+                'may_terminate' => true,
+            ],
+            /*'api-files' => [
                 'type'    => 'Segment',
                 'options' => [
                     'route'    => '/api/files[/:action[/:id]]',
@@ -20,14 +35,18 @@ return [
                         'action'        => 'index',
                     ],
                 ],
-                'may_terminate' => true,
-            ],
+            ],*/
         ],
     ],
 
     'controllers' => [
         'invokables' => [
             'Files\Controller\Index' => Controller\IndexController::class,
+        ],
+    ],
+    'controller_plugins' => [
+        'invokables' => [
+            'FilesPlugin' => Controller\Plugin\FilesPlugin::class,
         ],
     ],
 

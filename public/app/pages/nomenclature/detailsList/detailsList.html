@@ -6,7 +6,7 @@
                     <div class="col-md-6 col-lg-8 hidden-sm hidden-xs">
                         <h3>
                             Номенклатура <discription ng-if="order != null">(заказ "{{order.code}}")</discription>
-                            <a ng-if="order != null" ui-sref="orders-custom({id: order.clientId})" class="pull-right ng-scope">Назад</a>
+                            <a ng-if="order != null" href="javascript:window.history.back(-1)" class="pull-right ng-scope">Назад</a>
                         </h3>
                     </div>
                     <div class="col-md-6 col-lg-4 col-sm-12 col-xs-12">
@@ -65,9 +65,36 @@
                         <td class="align-center">{{item.code}}</td>
                         <td class="align-center">{{item.name}}</td>
                         <td ng-if="showOrder" class="align-center"><a ui-sref="nomenclature-custom({id: item.orderId})"></a>{{item.orderCode}}</td>
-                        <td class="align-center">{{(item.pattern == null) ? '---' : item.pattern}}</td>
-                        <td class="align-center">{{(item.model == null) ? '---' : item.model}}</td>
-                        <td class="align-center">{{(item.project == null) ? '---' : item.project}}</td>
+                        <td class="align-center">
+                            <span ng-if="item.pattern.length == null"> --- </span>
+                            <a ng-if="item.pattern.length == 1" class="btn btn-primary btn-xs" href="/files/{{item.pattern[0].id}}/{{item.pattern[0].name}}">{{item.pattern[0].name}}</a>
+                            <div ng-if="item.pattern.length > 1" class="dropdown">
+                                <button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="file in item.pattern"><a href="/files/{{file.id}}/{{file.name}}">{{file.name}}</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="align-center">
+                            <span ng-if="item.model.length == null"> --- </span>
+                            <a ng-if="item.model.length == 1" class="btn btn-primary btn-xs" href="/files/{{item.model[0].id}}/{{item.model[0].name}}">{{item.model[0].name}}</a>
+                            <div ng-if="item.model.length > 1" class="dropdown">
+                                <button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="file in item.model"><a href="/files/{{file.id}}/{{file.name}}">{{file.name}}</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="align-center">
+                            <span ng-if="item.project == null"> --- </span>
+                            <a ng-if="item.project.length == 1" class="btn btn-primary btn-xs" href="/files/{{item.project[0].id}}/{{item.project[0].name}}">{{item.project[0].name}}</a>
+                            <div ng-if="item.project.length > 1" class="dropdown">
+                                <button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="file in item.project"><a href="/files/{{file.id}}/{{file.name}}">{{file.name}}</a></li>
+                                </ul>
+                            </div>
+                        </td>
                         <td class="align-center">{{item.dateCreation}}</td>
                         <td class="align-center">{{(item.dateStart == null) ? '---' : item.dateStart}}</td>
                         <td class="align-right"><button class="btn btn-xs btn-primary">Кнопка</button></td>

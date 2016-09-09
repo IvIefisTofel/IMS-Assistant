@@ -19,7 +19,6 @@ class IndexController extends MCmsController
         if (!$request->isXmlHttpRequest() && !$request->isPost()) {
             $this->getResponse()->setStatusCode(404);
             return;
-//            $error = 404;
         }
 
         $task   = $this->params()->fromRoute('task', null);
@@ -33,34 +32,19 @@ class IndexController extends MCmsController
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
-                    $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
-                    if (count($data) > 0) {
-                        $data = $data->toArray();
-                    }
+                    $data = $this->plugin('DetailsPlugin')->toArray($this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id));
                 }
                 break;
             case 'getByOrder' || "get-by-order" || 'getbyorder':
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
-                    /* @var $order \Orders\Entity\Orders */
-                    $order = $this->entityManager->getRepository('Orders\Entity\Orders')->find($id);//->toArray();
-                    $data = $order->getDetails()->toArray();
-                    $order = $order->toArray();
-                    if (count($data) > 0) {
-                        foreach ($data as $key => $val) {
-                            $data[$key] = $val->toArray();
-                        }
-                    }
+                    $order = $this->entityManager->getRepository('Orders\Entity\Orders')->find($id)->toArray();
+                    $data = $this->plugin('DetailsPlugin')->toArray($this->entityManager->getRepository('Nomenclature\Entity\Details')->findByOrderId($id, ['dateCreation' => 'DESC']));
                 }
                 break;
             default:
-                $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->findBy([], ['dateCreation' => 'DESC']);
-                if (count($data) > 0) {
-                    foreach ($data as $key => $val) {
-                        $data[$key] = $val->toArray();
-                    }
-                }
+                $data = $this->plugin('DetailsPlugin')->toArray($this->entityManager->getRepository('Nomenclature\Entity\Details')->findBy([], ['dateCreation' => 'DESC']));
                 break;
         }
 

@@ -30,6 +30,11 @@ return [
             'Orders\Controller\Index' => Controller\IndexController::class,
         ],
     ],
+    'controller_plugins' => [
+        'invokables' => [
+            'OrdersPlugin' => Controller\Plugin\OrdersPlugin::class,
+        ],
+    ],
 
     'acl' => [
         'resources' => [

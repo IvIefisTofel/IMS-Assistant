@@ -14,3 +14,4 @@ languages/*.mo
 vendor/
 bower_components/
 public/.htaccess
+public/bower

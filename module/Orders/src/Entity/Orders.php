@@ -8,7 +8,7 @@ use MCms\Entity\MCmsEntity;
 /**
  * Orders
  *
- * @ORM\Table(name="orders")
+ * @ORM\Table(name="view_orders")
  * @ORM\Entity
  */
 class Orders extends MCmsEntity
@@ -33,14 +33,18 @@ class Orders extends MCmsEntity
     protected $id;
 
     /**
-     * @var \Clients\Entity\Clients
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="Clients\Entity\Clients", inversedBy="orders")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="orderClientId", referencedColumnName="clientId", nullable=false)
-     * })
+     * @ORM\Column(name="orderClientId", type="integer", nullable=false)
      */
-    protected $client;
+    protected $clientId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="clientName", type="string", length=255, nullable=false, unique=true)
+     */
+    protected $clientName;
 
     /**
      * @var string
@@ -55,14 +59,6 @@ class Orders extends MCmsEntity
      * @ORM\Column(name="orderStatus", type="integer", nullable=false)
      */
     protected $status;
-
-    /**
-     * @var \Nomenclature\Entity\Details
-     *
-     * @ORM\OneToMany(targetEntity="Nomenclature\Entity\Details", mappedBy="order")
-     * @ORM\OrderBy({"dateCreation" = "DESC"})
-     */
-    protected $details;
 
     /**
      * @var \DateTime
@@ -98,7 +94,6 @@ class Orders extends MCmsEntity
     public function __construct()
     {
         $this->dateCreation = new \DateTime();
-        $this->details = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -112,27 +107,37 @@ class Orders extends MCmsEntity
     }
 
     /**
-     * Set client
+     * Set clientId
      *
-     * @param \Clients\Entity\Clients $client
+     * @param integer $clientId
      *
      * @return Orders
      */
-    public function setClient(\Clients\Entity\Clients $client)
+    public function setClientId($clientId)
     {
-        $this->client = $client;
+        $this->clientId = $clientId;
 
         return $this;
     }
 
     /**
-     * Get client
+     * Get clientId
      *
-     * @return \Clients\Entity\Clients
+     * @return integer
      */
-    public function getClient()
+    public function getClientId()
     {
-        return $this->client;
+        return $this->clientId;
+    }
+
+    /**
+     * Get clientName
+     *
+     * @return string
+     */
+    public function getClientName()
+    {
+        return $this->clientName;
     }
 
     /**
@@ -169,7 +174,7 @@ class Orders extends MCmsEntity
      */
     public function setStatus($status)
     {
-        if (isset(\Orders\Entity\Orders::$STATUS[$status])) {
+        if (isset(self::$STATUS[$status])) {
             $this->status = $status;
             return $this;
         } else {
@@ -180,7 +185,7 @@ class Orders extends MCmsEntity
     /**
      * Get Status
      *
-     * @return integer
+     * @return string
      */
     public function getStatus()
     {
@@ -195,41 +200,6 @@ class Orders extends MCmsEntity
     public function getStatusCode()
     {
         return $this->status;
-    }
-
-// TODO Реализовать addDetail && removeDetail
-//    /**
-//     * Add detail
-//     *
-//     * @param \Nomenclature\Entity\Details $detail
-//     *
-//     * @return Orders
-//     */
-//    public function addDetail(\Nomenclature\Entity\Details $detail)
-//    {
-//        $this->details[] = $detail;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Remove detail
-//     *
-//     * @param \Nomenclature\Entity\Details $detail
-//     */
-//    public function removeDetail(\Nomenclature\Entity\Details $detail)
-//    {
-//        $this->details->removeElement($detail);
-//    }
-
-    /**
-     * Get details
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDetails()
-    {
-        return $this->details;
     }
 
     /**
@@ -387,16 +357,5 @@ class Orders extends MCmsEntity
             return date_format($this->dateDeadline, $format);
         else
             return null;
-    }
-
-    public function toArray()
-    {
-        $result = parent::toArray();
-
-        $result['clientId'] = $result['client']->getId();
-        $result['clientName'] = $result['client']->getName();
-        unset($result['client'], $result['details']);
-
-        return $result;
     }
 }

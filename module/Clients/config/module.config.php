@@ -11,12 +11,27 @@ return [
                 'options' => [
                     'route'    => '/api/clients[/][/:task[/][/:id[/]]]',
                     'constraints' => [
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'task'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id'         => '[0-9]+',
                     ],
                     'defaults' => [
                         '__NAMESPACE__' => 'Clients\Controller',
                         'controller'    => 'Index',
+                        'action'        => 'index',
+                    ],
+                ],
+                'may_terminate' => true,
+            ],
+            'forms-clients' => [
+                'type'    => 'Segment',
+                'options' => [
+                    'route'    => '/forms/clients[/:action[/]]',
+                    'constraints' => [
+                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        '__NAMESPACE__' => 'Clients\Controller',
+                        'controller'    => 'Forms',
                         'action'        => 'index',
                     ],
                 ],
@@ -28,6 +43,12 @@ return [
     'controllers' => [
         'invokables' => [
             'Clients\Controller\Index' => Controller\IndexController::class,
+            'Clients\Controller\Forms' => Controller\FormsController::class,
+        ],
+    ],
+    'controller_plugins' => [
+        'invokables' => [
+            'ClientsPlugin' => Controller\Plugin\ClientsPlugin::class,
         ],
     ],
 
@@ -35,6 +56,9 @@ return [
         'resources' => [
             'allow' => [
                 'Clients\Controller\Index' => [
+                    GUEST_ROLE,
+                ],
+                'Clients\Controller\Forms' => [
                     GUEST_ROLE,
                 ],
             ],

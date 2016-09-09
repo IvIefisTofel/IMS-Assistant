@@ -2,32 +2,30 @@
 
 namespace Files\Controller;
 
+use Assetic\Asset\FileAsset;
 use MCms\Controller\MCmsController;
-use Zend\View\Model\JsonModel;
+use Files\Entity\Files;
 
 class IndexController extends MCmsController
 {
     public function indexAction()
     {
-        $request = $this->getRequest();
-        if (!$request->isXmlHttpRequest() && !$request->isPost()) {
-//            $this->getResponse()->setStatusCode(404);
-//            return;
+        $versionId = $this->params()->fromRoute('versionId', null);
+        $fileName = $this->params()->fromRoute('fileName', null);
 
-            return new JsonModel([
-                "error" => "404",
-                "data" => null,
-            ]);
+        if ($versionId && $fileName) {
+            if ($version = $this->entityManager->getRepository('Files\Entity\FileVersion')->find($versionId)) {
+                /* @var $version \Files\Entity\FileVersion */
+                $file = new FileAsset(Files::UPLOAD_DIR . $version->getPath());
+                $file->load();
+
+                header('Content-Type: ' . mime_content_type(Files::UPLOAD_DIR . $version->getPath()));
+                echo $file->dump();
+                exit;
+            }
         }
-        if (!$this->identity()){
-            return $this->redirect()->toRoute('login');
-        }
 
-
-
-        return new JsonModel([
-            "error" => "false",
-            "data" => null,
-        ]);
+        $this->getResponse()->setStatusCode(404);
+        return;
     }
 }

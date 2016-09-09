@@ -13,6 +13,8 @@ use MCms\Entity\MCmsEntity;
  */
 class Files extends MCmsEntity
 {
+    const UPLOAD_DIR = './upload/';
+
     /**
      * @var integer
      *
@@ -23,34 +25,11 @@ class Files extends MCmsEntity
     protected $id;
 
     /**
-     * @var \Files\Entity\FileVersion
-     *
-     * @ORM\OneToMany(targetEntity="Files\Entity\FileVersion", mappedBy="file")
-     * @ORM\OrderBy({"date" = "DESC"})
-     */
-    protected $versions;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="fileName", type="string", length=255, nullable=false)
      */
     protected $name;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="fileExtension", type="string", length=255, nullable=false)
-     */
-    protected $ext;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->versions = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Get id
@@ -84,53 +63,5 @@ class Files extends MCmsEntity
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Set extension
-     *
-     * @param string $ext
-     *
-     * @return Files
-     */
-    public function setExt($ext)
-    {
-        $this->ext = $ext;
-
-        return $this;
-    }
-
-    /**
-     * Get ext
-     *
-     * @return string
-     */
-    public function getExt()
-    {
-        return $this->ext;
-    }
-
-    /**
-     * Get versions
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getVersions()
-    {
-        return $this->versions;
-    }
-
-    public function toArray()
-    {
-        $result = parent::toArray();
-        $result['lastVersion'] = $result['versions']->last()->toArray();
-        $result['versions'] = $result['versions']->toArray();
-        $versions = [];
-        foreach ($result['versions'] as $version) {
-            $versions[] = $version->toArray();
-        }
-        $result['versions'] = $versions;
-
-        return $result;
     }
 }

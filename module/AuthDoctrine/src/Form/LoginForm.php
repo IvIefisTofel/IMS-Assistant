@@ -1,7 +1,6 @@
 <?php
 namespace AuthDoctrine\Form;
 
-use TwbBundle\View\Helper\TwbBundleButtonGroup;
 use Zend\Form\Form;
 use Zend\Form\Element;
 use Zend\InputFilter\Input;
@@ -46,7 +45,6 @@ class LoginForm extends Form
             ]);
         $this->add($password);
 
-        new TwbBundleButtonGroup();
         $submit = new Element\Submit('submit');
         $submit
             ->setLabel('Вход')

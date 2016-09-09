@@ -18,7 +18,7 @@ return [
                 ],
             ],
             'api-permissions' => [
-                'type'    => 'Segment',
+                'type'    => 'Literal',
                 'options' => [
                     'route'    => '/api/get-permissions',
                     'defaults' => [
@@ -57,6 +57,7 @@ return [
             ],*/
         ],
     ],
+
     'service_manager' => [
         'abstract_factories' => [
             'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
@@ -66,6 +67,7 @@ return [
             'translator' => 'Zend\Mvc\Service\TranslatorServiceFactory',
         ],
     ],
+
     'translator' => [
         'locale' => 'ru_RU',
         'translation_file_patterns' => [
@@ -76,11 +78,23 @@ return [
             ],
         ],
     ],
+
     'controllers' => [
         'invokables' => [
-            'Application\Controller\Index' => \Application\Controller\IndexController::class
+            'Application\Controller\Index' => \Application\Controller\IndexController::class,
         ],
     ],
+
+    'acl' => [
+        'resources' => [
+            'allow' => [
+                'Application\Controller\Index' => [
+                    GUEST_ROLE,
+                ],
+            ],
+        ],
+    ],
+
     'view_manager' => [
         'display_not_found_reason' => $env,
         'display_exceptions'       => $env,

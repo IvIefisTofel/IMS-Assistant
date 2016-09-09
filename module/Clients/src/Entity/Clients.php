@@ -30,14 +30,6 @@ class Clients extends MCmsEntity
     protected $name;
 
     /**
-     * @var \Orders\Entity\Orders
-     *
-     * @ORM\OneToMany(targetEntity="Orders\Entity\Orders", mappedBy="client")
-     * @ORM\OrderBy({"dateCreation" = "DESC"})
-     */
-    protected $orders;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="clientDescription", type="text", length=65535, precision=0, scale=0, nullable=true, unique=false)
@@ -47,9 +39,9 @@ class Clients extends MCmsEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="clientAdditions", type="text", length=65535, precision=0, scale=0, nullable=true, unique=false)
+     * @ORM\Column(name="clientFilesGroup", type="integer", nullable=true)
      */
-    protected $additions;
+    protected $filesGroup;
 
 
     /**
@@ -94,41 +86,6 @@ class Clients extends MCmsEntity
         return $this->name;
     }
 
-// TODO Реализовать addOrder && removeOrder
-//    /**
-//     * Add order
-//     *
-//     * @param \Orders\Entity\Orders $order
-//     *
-//     * @return Clients
-//     */
-//    public function addOrder(\Orders\Entity\Orders $order)
-//    {
-//        $this->orders[] = $order;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Remove order
-//     *
-//     * @param \Orders\Entity\Orders $order
-//     */
-//    public function removeOrder(\Orders\Entity\Orders $order)
-//    {
-//        $this->orders->removeElement($order);
-//    }
-
-    /**
-     * Get orders
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getOrders()
-    {
-        return $this->orders;
-    }
-
     /**
      * Set client Description
      *
@@ -154,34 +111,26 @@ class Clients extends MCmsEntity
     }
 
     /**
-     * Set client Additions
+     * Set client Files Group
      *
-     * @param array $additions
+     * @param integer $filesGroup
      *
      * @return Clients
      */
-    public function setAdditions($additions)
+    public function setFilesGroup($filesGroup)
     {
-        $this->additions = implode("\n", $additions);
+        $this->filesGroup = $filesGroup;
 
         return $this;
     }
 
     /**
-     * Get client Additions
+     * Get client Files Group
      *
-     * @return string
+     * @return integer
      */
     public function getAdditions()
     {
-        return ($this->additions) ? explode("\n", $this->additions) : null;
-    }
-
-    public function toArray()
-    {
-        $result = parent::toArray();
-        unset($result['orders']);
-
-        return $result;
+        return $this->filesGroup;
     }
 }

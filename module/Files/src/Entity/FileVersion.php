@@ -8,7 +8,7 @@ use MCms\Entity\MCmsEntity;
 /**
  * FileVersion
  *
- * @ORM\Table(name="fileversion")
+ * @ORM\Table(name="file_versions")
  * @ORM\Entity
  */
 class FileVersion extends MCmsEntity
@@ -23,25 +23,23 @@ class FileVersion extends MCmsEntity
     protected $id;
 
     /**
-     * @var \Files\Entity\Files
-     * @ORM\ManyToOne(targetEntity="Files\Entity\Files", inversedBy="versions")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="versionFileId", referencedColumnName="fileId", nullable=false)
-     * })
+     * @var integer
+     *
+     * @ORM\Column(name="versionFileId", type="integer", nullable=false)
      */
-    protected $file;
+    protected $fileId;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="versionPath", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="versionPath", type="string", length=255, nullable=false)
      */
     protected $path;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="versionDate", type="date", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="versionDate", type="date", nullable=false)
      */
     protected $date;
 
@@ -65,27 +63,23 @@ class FileVersion extends MCmsEntity
     }
 
     /**
-     * Set file
+     * Get file id
      *
-     * @param \Files\Entity\Files $file
-     *
-     * @return FileVersion
+     * @return int
      */
-    public function setFile(\Files\Entity\Files $file)
+    public function getFileId(): int
     {
-        $this->file = $file;
-
-        return $this;
+        return $this->fileId;
     }
 
     /**
-     * Get file
+     * Get file id
      *
-     * @return \Files\Entity\Files
+     * @param int $fileId
      */
-    public function getFile()
+    public function setFileId(int $fileId)
     {
-        return $this->file;
+        $this->fileId = $fileId;
     }
 
     /**
@@ -140,16 +134,5 @@ class FileVersion extends MCmsEntity
             return date_format($this->date, $format);
         else
             return null;
-    }
-
-    public function toArray()
-    {
-        $result = parent::toArray();
-
-        $result['fileId'] = $result['file']->getId();
-        $result['fileName'] = $result['file']->getName() . "." . $result['file']->getExt();
-        unset($result['file']);
-
-        return $result;
     }
 }

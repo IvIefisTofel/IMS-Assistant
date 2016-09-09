@@ -9,7 +9,7 @@
       .controller('ClientsListCtrl', ClientsListCtrl);
 
   /** @ngInject */
-  function ClientsListCtrl($scope, $uibModal, $http) {
+  function ClientsListCtrl($scope, $uibModal, $http, $timeout) {
     var modalInstance = null;
 
     $scope.list = [];
@@ -29,17 +29,6 @@
         params: {
           title: 'Добавить клиента',
           page: 'app/pages/clients/modals/content/add.html',
-          size: 'lg'
-        }
-      },
-      {
-        text: "Удалить",
-        class: "btn-danger",
-        iconClass: "fa fa-user-times",
-        action: 'modal',
-        params: {
-          title: 'Удалить клиента',
-          page: 'app/pages/clients/modals/content/remove.html',
           size: 'lg'
         }
       },
@@ -79,7 +68,10 @@
         item = item[0];
 
         $scope.current = item.id;
-        $scope.client.files = item.additions;
+        $scope.client.files = null;
+        $timeout(function(){
+          $scope.client.files = item.additions
+        }, 10);
 
         if (item.description != null && item.description != "") {
           $scope.client.info = item.description;
@@ -99,11 +91,11 @@
         if (data.error) {
           console.log(data);
         } else {
-          $scope.list = data.data;
+          $scope.list = data;
           $scope.loading = false;
           if ($scope.list.length > 0) {
             if ($scope.current === null) {
-              $scope.current = $scope.list[0].id;
+              $scope.current = data[Object.keys(data)[0]].id;
             }
             $scope.showInfo($scope.current);
           }
