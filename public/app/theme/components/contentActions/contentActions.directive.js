@@ -13,7 +13,7 @@
     return {
       restrict: 'E',
       controller: 'ContentActionsCtrl',
-      templateUrl: 'app/theme/components/contentTop/contentActions/contentActions.html'
+      templateUrl: 'app/theme/components/contentActions/contentActions.html'
     };
   }
 })();

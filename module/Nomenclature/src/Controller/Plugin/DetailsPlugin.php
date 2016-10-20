@@ -22,6 +22,8 @@ class DetailsPlugin extends AbstractPlugin
                 if (get_class($detail) == 'Nomenclature\Entity\Details') {
                     /* @var $detail \Nomenclature\Entity\Details */
                     $result[$detail->getId()] = $detail->toArray();
+                    $result[$detail->getId()]['dateCreation'] = $detail->getDateCreationFormat('Y-m-d');
+                    $result[$detail->getId()]['dateEnd'] = $detail->getDateEndFormat('Y-m-d');
                     if ($detail->getPattern()) {
                         $collections[$detail->getPattern()] = true;
                     }

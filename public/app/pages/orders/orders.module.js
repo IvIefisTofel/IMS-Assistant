@@ -9,7 +9,7 @@
         $stateProvider
             .state('orders', {
                 url: '/orders',
-                templateUrl: 'app/pages/orders/orders.html',
+                template: '<orders-list></orders-list>',
                 title: 'Заказы',
                 sidebarMeta: {
                     icon: 'fa fa-th-list',
@@ -24,7 +24,7 @@
                         squash: true
                     }
                 },
-                templateUrl: 'app/pages/orders/orders.html',
+                template: '<orders-list></orders-list>',
                 title: 'Заказы'
             });
     }

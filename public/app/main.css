@@ -3039,7 +3039,8 @@ a {
     line-height: 35px;
     border-top: 1px solid gainsboro; }
     .table > tbody > tr > td:first-child {
-      text-align: center; }
+      padding-left: 20px;
+      text-align: left; }
     .table > tbody > tr > td:last-child {
       padding-right: 16px !important; }
 
@@ -6194,11 +6195,16 @@ pre.text {
   border: none;
   background: inherit; }
 
+.table.table-text-center tr>th, .table.table-text-center tr>td {
+  text-align: center; }
 .table>tbody>tr.active>td, .table>tbody>tr.active>th, .table>tbody>tr>td.active,
 .table>tbody>tr>th.active, .table>tfoot>tr.active>td, .table>tfoot>tr.active>th,
 .table>tfoot>tr>td.active, .table>tfoot>tr>th.active, .table>thead>tr.active>td,
 .table>thead>tr.active>th, .table>thead>tr>td.active, .table>thead>tr>th.active {
   background-color: #e2eceb; }
+.table .tree-dnd-nodes>tr.success>td {
+  background-color: #dff0d8;
+  color: #666; }
 
 .sortorder:after {
   content: '\25b2'; }
@@ -6214,14 +6220,17 @@ thead button.btn.btn-link:hover {
 .panel .switches {
   float: right;
   margin-bottom: 5px; }
-td.first-fixed { width: 100px; }
-td.last-fixed { width: 130px;}
+th.first-fixed, td.first-fixed { width: 100px; }
+th.last-fixed, td.last-fixed { width: 130px;}
 .table-with-labels span.label {
   display: inline-block;
   width: 70px;
   height: 18px;
   border-radius: 5px;
   padding: 5px; }
+.table-with-labels td.tree-dnd-handle:nth-of-type(2) {
+  text-align: left;
+}
 
 .panel.content-actions .panel-body h2:first-child {
   display: inline; }

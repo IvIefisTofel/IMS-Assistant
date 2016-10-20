@@ -9,7 +9,7 @@
         $stateProvider
             .state('clients', {
                 url: '/',
-                templateUrl: 'app/pages/clients/clients.html',
+                template: '<clients-list></clients-list>',
                 title: 'Клиенты',
                 sidebarMeta: {
                     icon: 'ion-ios-people',

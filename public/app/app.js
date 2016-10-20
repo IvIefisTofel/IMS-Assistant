@@ -11,6 +11,7 @@ angular.module('BlurAdmin', [
   "xeditable",
   'ui.slimscroll',
   'ngJsTree',
+  'ntt.TreeDnD',
   'angular-progress-button-styles',
 
   'BlurAdmin.theme',

@@ -8,7 +8,7 @@ use MCms\Entity\MCmsEntity;
 /**
  * Details
  *
- * @ORM\Table(name="details")
+ * @ORM\Table(name="view_details")
  * @ORM\Entity
  */
 class Details extends MCmsEntity
@@ -42,6 +42,13 @@ class Details extends MCmsEntity
      * @ORM\Column(name="detailCode", type="string", length=255, nullable=false)
      */
     protected $code;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="orderCode", type="string", length=255, nullable=false)
+     */
+    protected $orderCode;
 
     /**
      * @var string
@@ -171,6 +178,30 @@ class Details extends MCmsEntity
     public function getCode()
     {
         return $this->code;
+    }
+
+    /**
+     * Set orderCode
+     *
+     * @param string $orderCode
+     *
+     * @return Details
+     */
+    public function setOrderCode($orderCode)
+    {
+        $this->orderCode = $orderCode;
+
+        return $this;
+    }
+
+    /**
+     * Get orderCode
+     *
+     * @return string
+     */
+    public function getOrderCode()
+    {
+        return $this->orderCode;
     }
 
     /**

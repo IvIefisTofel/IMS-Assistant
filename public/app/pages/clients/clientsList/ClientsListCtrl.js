@@ -19,8 +19,7 @@
       info: "Клиент не выбран.",
       files: null
     };
-
-    angular.element($('content-actions')).scope().refreshData('clients-list', [
+    $scope.actions =  [
       {
         text: "Добавить",
         class: "btn-success",
@@ -38,7 +37,7 @@
         iconClass: "fa fa-refresh",
         action: 'refreshData'
       }
-    ]);
+    ];
 
     $scope.modalActions = {
       close: function () {

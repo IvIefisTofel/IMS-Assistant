@@ -54,7 +54,8 @@
     "textAngular": "~1.4.6",
     "angular-xeditable": "~0.1.9",
     "ng-js-tree": "~0.0.7",
-    "toastr": "^2.1.2"
+    "toastr": "^2.1.2",
+    "textAngular": "1.5.12"
   },
   "overrides": {
     "amcharts": {

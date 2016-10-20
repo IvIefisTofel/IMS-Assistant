@@ -1,3 +1,4 @@
+<content-actions></content-actions>
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-primary with-search animated fadeInUp">
@@ -10,7 +11,7 @@
                         </h3>
                     </div>
                     <div class="col-md-6 col-lg-4 col-sm-12 col-xs-12">
-                        <input ng-model="search" type="text" name="criteria" class="form-control" placeholder="Поиск..."/>
+                        <input ng-model="_filter._$" type="text" name="criteria" class="form-control" placeholder="Поиск..."/>
                     </div>
                 </div>
             </div>
@@ -22,85 +23,23 @@
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
-                <table ng-if="!loading" class="table table-bordered table-hover">
-                    <thead>
-                    <tr ng-if="list.length != 0" class="black-muted-bg">
-                        <td class="align-center">
-                            <button class="btn btn-link" ng-click="sortBy('code')">Шифр детали</button>
-                            <span class="sortorder" ng-show="propertyName === 'code'" ng-class="{reverse: reverse}"></span>
-                        </td>
-                        <td class="align-center">
-                            <button class="btn btn-link" ng-click="sortBy('name')">Имя детали</button>
-                            <span class="sortorder" ng-show="propertyName === 'name'" ng-class="{reverse: reverse}"></span>
-                        </td>
-                        <td ng-if="showOrder" class="align-center">
-                            <button class="btn btn-link" ng-click="sortBy('orderCode')">Шифр заказа</button>
-                            <span class="sortorder" ng-show="propertyName === 'orderCode'" ng-class="{reverse: reverse}"></span>
-                        </td>
-                        <td class="align-center">
-                            <button class="btn btn-link" ng-click="sortBy('pattern')">Чертеж</button>
-                            <span class="sortorder" ng-show="propertyName === 'pattern'" ng-class="{reverse: reverse}"></span>
-                        </td>
-                        <td class="align-center">
-                            <button class="btn btn-link" ng-click="sortBy('model')">Модель</button>
-                            <span class="sortorder" ng-show="propertyName === 'model'" ng-class="{reverse: reverse}"></span>
-                        </td>
-                        <td class="align-center">
-                            <button class="btn btn-link" ng-click="sortBy('project')">Проект</button>
-                            <span class="sortorder" ng-show="propertyName === 'project'" ng-class="{reverse: reverse}"></span>
-                        </td>
-                        <td class="align-center">
-                            <button class="btn btn-link" ng-click="sortBy('dateCreation')">Дата создания</button>
-                            <span class="sortorder" ng-show="propertyName === 'dateCreation'" ng-class="{reverse: reverse}"></span>
-                        </td>
-                        <td class="align-center">
-                            <button class="btn btn-link" ng-click="sortBy('dateStart')">Дата исполнения</button>
-                            <span class="sortorder" ng-show="propertyName === 'dateStart'" ng-class="{reverse: reverse}"></span>
-                        </td>
-                        <td class="align-right"></td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-if="list.length != 0" ng-repeat="item in list | filter:search | orderBy:propertyName:reverse" class="no-top-border" ng-class="{active: item.id == current}">
-                        <td class="align-center">{{item.code}}</td>
-                        <td class="align-center">{{item.name}}</td>
-                        <td ng-if="showOrder" class="align-center"><a ui-sref="nomenclature-custom({id: item.orderId})"></a>{{item.orderCode}}</td>
-                        <td class="align-center">
-                            <span ng-if="item.pattern.length == null"> --- </span>
-                            <a ng-if="item.pattern.length == 1" class="btn btn-primary btn-xs" href="/files/{{item.pattern[0].id}}/{{item.pattern[0].name}}">{{item.pattern[0].name}}</a>
-                            <div ng-if="item.pattern.length > 1" class="dropdown">
-                                <button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li ng-repeat="file in item.pattern"><a href="/files/{{file.id}}/{{file.name}}">{{file.name}}</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                        <td class="align-center">
-                            <span ng-if="item.model.length == null"> --- </span>
-                            <a ng-if="item.model.length == 1" class="btn btn-primary btn-xs" href="/files/{{item.model[0].id}}/{{item.model[0].name}}">{{item.model[0].name}}</a>
-                            <div ng-if="item.model.length > 1" class="dropdown">
-                                <button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li ng-repeat="file in item.model"><a href="/files/{{file.id}}/{{file.name}}">{{file.name}}</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                        <td class="align-center">
-                            <span ng-if="item.project == null"> --- </span>
-                            <a ng-if="item.project.length == 1" class="btn btn-primary btn-xs" href="/files/{{item.project[0].id}}/{{item.project[0].name}}">{{item.project[0].name}}</a>
-                            <div ng-if="item.project.length > 1" class="dropdown">
-                                <button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li ng-repeat="file in item.project"><a href="/files/{{file.id}}/{{file.name}}">{{file.name}}</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                        <td class="align-center">{{item.dateCreation}}</td>
-                        <td class="align-center">{{(item.dateStart == null) ? '---' : item.dateStart}}</td>
-                        <td class="align-right"><button class="btn btn-xs btn-primary">Кнопка</button></td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="switches">
+                    <switch color="warning" ng-model="filter.false">В работе</switch>
+                    <switch color="success" ng-model="filter.true">Исполненно</switch>
+                </div>
+                <tree-dnd ng-if="!loading"
+                    tree-class="table table-bordered table-hover table-text-center"
+                    tree-data="(list | filter:filterBy)"
+                    primary-key="treeId"
+                    column-defs="defaults"
+                    tree-control="treeControl"
+                    filter="_filter"
+                    icon-leaf="fa fa-fw fa-cogs"
+                    icon-expand="fa fa-fw fa-arrow-right"
+                    icon-collapse="fa fa-fw fa-arrow-down"
+                    template-url="app/theme/components/treeDnD/template-render.html"
+                    expand-on="expanding_property"
+                ></tree-dnd>
             </div>
         </div>
     </div>

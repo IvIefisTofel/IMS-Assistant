@@ -20,14 +20,14 @@
     $scope.propertyName = 'dateCreation';
     $scope.reverse = true;
 
-    angular.element($('content-actions')).scope().refreshData('orders-list', [
+    $scope.actions =  [
       {
         text: "Обновить",
         class: "btn-info",
         iconClass: "fa fa-refresh",
         action: 'refreshData'
       }
-    ]);
+    ];
 
     $scope.sortBy = function(propertyName) {
       if (propertyName.indexOf('date') != -1) {

@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-primary with-search animated fadeInUp">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-6 col-lg-8 hidden-sm hidden-xs">
+                        <h3>Деталь</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div ng-if="loading" class="no-data">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+                <div ng-if="!loading && list.length == 0" class="no-data">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    Нет данных
+                </div>
+                <div ng-if="!loading" ng-bind-html="detail">
+                    <!--<p>id => {{detail.id}}</p>
+                    <p>orderId => {{detail.orderId}}</p>
+                    <p>group => <span ng-style="detail.group && {color: '#CC0000'} || {color: '#3465A4'}">{{detail.group ? detail.group : "null"}}</span></p>
+                    <p>code => {{detail.code}}</p>
+                    <p>orderCode => {{detail.orderCode}}</p>
+                    <p>name => {{detail.name}}</p>
+                    <p>pattern => {{detail.pattern ? "array(" + detail.pattern.length + ")" : "null"}}</p>
+                    <p>model => {{detail.model ? "array(" + detail.model.length + ")" : "null"}}</p>
+                    <p>project => {{detail.project ? "array(" + detail.model.length + ")" : "null"}}</p>
+                    <p>dateCreation => {{detail.dateCreation}}</p>
+                    <p>dateEnd => {{detail.dateEnd}}</p>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

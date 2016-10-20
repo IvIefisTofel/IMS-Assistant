@@ -10,8 +10,7 @@
     'BlurAdmin.pages.clients',
     'BlurAdmin.pages.orders',
     'BlurAdmin.pages.nomenclature'
-  ])
-      .config(routeConfig);
+  ]).config(routeConfig);
 
   /** @ngInject */
   function routeConfig($urlRouterProvider) {

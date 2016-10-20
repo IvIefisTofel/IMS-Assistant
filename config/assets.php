@@ -97,6 +97,8 @@ function angularAppJs()
 //        "/app/pages/charts/amCharts/amCharts.module.js",
 //        "/app/pages/charts/charts.module.js",
 
+        "/app/pages/nomenclature/detail/DetailCtrl.js",
+        "/app/pages/nomenclature/detail/detail.directive.js",
         "/app/pages/nomenclature/detailsList/DetailsListCtrl.js",
         "/app/pages/nomenclature/detailsList/detailsList.directive.js",
         "/app/pages/nomenclature/nomenclature.module.js",
@@ -152,8 +154,8 @@ return [
         "/app/theme/components/pageTop/pageTop.directive.js",
         "/app/theme/components/msgCenter/msgCenter.directive.js",
         "/app/theme/components/msgCenter/MsgCenterCtrl.js",
-        "/app/theme/components/contentTop/contentActions/ContentActionsCtrl.js",
-        "/app/theme/components/contentTop/contentActions/contentActions.directive.js",
+        "/app/theme/components/contentActions/ContentActionsCtrl.js",
+        "/app/theme/components/contentActions/contentActions.directive.js",
         "/app/theme/components/contentTop/contentTop.directive.js",
         "/app/theme/components/baWizard/baWizardStep.directive.js",
         "/app/theme/components/baWizard/baWizardCtrl.js",
@@ -193,6 +195,7 @@ return [
 
 //        "http://maps.google.com/maps/api/js?sensor=false",
 
+        "/bower/angular-tree-dnd/dist/ng-tree-dnd.min.js",
         "/bower/ng-js-tree/dist/ngJsTree.min.js",
         "/bower/jstree/dist/jstree.min.js",
         "/bower/angular-xeditable/dist/js/xeditable.min.js",
@@ -235,6 +238,7 @@ return [
         "/bower/angular-slimscroll/angular-slimscroll.js",
         "/bower/slimScroll/jquery.slimscroll.min.js",
         "/bower/angular-route/angular-route.min.js",
+        "/js/angular-locale_ru-ru.js",
         "/bower/angular/angular.min.js",
         "/bower/ammap/dist/ammap/maps/js/worldLow.js",
         "/bower/ammap/dist/ammap/ammap.js",

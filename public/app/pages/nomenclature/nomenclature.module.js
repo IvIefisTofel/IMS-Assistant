@@ -9,7 +9,7 @@
         $stateProvider
             .state('nomenclature', {
                 url: '/orders/nomenclature',
-                templateUrl: 'app/pages/nomenclature/nomenclature.html',
+                template: '<details-list></details-list>',
                 title: 'Номенклатура',
                 sidebarMeta: {
                     icon: 'fa fa-list',
@@ -24,8 +24,19 @@
                         squash: true
                     }
                 },
-                templateUrl: 'app/pages/nomenclature/nomenclature.html',
+                template: '<details-list></details-list>',
                 title: 'Номенклатура'
+            })
+            .state('nomenclature-detail', {
+                url: '/orders/nomenclature/detail/{id:int}',
+                params: {
+                    id: {
+                        value:  null,
+                        squash: true
+                    }
+                },
+                template: '<detail></detail>',
+                title: 'Деталь'
             });
     }
 
