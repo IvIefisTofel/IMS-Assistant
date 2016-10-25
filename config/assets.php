@@ -141,6 +141,7 @@ return [
         "/bower/textAngular/dist/textAngular.css",
         "/bower/angular-xeditable/dist/css/xeditable.min.css",
         "/bower/jstree/dist/themes/default/style.min.css",
+        "/bower/angular-ui-select/dist/select.min.css",
         "app/main.css",
     ],
     'assetsJs' => array_merge(angularAppJs(), [
@@ -151,6 +152,7 @@ return [
         "/app/theme/filters/image/kameleonImg.js",
         "/app/theme/filters/image/appImage.js",
         "/app/theme/components/widgets/widgets.directive.js",
+        "/app/theme/components/SelectPicker/selectpicker.js",
         "/app/theme/components/pageTop/pageTop.directive.js",
         "/app/theme/components/msgCenter/msgCenter.directive.js",
         "/app/theme/components/msgCenter/MsgCenterCtrl.js",
@@ -195,6 +197,7 @@ return [
 
 //        "http://maps.google.com/maps/api/js?sensor=false",
 
+        "/bower/angular-ui-select/dist/select.min.js",
         "/bower/angular-tree-dnd/dist/ng-tree-dnd.min.js",
         "/bower/ng-js-tree/dist/ngJsTree.min.js",
         "/bower/jstree/dist/jstree.min.js",
@@ -215,7 +218,6 @@ return [
         "/bower/morris.js/morris.min.js",
         "/bower/mocha/mocha.js",
         "/bower/raphael/raphael.min.js",
-        "/bower/eve/eve.js",
         "/bower/angular-chartist.js/dist/angular-chartist.min.js",
         "/bower/chartist/dist/chartist.min.js",
         "/bower/angular-chart.js/dist/angular-chart.min.js",

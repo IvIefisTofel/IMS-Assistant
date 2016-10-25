@@ -14,9 +14,10 @@ class IndexController extends MCmsController
         }
 
         $error = false;
+        $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
 
         $request = $this->getRequest();
-        if (!$request->isXmlHttpRequest() && !$request->isPost()) {
+        if (!$request->isXmlHttpRequest() && !$request->isPost() && !$dev) {
             $this->getResponse()->setStatusCode(404);
             return;
         }
@@ -26,6 +27,7 @@ class IndexController extends MCmsController
 
         $data = [];
         $order = null;
+        $clients = null;
         $tree = false;
         if (strstr($task, "tree")) {
             $task = substr($task, 0, -5);
@@ -33,16 +35,17 @@ class IndexController extends MCmsController
         }
 
         switch ($task) {
+            case "get-with-parents": case "getwithparents": case "getWithParents":
+                $tree = false;
+                $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
+                $opts = ['withOrders' => true, 'withFiles' => false, 'saveIds' => true];
+                $clients = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
+                break;
             case "get":
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
-//                    $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
-                    /**
-                     * @todo Убрать
-                     */
-                    var_dump($this->plugin('DetailsPlugin')->toArray($this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id)));
-                    exit;
+                    $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
                 }
                 break;
             case "getByOrder": case "get-by-order": case "getbyorder":
@@ -102,12 +105,19 @@ class IndexController extends MCmsController
         }
 
         if ($error) {
-            return new JsonModel(["error" => $error]);
+            $result = ["error" => $error];
         } else {
-            return new JsonModel([
+            $result = [
                 "data" => $data,
                 "order" => $order,
-            ]);
+                'clients' => $clients,
+            ];
+        }
+        if ($dev) {
+            var_dump($result);
+            exit;
+        } else {
+            return new JsonModel($result);
         }
     }
 }

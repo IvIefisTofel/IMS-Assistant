@@ -16,18 +16,94 @@
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
-                <div ng-if="!loading" ng-bind-html="detail">
-                    <!--<p>id => {{detail.id}}</p>
-                    <p>orderId => {{detail.orderId}}</p>
-                    <p>group => <span ng-style="detail.group && {color: '#CC0000'} || {color: '#3465A4'}">{{detail.group ? detail.group : "null"}}</span></p>
-                    <p>code => {{detail.code}}</p>
-                    <p>orderCode => {{detail.orderCode}}</p>
-                    <p>name => {{detail.name}}</p>
-                    <p>pattern => {{detail.pattern ? "array(" + detail.pattern.length + ")" : "null"}}</p>
-                    <p>model => {{detail.model ? "array(" + detail.model.length + ")" : "null"}}</p>
-                    <p>project => {{detail.project ? "array(" + detail.model.length + ")" : "null"}}</p>
-                    <p>dateCreation => {{detail.dateCreation}}</p>
-                    <p>dateEnd => {{detail.dateEnd}}</p>-->
+                <div ng-if="!loading">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="usm_detail_name" class="col-sm-3 control-label">Имя детали</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" placeholder="Имя детали"
+                                           id="usm_detail_name"
+                                           name="usm_detail_name"
+                                           ng-model="detail.name">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usm_detail_code" class="col-sm-3 control-label">Шифр детали</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" placeholder="Шифр детали"
+                                           id="usm_detail_code"
+                                           name="usm_detail_code"
+                                           ng-model="detail.code">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Шифр заказа</label>
+                                    <div class="col-sm-4">
+                                        <ui-select allow-clear on-select="changeClient()" ng-model="selected.client">
+                                            <ui-select-match placeholder="Клиент...">{{$select.selected.value.name}}</ui-select-match>
+                                            <ui-select-choices repeat="(key, item) in clients | filter: $select.search">
+                                                <span ng-bind-html="item.value.name | highlight: $select.search"></span>
+                                                <small ng-bind-html="(item.value.description ? '('+item.value.description+')' : '') | highlight: $select.search"></small>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <ui-select allow-clear on-select="changeOrder()" ng-model="selected.order">
+                                            <ui-select-match placeholder="Заказ...">{{$select.selected.code}}</ui-select-match>
+                                            <ui-select-choices repeat="item in (orders | filter:filterBy) | filter: $select.search">
+                                                <span ng-bind-html="item.code | highlight: $select.search"></span>
+                                                <small ng-bind-html="(item.clientName ? '('+item.clientName+')' : '') | highlight: $select.search"></small>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>
+                                                <div class="no-found">
+                                                    По этому запросу ничего не найдено.
+                                                </div>
+                                            </ui-select-no-choice>
+                                        </ui-select>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <button class="btn btn-danger" ng-click="clear()"><i class="fa fa-eraser"></i></button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usm_detail_dateCreation" class="col-sm-3 control-label">Дата создания</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" placeholder="Дата создания"
+                                           id="usm_detail_dateCreation"
+                                           name="usm_detail_name"
+                                           ng-model="detail.dateCreation">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usm_detail_dateEnd" class="col-sm-3 control-label">Дата исполнения</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" placeholder="Дата исполнения"
+                                           id="usm_detail_dateEnd"
+                                           name="usm_detail_dateEnd"
+                                           ng-model="detail.dateEnd">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-3 col-sm-9">
+                                        <button ng-click="test()" type="submit" class="btn btn-default pull-right">Сохранить</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-sm-12"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

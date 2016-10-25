@@ -19,7 +19,12 @@
         ],
         "post-update-cmd": [
             "\n", "@clearCache", "\n",
+            "@bower-update",
             "@compile-mo"
+        ],
+        "bower-update" : [
+            "bower prune",
+            "bower update"
         ],
         "clearCache": [
             "find data/cache -mindepth 1 ! -name '.gitignore' -delete",

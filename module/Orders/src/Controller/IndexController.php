@@ -14,9 +14,10 @@ class IndexController extends MCmsController
         }
 
         $error = false;
+        $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
 
         $request = $this->getRequest();
-        if (!$request->isXmlHttpRequest() && !$request->isPost()) {
+        if (!$request->isXmlHttpRequest() && !$request->isPost() && !$dev) {
             $this->getResponse()->setStatusCode(404);
             return;
         }
@@ -49,12 +50,18 @@ class IndexController extends MCmsController
         }
 
         if ($error) {
-            return new JsonModel(["error" => $error]);
+            $result = ["error" => $error];
         } else {
-            return new JsonModel([
+            $result = [
                 "data" => $data,
                 "clientName" => $clientName,
-            ]);
+            ];
+        }
+        if ($dev) {
+            var_dump($result);
+            exit;
+        } else {
+            return new JsonModel($result);
         }
     }
 }

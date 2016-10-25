@@ -6,9 +6,11 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 class DetailsPlugin extends AbstractPlugin
 {
-    public function toArray($details = null, $allVersions = false)
+    public function toArray($details = null, $options = [])
     {
         if ($details !== null) {
+            $allVersions = isset($options['allVersions']) ? $options['allVersions'] : false;
+
             /* @var $em \Doctrine\ORM\EntityManager */
             $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $result = [];

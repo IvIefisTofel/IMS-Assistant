@@ -9,8 +9,9 @@
     .config(config);
 
   /** @ngInject */
-  function config(baConfigProvider, colorHelper, $httpProvider) {
+  function config(baConfigProvider, colorHelper, $httpProvider, uiSelectConfig) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    uiSelectConfig.theme = 'bootstrap';
     //baConfigProvider.changeTheme({blur: true});
     //
     //baConfigProvider.changeColors({

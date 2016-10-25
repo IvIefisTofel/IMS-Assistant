@@ -13,6 +13,17 @@ use MCms\Entity\MCmsEntity;
  */
 class User extends  MCmsEntity
 {
+    /**
+     * Getting client IP Address
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+    */
+
     const ADMIN_ROLE     = 1;
     const MODERATOR_ROLE = 2;
     const USER_ROLE      = 3;

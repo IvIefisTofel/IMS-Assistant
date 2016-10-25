@@ -6,9 +6,12 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 class OrdersPlugin extends AbstractPlugin
 {
-    public function toArray($orders = null, $withDetails = false, $allVersions = false)
+    public function toArray($orders = null, $options = [])
     {
         if ($orders !== null) {
+            $withDetails = isset($options['withDetails']) ? $options['withDetails'] : false;
+            $allVersions = isset($options['allVersions']) ? $options['allVersions'] : false;
+
             /* @var $em \Doctrine\ORM\EntityManager */
             $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $result = [];
