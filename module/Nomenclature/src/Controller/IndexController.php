@@ -38,7 +38,7 @@ class IndexController extends MCmsController
             case "get-with-parents": case "getwithparents": case "getWithParents":
                 $tree = false;
                 $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
-                $opts = ['withOrders' => true, 'withFiles' => false, 'saveIds' => true];
+                $opts = ['withOrders' => true, 'withFiles' => false];
                 $clients = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
                 break;
             case "get":

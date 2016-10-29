@@ -152,7 +152,6 @@ return [
         "/app/theme/filters/image/kameleonImg.js",
         "/app/theme/filters/image/appImage.js",
         "/app/theme/components/widgets/widgets.directive.js",
-        "/app/theme/components/SelectPicker/selectpicker.js",
         "/app/theme/components/pageTop/pageTop.directive.js",
         "/app/theme/components/msgCenter/msgCenter.directive.js",
         "/app/theme/components/msgCenter/MsgCenterCtrl.js",

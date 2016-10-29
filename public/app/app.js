@@ -3,6 +3,8 @@
 angular.module('BlurAdmin', [
   'ngAnimate',
   'ui.bootstrap',
+  'ui.bootstrap.datepicker',
+  'ui.bootstrap.datepickerPopup',
   'ui.router',
   'ntt.TreeDnD',
   'ui.select',

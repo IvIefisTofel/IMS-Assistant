@@ -4,10 +4,14 @@
             <div class="panel-body">
                 <h2>Действия</h2>
                 <div class="actions">
-                    <button ng-repeat="(key, item) in actions" type="button" class="btn" ng-class="item.class" ng-click="action(key)">
-                        <i ng-if="item.iconClass !== null" ng-class="item.iconClass"></i>
-                        {{item.text}}
-                    </button>
+                    <div class="swap-container">
+                        <div ng-animate-swap="actions" class="cell swap-animation">
+                            <button ng-repeat="(key, item) in actions" type="button" class="btn" ng-class="item.class" ng-click="action(key)">
+                                <i ng-if="item.iconClass !== null" ng-class="item.iconClass"></i>
+                                {{item.text}}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
