@@ -73,8 +73,10 @@
     $scope.edit = false;
     $scope.preview = {
       detail: null,
-      clients: null,
-      orders: null
+      selected: {
+        client: null,
+        order: null
+      }
     };
 
     $scope.detail = {};
@@ -95,8 +97,16 @@
       },
       order: {
         change: function() {
-          if (!isEmpty($scope.selected.order)) {
-            $scope.selected.client = {key: $scope.clients[$scope.selected.order.clientId].id, value: $scope.clients[$scope.selected.order.clientId]};
+          if (!isEmpty($scope.selected.order) && isEmpty($scope.selected.client)) {
+            var next = true;
+            angular.forEach($scope.clients, function (client, key) {
+              if (next) {
+                if ($scope.selected.order.clientId == client.id) {
+                  $scope.selected.client = $scope.clients[$scope.selected.order.clientId];
+                  next = false;
+                }
+              }
+            });
           }
         }
       },
@@ -185,18 +195,25 @@
       if ($scope.edit) {
         $scope.edit = false;
         $scope.actions = $scope.actionVariants.view;
-        $scope.detail = angular.copy($scope.preview.detail);
-        $scope.clients = $scope.orders = [];
-        angular.forEach($scope.preview.clients, function(client, key) {
-          angular.forEach(client.orders, function(order, key) {
-            if ($scope.detail.orderId == order.id) {
-              $scope.selected.client = client;
-              $scope.selected.order = order;
+        if (angular.toJson($scope.detail) != angular.toJson($scope.preview.detail)) {
+          angular.forEach($scope.preview.detail, function (val, key) {
+            if ($scope.detail[key] != val) {
+              if (typeof(val) === 'object') {
+                if (angular.toJson($scope.detail[key]) != angular.toJson(val)) {
+                  $scope.detail[key] = angular.copy(val);
+                }
+              } else {
+                $scope.detail[key] = val;
+              }
             }
-            $scope.orders = $scope.orders.concat(order);
           });
-          $scope.clients = $scope.clients.concat(client);
-        });
+        }
+        if (angular.toJson($scope.selected.client) != angular.toJson($scope.preview.selected.client)) {
+          $scope.selected.client = angular.copy($scope.preview.selected.client);
+        }
+        if (angular.toJson($scope.selected.order) != angular.toJson($scope.preview.selected.order)) {
+          $scope.selected.order = angular.copy($scope.preview.selected.order);
+        }
         $scope.calendar.dateCreation.date =
             $scope.calendar.dateEnd.options.minDate = new Date($scope.preview.detail.dateCreation);
         $scope.calendar.dateEnd.date = new Date($scope.preview.detail.dateEnd);
@@ -241,9 +258,11 @@
             });
           });
           $scope.preview = {
-            detail: jQuery.extend(true, {}, $scope.detail),
-            clients: jQuery.extend(true, {}, $scope.clients),
-            orders: jQuery.extend(true, {}, $scope.orders)
+            detail: angular.copy($scope.detail),
+            selected: {
+              client: angular.copy($scope.selected.client),
+              order: angular.copy($scope.selected.order)
+            }
           };
           $scope.loading = false;
         }

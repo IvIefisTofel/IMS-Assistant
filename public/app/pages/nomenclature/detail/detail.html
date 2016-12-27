@@ -4,147 +4,188 @@
         <div class="panel panel-primary with-search animated fadeInUp">
             <div class="panel-heading">
                 <div class="row">
-                    <div class="col-md-6 col-lg-8 hidden-sm hidden-xs">
-                        <h3>Деталь{{ (preview.detail.name && preview.detail.code ? " " + preview.detail.name +
-                            " (" + preview.detail.code + ")" : (preview.detail.name) ? " " + preview.detail.name : "") }}</h3>
+                    <div class="col-md-12 hidden-sm hidden-xs">
+                        <h3>
+                            Деталь{{ (preview.detail.name && preview.detail.code ? " " + preview.detail.name +
+                            " (" + preview.detail.code + ")" : (preview.detail.name) ? " " + preview.detail.name : "") }}
+                            <a href="javascript:window.history.back(-1)" class="pull-right">Назад</a>
+                        </h3>
                     </div>
                 </div>
             </div>
             <div class="panel-body">
-                <div class="panel-body-container">
-                    <div ng-if="loading" class="no-data">
-                        <i class="fa fa-spinner fa-spin"></i>
-                    </div>
-                    <div ng-if="!loading && list.length == 0" class="no-data">
-                        <i class="fa fa-exclamation-triangle"></i>
-                        Нет данных
-                    </div>
-                    <div ng-if="!loading">
-                        <div class="row">
-                            <div class="col-md-5" ng-show="edit" ng-class="edit ? 'animated slideInLeft' : ''">
-                                <form class="form-horizontal">
-                                    <div class="form-group">
-                                        <label for="usm_detail_name" class="col-sm-3 control-label">Имя детали</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Имя детали"
-                                               id="usm_detail_name"
-                                               name="usm_detail_name"
-                                               ng-model="detail.name">
-                                        </div>
+                <div ng-if="loading" class="no-data">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+                <div ng-if="!loading && list.length == 0" class="no-data">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    Нет данных
+                </div>
+                <div ng-if="!loading">
+                    <div class="row">
+                        <div class="col-md-5" ng-show="edit" ng-class="edit ? 'animated fadeIn' : ''">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="usm_detail_name" class="col-md-3 control-label">Имя детали</label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" placeholder="Имя детали"
+                                           id="usm_detail_name"
+                                           name="usm_detail_name"
+                                           ng-model="detail.name">
                                     </div>
-                                    <div class="form-group">
-                                        <label for="usm_detail_code" class="col-sm-3 control-label">Шифр детали</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Шифр детали"
-                                               id="usm_detail_code"
-                                               name="usm_detail_code"
-                                               ng-model="detail.code">
-                                        </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usm_detail_code" class="col-md-3 control-label">Шифр детали</label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" placeholder="Шифр детали"
+                                           id="usm_detail_code"
+                                           name="usm_detail_code"
+                                           ng-model="detail.code">
                                     </div>
-                                    <div class="form-group btn-no-transform">
-                                        <label class="col-sm-3 control-label">Шифр заказа</label>
-                                        <div class="col-sm-4">
-                                            <ui-select allow-clear on-select="ordersObj.client.change()" ng-model="selected.client">
-                                                <ui-select-match placeholder="Клиент...">{{$select.selected.name}}</ui-select-match>
-                                                <ui-select-choices repeat="item in clients | filter: $select.search">
-                                                    <span ng-bind-html="item.name | highlight: $select.search"></span>
-                                                </ui-select-choices>
-                                            </ui-select>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <ui-select allow-clear on-select="ordersObj.order.change()" ng-model="selected.order">
-                                                <ui-select-match placeholder="Заказ...">{{$select.selected.code}}</ui-select-match>
-                                                <ui-select-choices repeat="item in (orders | filter:filterBy) | filter: $select.search">
-                                                    <span ng-bind-html="item.code | highlight: $select.search"></span>
-                                                    <small ng-bind-html="(item.clientName ? '('+item.clientName+')' : '') | highlight: $select.search"></small>
-                                                </ui-select-choices>
-                                                <ui-select-no-choice>
-                                                    <div class="no-found">
-                                                        По этому запросу ничего не найдено.
-                                                    </div>
-                                                </ui-select-no-choice>
-                                            </ui-select>
-                                        </div>
-                                        <button class="btn btn-danger" ng-click="ordersObj.clear()"
-                                            tooltip-placement="top-right" uib-tooltip="Очистить"><i class="fa fa-times"></i></button>
+                                </div>
+                                <div class="form-group btn-no-transform">
+                                    <label class="col-md-3 control-label">Шифр заказа</label>
+                                    <div class="col-md-4">
+                                        <ui-select allow-clear on-select="ordersObj.client.change()" ng-model="selected.client">
+                                            <ui-select-match placeholder="Клиент...">{{$select.selected.name}}</ui-select-match>
+                                            <ui-select-choices repeat="item in clients | filter: $select.search">
+                                                <span ng-bind-html="item.name | highlight: $select.search"></span>
+                                            </ui-select-choices>
+                                        </ui-select>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="usm_detail_dateCreation" class="col-sm-3 control-label">Дата создания</label>
-                                        <div class="col-sm-9 btn-group btn-no-transform">
-                                            <button type="button" class="btn btn-default col-sm-9" ng-click="calendar.dateCreation.open()"
-                                                    uib-datepicker-popup="dd MMMM yyyy г." ng-model="calendar.dateCreation.date"
-                                                    is-open="calendar.dateCreation.opened" datepicker-options="calendar.dateCreation.options"
-                                                    current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
-                                                    ng-change="calendar.dateCreation.change()" show-button-bar="false">
-                                                {{calendar.dateCreation.date ? (calendar.dateCreation.date | date:"dd MMMM yyyy г.") : '---'}}
-                                            </button>
-                                            <button type="button" class="btn btn-info col-sm-1" ng-click="calendar.today(calendar.dateCreation)"
-                                                    ng-mouseenter="calendar.dateCreation.tooltips.today = true"
-                                                    ng-mouseleave="calendar.dateCreation.tooltips.today = false">
-                                                <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
-                                                    tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.today" uib-tooltip="Сегодня"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-danger col-sm-1" ng-click="calendar.clear(calendar.dateCreation)"
-                                                    ng-mouseenter="calendar.dateCreation.tooltips.clear = true"
-                                                    ng-mouseleave="calendar.dateCreation.tooltips.clear = false">
-                                                <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom"
-                                                    tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.clear" uib-tooltip="Удалить"></i>
-                                            </button>
-                                            <button id="usm_detail_dateCreation" type="button"
-                                                    ng-mouseenter="calendar.dateCreation.tooltips.calendar = true"
-                                                    ng-mouseleave="calendar.dateCreation.tooltips.calendar = false"
-                                                    class="btn btn-default col-sm-1" ng-click="calendar.dateCreation.open()">
-                                                <i class="fa fa-calendar" tooltip-trigger="none" tooltip-placement="bottom-right"
-                                                    tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.calendar" uib-tooltip="Календарь"></i>
-                                            </button>
-                                        </div>
+                                    <div class="col-md-4">
+                                        <ui-select allow-clear on-select="ordersObj.order.change()" ng-model="selected.order">
+                                            <ui-select-match placeholder="Заказ...">{{$select.selected.code}}</ui-select-match>
+                                            <ui-select-choices repeat="item in (orders | filter:filterBy) | filter: $select.search">
+                                                <span ng-bind-html="item.code | highlight: $select.search"></span>
+                                                <small ng-bind-html="(item.clientName ? '('+item.clientName+')' : '') | highlight: $select.search"></small>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>
+                                                <div class="no-found">
+                                                    По этому запросу ничего не найдено.
+                                                </div>
+                                            </ui-select-no-choice>
+                                        </ui-select>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="usm_detail_dateEnd" class="col-sm-3 control-label">Дата исполнения</label>
-                                        <div class="col-sm-9 btn-group btn-no-transform">
-                                            <button type="button" class="btn btn-default col-sm-9" ng-click="calendar.dateEnd.open()"
-                                                    uib-datepicker-popup="dd MMMM yyyy г." ng-model="calendar.dateEnd.date"
-                                                    is-open="calendar.dateEnd.opened" datepicker-options="calendar.dateEnd.options"
-                                                    current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
-                                                    show-button-bar="false">
-                                                {{calendar.dateEnd.date ? (calendar.dateEnd.date | date:"dd MMMM yyyy г.") : '---'}}
-                                            </button>
-                                            <button type="button" class="btn btn-info col-sm-1" ng-click="calendar.today(calendar.dateEnd)"
-                                                    ng-mouseenter="calendar.dateEnd.tooltips.today = true"
-                                                    ng-mouseleave="calendar.dateEnd.tooltips.today = false">
-                                                <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
-                                                   tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.today" uib-tooltip="Сегодня"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-danger col-sm-1" ng-click="calendar.clear(calendar.dateEnd)"
-                                                    ng-mouseenter="calendar.dateEnd.tooltips.clear = true"
-                                                    ng-mouseleave="calendar.dateEnd.tooltips.clear = false">
-                                                <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom"
-                                                   tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.clear" uib-tooltip="Удалить"></i>
-                                            </button>
-                                            <button id="usm_detail_dateEnd" type="button"
-                                                    ng-mouseenter="calendar.dateEnd.tooltips.calendar = true"
-                                                    ng-mouseleave="calendar.dateEnd.tooltips.calendar = false"
-                                                    class="btn btn-default col-sm-1" ng-click="calendar.dateEnd.open()">
-                                                <i class="fa fa-calendar" tooltip-trigger="none" tooltip-placement="bottom-right"
-                                                   tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.calendar" uib-tooltip="Календарь"></i>
-                                            </button>
-                                        </div>
+                                    <button class="btn btn-danger" ng-click="ordersObj.clear()"
+                                        tooltip-placement="top-right" uib-tooltip="Очистить"><i class="fa fa-times"></i></button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usm_detail_dateCreation" class="col-md-3 control-label">Дата создания</label>
+                                    <div class="col-md-9 btn-group btn-no-transform">
+                                        <button type="button" class="btn btn-default col-md-9" ng-click="calendar.dateCreation.open()"
+                                                uib-datepicker-popup="dd MMMM yyyy г." ng-model="calendar.dateCreation.date"
+                                                is-open="calendar.dateCreation.opened" datepicker-options="calendar.dateCreation.options"
+                                                current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
+                                                ng-change="calendar.dateCreation.change()" show-button-bar="false">
+                                            {{calendar.dateCreation.date ? (calendar.dateCreation.date | date:"dd MMMM yyyy г.") : '---'}}
+                                        </button>
+                                        <button type="button" class="btn btn-info col-md-1" ng-click="calendar.today(calendar.dateCreation)"
+                                                ng-mouseenter="calendar.dateCreation.tooltips.today = true"
+                                                ng-mouseleave="calendar.dateCreation.tooltips.today = false">
+                                            <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
+                                                tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.today" uib-tooltip="Сегодня"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger col-md-1" ng-click="calendar.clear(calendar.dateCreation)"
+                                                ng-mouseenter="calendar.dateCreation.tooltips.clear = true"
+                                                ng-mouseleave="calendar.dateCreation.tooltips.clear = false">
+                                            <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                                tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.clear" uib-tooltip="Очистить"></i>
+                                        </button>
+                                        <button id="usm_detail_dateCreation" type="button"
+                                                ng-mouseenter="calendar.dateCreation.tooltips.calendar = true"
+                                                ng-mouseleave="calendar.dateCreation.tooltips.calendar = false"
+                                                class="btn btn-default col-md-1" ng-click="calendar.dateCreation.open()">
+                                            <i class="fa fa-calendar" tooltip-trigger="none" tooltip-placement="bottom-right"
+                                                tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.calendar" uib-tooltip="Календарь"></i>
+                                        </button>
                                     </div>
-                                </form>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usm_detail_dateEnd" class="col-md-3 control-label">Дата исполнения</label>
+                                    <div class="col-md-9 btn-group btn-no-transform">
+                                        <button type="button" class="btn btn-default col-md-9" ng-click="calendar.dateEnd.open()"
+                                                uib-datepicker-popup="dd MMMM yyyy г." ng-model="calendar.dateEnd.date"
+                                                is-open="calendar.dateEnd.opened" datepicker-options="calendar.dateEnd.options"
+                                                current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
+                                                show-button-bar="false" datepicker-append-to-body>
+                                            {{calendar.dateEnd.date ? (calendar.dateEnd.date | date:"dd MMMM yyyy г.") : '---'}}
+                                        </button>
+                                        <button type="button" class="btn btn-info col-md-1" ng-click="calendar.today(calendar.dateEnd)"
+                                                ng-mouseenter="calendar.dateEnd.tooltips.today = true"
+                                                ng-mouseleave="calendar.dateEnd.tooltips.today = false">
+                                            <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
+                                               tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.today" uib-tooltip="Сегодня"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger col-md-1" ng-click="calendar.clear(calendar.dateEnd)"
+                                                ng-mouseenter="calendar.dateEnd.tooltips.clear = true"
+                                                ng-mouseleave="calendar.dateEnd.tooltips.clear = false">
+                                            <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                               tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.clear" uib-tooltip="Очистить"></i>
+                                        </button>
+                                        <button id="usm_detail_dateEnd" type="button"
+                                                ng-mouseenter="calendar.dateEnd.tooltips.calendar = true"
+                                                ng-mouseleave="calendar.dateEnd.tooltips.calendar = false"
+                                                class="btn btn-default col-md-1" ng-click="calendar.dateEnd.open()">
+                                            <i class="fa fa-calendar" tooltip-trigger="none" tooltip-placement="bottom-right"
+                                               tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.calendar" uib-tooltip="Календарь"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-3" ng-hide="edit" ng-class="edit ? '' : 'animated fadeIn'">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Имя детали</label>
+                                    <div class="col-md-7">
+                                        <p class="form-control-static">{{detail.name}}</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Шифр детали</label>
+                                    <div class="col-md-7">
+                                        <p class="form-control-static">{{detail.code}}</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Шифр заказа</label>
+                                    <div class="col-md-7">
+                                        <p class="form-control-static">{{selected.order.code + " (" + selected.client.name + ")"}}</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Дата создания</label>
+                                    <div class="col-md-7">
+                                        <p class="form-control-static">
+                                            {{calendar.dateCreation.date ? (calendar.dateCreation.date | date:"dd MMMM yyyy г.") : '---'}}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Дата исполнения</label>
+                                    <div class="col-md-7">
+                                        <p class="form-control-static">
+                                            {{calendar.dateEnd.date ? (calendar.dateEnd.date | date:"dd MMMM yyyy г.") : '---'}}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-5" ng-hide="edit" ng-class="edit ? '' : 'animated slideInLeft'">
-                                View detail info!
+                        </div>
+                        <div ng-class="edit ? 'col-md-7' : 'col-md-9'">
+                            <div class="row">
+                                <div ng-class="edit ? 'col-md-4' : 'col-md-3'" ng-repeat="file in detail.pattern">
+                                    <div class="image-preview">
+                                        <div class="image-mask"></div>
+                                        <img ng-src="/files/{{file.id}}/{{file.name}}">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-7">
-                                <div class="row">
-                                    <div class="col-sm-12"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12"></div>
-                                </div>
+                            <div class="row">
+                                <div class="col-md-12"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12"></div>
                             </div>
                         </div>
                     </div>
