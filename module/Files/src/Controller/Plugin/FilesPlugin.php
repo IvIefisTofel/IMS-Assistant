@@ -34,7 +34,8 @@ class FilesPlugin extends AbstractPlugin
                 /* @var $version \Files\Entity\FileVersion */
                 $fileVersions[$version->getFileId()][$version->getId()] = [
                     'id' => $version->getId(),
-                    'date' => $version->getDateFormat('d.m.Y H:i:s'),
+//                    'date' => $version->getDateFormat('d.m.Y H:i:s'),
+                    'date' => $version->getDateFormat('d.m.Y'),
                 ];
             }
 
@@ -43,7 +44,7 @@ class FilesPlugin extends AbstractPlugin
                     if ($allVersions) {
                         $result[$key][$fileId]['versions'] = array_values($fileVersions[$fileId]);
                     } else {
-                        $lastFile = array_shift($fileVersions[$fileId]);
+                        $lastFile = array_values($fileVersions[$fileId])[0];
                         $result[$key][$fileId]['id'] = $lastFile['id'];
                         $result[$key][$fileId]['date'] = $lastFile['date'];
                     }
@@ -56,5 +57,18 @@ class FilesPlugin extends AbstractPlugin
         }
 
         return null;
+    }
+
+    public function getLastCollectionId()
+    {
+        $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $sql = "SELECT DISTINCT id FROM `ims_files_collections` ORDER BY id DESC LIMIT 1";
+
+        /* @var $stmt \Doctrine\DBAL\Statement */
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt->execute();
+        $result = (int)$stmt->fetchAll()[0]['id'];
+
+        return $result;
     }
 }

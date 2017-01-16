@@ -27,7 +27,7 @@
                     <switch color="warning" ng-model="filter.false">В работе</switch>
                     <switch color="success" ng-model="filter.true">Исполненно</switch>
                 </div>
-                <tree-dnd ng-if="!loading"
+                <tree-dnd ng-if="!loading && list.length > 0"
                     tree-class="table table-bordered table-hover table-text-center"
                     tree-data="(list | filter:filterBy)"
                     primary-key="treeId"

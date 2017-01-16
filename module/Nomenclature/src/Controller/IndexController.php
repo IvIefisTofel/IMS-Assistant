@@ -24,6 +24,9 @@ class IndexController extends MCmsController
 
         $task   = $this->params()->fromRoute('task', null);
         $id     = $this->params()->fromRoute('id', null);
+        if ($allVersions = $this->params()->fromHeader('All-Versions', false)) {
+            $allVersions = (bool)$allVersions->getFieldValue();
+        }
 
         $data = [];
         $order = null;
@@ -48,7 +51,7 @@ class IndexController extends MCmsController
                     $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
                 }
                 break;
-            case "getByOrder": case "get-by-order": case "getbyorder":
+            case "get-by-order": case "getbyorder": case "getByOrder":
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
@@ -62,7 +65,7 @@ class IndexController extends MCmsController
         }
 
         if ($tree) {
-            $details = $this->plugin('DetailsPlugin')->toArray($data);
+            $details = $this->plugin('DetailsPlugin')->toArray($data, ['allVersions' => $allVersions]);
             $data = [];
             $id = 0;
             foreach ($details as $item) {
@@ -101,7 +104,12 @@ class IndexController extends MCmsController
             }
             $data = array_values($data);
         } else {
-            $data = $this->plugin('DetailsPlugin')->toArray($data);
+            $data = $this->plugin('DetailsPlugin')->toArray($data, ['allVersions' => $allVersions]);
+        }
+
+        $groups = $this->entityManager->getRepository('Nomenclature\Entity\Groups')->findAll();
+        foreach ($groups as $key => $group) {
+            $groups[$key] = $group->toArray()['group'];
         }
 
         if ($error) {
@@ -109,6 +117,7 @@ class IndexController extends MCmsController
         } else {
             $result = [
                 "data" => $data,
+                "groups" => $groups,
                 "order" => $order,
                 'clients' => $clients,
             ];

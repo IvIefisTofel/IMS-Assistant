@@ -142,6 +142,8 @@ return [
         "/bower/angular-xeditable/dist/css/xeditable.min.css",
         "/bower/jstree/dist/themes/default/style.min.css",
         "/bower/angular-ui-select/dist/select.min.css",
+        "/bower/cropper/dist/cropper.min.css",
+        "/css/plugins/ng-image-gallery/ng-image-gallery.css",
         "app/main.css",
     ],
     'assetsJs' => array_merge(angularAppJs(), [
@@ -196,6 +198,8 @@ return [
 
 //        "http://maps.google.com/maps/api/js?sensor=false",
 
+        "/js/plugins/ng-image-gallery/ng-image-gallery.js",
+        "/bower/cropper/dist/cropper.min.js",
         "/bower/angular-ui-select/dist/select.min.js",
         "/bower/angular-tree-dnd/dist/ng-tree-dnd.min.js",
         "/bower/ng-js-tree/dist/ngJsTree.min.js",
@@ -227,6 +231,8 @@ return [
         "/bower/jquery.easing/js/jquery.easing.min.js",
         "/bower/fullcalendar/dist/fullcalendar.min.js",
         "/bower/moment/min/moment.min.js",
+        "/bower/angular-bootstrap3-typeahead/angular-bootstrap3-typeahead.js",
+        "/bower/bootstrap3-typeahead/bootstrap3-typeahead.min.js",
         "/bower/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js",
         "/bower/bootstrap-switch/dist/js/bootstrap-switch.min.js",
         "/bower/bootstrap-select/dist/js/bootstrap-select.min.js",

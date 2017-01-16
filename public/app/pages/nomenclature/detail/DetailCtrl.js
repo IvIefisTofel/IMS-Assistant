@@ -9,7 +9,7 @@
       .controller('DetailCtrl', DetailCtrl);
 
   /** @ngInject */
-  function DetailCtrl($scope, $stateParams, $http, $window, $timeout, $interval) {
+  function DetailCtrl($scope, $stateParams, $http, $window, $uibModal) {
     function isEmpty(obj) {
       if (obj == null) return true;
       if (obj.length > 0)    return false;
@@ -79,9 +79,44 @@
       }
     };
 
-    $scope.detail = {};
+    $scope.detail  = {};
     $scope.orders  = [];
+    $scope.groups  = [];
     $scope.loading = true;
+    $scope.galleries = {
+      main: []
+    };
+    $scope.gallery = {
+        images: null,
+        methods: {}
+    };
+
+    $scope.openGallery = function( id, index){
+      if (index == undefined) {
+        index = 0;
+      }
+      if ($scope.galleries[id] != undefined) {
+        $scope.gallery.images = $scope.galleries[id];
+        $scope.gallery.methods.open(index);
+      }
+    };
+
+    $scope.new = {
+        patterns: null,
+        models: null,
+        projects: null
+    };
+    $scope.change = {
+      pattern: function(event){},
+      model: function(event){
+        $scope.new.models = event.files;
+        $scope.$apply();
+      },
+      project: function(event){
+        $scope.new.projects = event.files;
+        $scope.$apply();
+      }
+    };
 
     $scope.selected = {
       client: null,
@@ -217,6 +252,13 @@
         $scope.calendar.dateCreation.date =
             $scope.calendar.dateEnd.options.minDate = new Date($scope.preview.detail.dateCreation);
         $scope.calendar.dateEnd.date = new Date($scope.preview.detail.dateEnd);
+        $scope.new = {
+          patterns: null,
+          models: null,
+          projects: null
+        };
+          $('#add-model').val(null);
+          $('#add-project').val(null);
       } else {
         $scope.edit = true;
         $scope.actions = $scope.actionVariants.edit;
@@ -224,6 +266,8 @@
     };
 
     $scope.saveData = function(){
+      $scope.edit = false;
+      $scope.actions = $scope.actionVariants.view;
       console.log('Saving data!');
     };
 
@@ -238,13 +282,14 @@
       }
 
       var $url = "/api/nomenclature/get-with-parents/" + $stateParams.id;
-      $http.post($url).then(function successCallback(response) {
+      $http.post($url, null, {headers: {'All-Versions': true} }).then(function successCallback(response) {
         var data = response.data;
         if (data.error) {
           console.log(data);
         } else {
           $scope.detail = data.data[0];
           $scope.clients = data.clients;
+          $scope.groups = data.groups;
           $scope.calendar.dateCreation.date =
               $scope.calendar.dateEnd.options.minDate = new Date($scope.detail.dateCreation);
           $scope.calendar.dateEnd.date = new Date($scope.detail.dateEnd);
@@ -264,6 +309,24 @@
               order: angular.copy($scope.selected.order)
             }
           };
+          $scope.galleries = {
+            main: []
+          };
+          angular.forEach($scope.detail.pattern, function(image, key) {
+            $scope.galleries.main.push({
+              url: '/files/' + image.versions[0].id + '/' + image.name,
+              extUrl: '/files/' + image.versions[0].id + '/' + image.name,
+              desText: image.name
+            });
+            $scope.galleries[image.id] = [];
+            angular.forEach(image.versions, function(version, key) {
+              $scope.galleries[image.id].push({
+                url: '/files/' + version.id + '/' + image.name,
+                extUrl: '/files/' + version.id + '/' + image.name,
+                desText: image.name + ' (' + version.date + ')'
+              });
+            });
+          });
           $scope.loading = false;
         }
       }, function errorCallback(response) {
@@ -278,6 +341,23 @@
       console.log($scope.preview.detail.name);
       // $scope.selected.client = JSON.parse(JSON.stringify($scope.selected.client));
       // console.log($scope.selected.client.$$hashKey);
+    };
+
+    // Доделать модальное окно
+    var modalInstance = null;
+    $scope.modalActions = {
+      close: function () {
+        modalInstance.dismiss();
+        modalInstance = null;
+      }
+    };
+    $scope.modal = function () {
+      modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: 'app/pages/nomenclature/modal/newPattern.html',
+        size: 'lg',
+        scope: $scope
+      });
     };
   }
 })();

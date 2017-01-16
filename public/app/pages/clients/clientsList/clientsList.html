@@ -56,7 +56,7 @@
                     </div>
                     <div class="row">
                         <div ng-if="(client.files != null && client.files.length != 0)" class="col-md-12 adds">
-                            <a ng-repeat="file in client.files" class="btn btn-primary btn-xs" href="/files/{{file.id}}/{{file.name}}" download="">{{file.name}}</a>
+                            <a ng-repeat="file in client.files" class="btn btn-primary btn-xs" href="/files/{{file.id}}/{{file.name}}" download="download">{{file.name}}</a>
                         </div>
                     </div>
                 </div>

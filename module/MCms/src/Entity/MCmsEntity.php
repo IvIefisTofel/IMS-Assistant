@@ -8,9 +8,9 @@ class MCmsEntity
     {
         $methods = get_class_methods($this);
         $result = [];
-        foreach ($methods as $key => $val) {
-            if (substr($val, 0, 3) == 'get' && strpos($val, 'Format') === false) {
-                $result[lcfirst(substr($val, 3))] = $this->$val();
+        foreach ($methods as $method) {
+            if (substr($method, 0, 3) == 'get' && strpos($method, 'Format') === false) {
+                $result[lcfirst(substr($method, 3))] = $this->$method();
             }
         }
         return $result;

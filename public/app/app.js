@@ -9,6 +9,8 @@ angular.module('BlurAdmin', [
   'ntt.TreeDnD',
   'ui.select',
   'ngSanitize',
+  'bootstrap3-typeahead',
+  'thatisuday.ng-image-gallery',
   // 'ui.sortable',
   // 'ngTouch',
   // 'toastr',
