@@ -24,7 +24,7 @@
                 <div ng-if="!loading">
                     <div class="row">
                         <div class="col-md-5" ng-show="edit" ng-class="edit ? 'animated fadeIn' : ''">
-                            <form class="form-horizontal">
+                            <div class="form-horizontal">
                                 <div class="form-group">
                                     <label for="usm_detail_name" class="col-md-3 control-label">Имя детали</label>
                                     <div class="col-md-9">
@@ -142,7 +142,7 @@
                                         </button>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                         <div class="col-md-3" ng-hide="edit" ng-class="edit ? '' : 'animated fadeIn'">
                             <div class="form-horizontal">
@@ -205,17 +205,23 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="alert alert-info" ng-show="new.patterns.length > 0">
-                                            <div id="new-patterns" ng-repeat="file in new.patterns" class="image-collection">
+                                            <div id="new-patterns" ng-repeat="(key, image) in new.patterns" class="image-collection">
                                                 <div class="image-preview">
                                                     <div class="image-mask"></div>
-                                                    <img ng-src="file.base64">
+                                                    <div class="image-actions">
+                                                        <div class="image-actions-content">
+                                                            <button class="btn btn-success btn-image-action" ng-click="openGallery('new', key)">Просмотр <i class="fa fa-eye"></i></button>
+                                                            <button class="btn btn-danger btn-image-action" ng-click="delNewImage(key)">Удалить <i class="fa fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <img ng-src="{{image.img}}">
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="alert alert-default">
                                             <div ng-repeat="(fKey, file) in detail.pattern" class="image-collection">
                                                 <div class="image-preview">
-                                                    <div class="image-mask" ng-class="detail.pattern[fKey].update ? 'updated' : ''"></div>
+                                                    <div class="image-mask" ng-class="new.update.patterns[file.id] ? 'updated' : ''"></div>
                                                     <div class="image-actions">
                                                         <div class="image-actions-content">
                                                             <button class="btn btn-success btn-image-action" ng-click="openGallery('main', fKey)">Просмотр <i class="fa fa-eye"></i></button>
@@ -232,10 +238,10 @@
                                                             </div>
                                                             <div class="btn-group btn-block" ng-show="edit">
                                                                 <button class="btn btn-info btn-image-action bi-checkbox">
-                                                                    <i ng-class="detail.pattern[fKey].update ? 'fa-check-square-o' : 'fa-square-o'" class="fa"></i>
+                                                                    <i ng-class="new.update.patterns[file.id] ? 'fa-check-square-o' : 'fa-square-o'" class="fa"></i>
                                                                 </button>
                                                                 <button class="btn btn-info btn-image-action bi-btn"
-                                                                    ng-click="detail.pattern[fKey].update = !detail.pattern[fKey].update">Изменить</button>
+                                                                    ng-click="modalActions.update(file.id)">Изменить</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -246,7 +252,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div ng-show="detail.model.length > 0 || edit || new.models.length > 0">
+                            <div ng-show="detail.model.length > 0 || edit || new.models().length > 0">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="file-collection">
@@ -254,52 +260,81 @@
                                             <div ng-show="edit" class="btn btn-primary btn-sm btn-file pull-right"
                                                  uib-tooltip="Добавить модель" tooltip-placement="left">
                                                 <i class="fa fa-plus"></i>
-                                                <input id="add-model" name="models[]" type="file" multiple="multiple" onchange="angular.element(this).scope().change.model(this)">
+                                                <input id="add-model" name="models[]" type="file" multiple="multiple" onchange="angular.element(this).scope().change.add.model(this)">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div id="new-models" class="alert alert-info" ng-show="new.models.length > 0">
+                                        <div id="new-models" class="alert alert-info" ng-show="new.models().length > 0">
                                             <ul>
-                                                <li ng-repeat="models in new.models">{{models.name}}</li>
+                                                <li ng-repeat="models in new.models()">{{models.name}}</li>
                                             </ul>
                                         </div>
-                                        <div class="alert alert-default" ng-show="detail.model.length > 0 || edit">
+                                        <div class="alert alert-default files" ng-show="detail.model.length > 0 || edit">
                                             <h3 ng-hide="detail.model.length > 0">Моделей нет.</h3>
-                                            <span ng-repeat="model in detail.model">
-                                                <a class="btn btn-primary btn-xs" href="/files/{{model.versions[0].id}}/{{model.name}}" download="download">{{model.name}}</a>
-                                            </span>
+                                            <div class="btn-group" uib-dropdown ng-repeat="model in detail.model">
+                                                <button class="btn btn-xs" ng-class="new.update.models[model.id] ? 'btn-info' : 'btn-primary'" uib-dropdown-toggle>
+                                                    {{model.name}}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu" uib-dropdown-menu role="menu">
+                                                    <li role="menuitem" ng-show="edit">
+                                                        <div class="btn-file">
+                                                            Обновить файл<input type="file" name="file_id_{{model.id}}" data-id="{{model.id}}"
+                                                                onchange="angular.element(this).scope().change.update.model(this)">
+                                                        </div>
+                                                    </li>
+                                                    <li role="menuitem" ng-repeat="version in model.versions">
+                                                        <a href="/files/{{version.id}}/{{model.name}}" download="download">{{version.date}}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div ng-show="detail.project.length > 0 || edit || new.projects.length > 0">
+                            <div ng-show="detail.project.length > 0 || edit || new.projects().length > 0">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="file-collection">
                                             <h2>Проекты</h2>
                                             <div ng-show="edit" class="btn btn-primary btn-sm btn-file pull-right"
-                                                 uib-tooltip="Добавить модель" tooltip-placement="left">
+                                                 uib-tooltip="Добавить проект" tooltip-placement="left">
                                                 <i class="fa fa-plus"></i>
-                                                <input id="add-project" name="projects[]" type="file" multiple="multiple" onchange="angular.element(this).scope().change.project(this)">
+                                                <input id="add-project" name="projects[]" type="file" multiple="multiple"
+                                                       onchange="angular.element(this).scope().change.add.project(this)">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div id="new-projects" class="alert alert-info" ng-show="new.projects.length > 0">
+                                        <div id="new-projects" class="alert alert-info" ng-show="new.projects().length > 0">
                                             <ul>
-                                                <li ng-repeat="newProject in new.projects">{{newProject.name}}</li>
+                                                <li ng-repeat="newProject in new.projects()">{{newProject.name}}</li>
                                             </ul>
                                         </div>
-                                        <div class="alert alert-default" ng-show="detail.project.length > 0 || edit">
+                                        <div class="alert alert-default files" ng-show="detail.project.length > 0 || edit">
                                             <h3 ng-hide="detail.project.length > 0">Проектов нет.</h3>
-                                            <span ng-repeat="project in detail.project">
-                                                <a class="btn btn-primary btn-xs" href="/files/{{project.versions[0].id}}/{{project.name}}" download="download">{{project.name}}</a>
-                                            </span>
+                                            <div class="btn-group" uib-dropdown ng-repeat="project in detail.project">
+                                                <button class="btn btn-xs" ng-class="new.update.projects[project.id] ? 'btn-info' : 'btn-primary'" uib-dropdown-toggle>
+                                                    {{project.name}}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu" uib-dropdown-menu role="menu">
+                                                    <li role="menuitem" ng-show="edit">
+                                                        <div class="btn-file">
+                                                            Обновить файл<input type="file" name="file_id_{{project.id}}" data-id="{{project.id}}"
+                                                                onchange="angular.element(this).scope().change.update.project(this)">
+                                                        </div>
+                                                    </li>
+                                                    <li role="menuitem" ng-repeat="version in project.versions">
+                                                        <a href="/files/{{version.id}}/{{project.name}}" download="download">{{version.date}}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

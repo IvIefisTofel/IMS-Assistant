@@ -6314,9 +6314,9 @@ th.last-fixed, td.last-fixed { width: 130px;}
   display: inline-block;
   margin: 0 15px 15px 0; }
 .image-preview {
-  height: 200px;
-  min-width: 144px;
-  max-width: 280px;
+  height: 190px;
+  min-width: 137px;
+  max-width: 265px;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
   background-color: #eee;
   position: relative;
@@ -6386,7 +6386,17 @@ ul.typeahead.dropdown-menu {
   background: none repeat scroll 0 0 transparent;
   cursor: inherit;
   display: block; }
-
+.dropdown-menu>li>div.btn-file {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #fff;
+  white-space: nowrap;
+  background-color: #2dacd1; }
+.dropdown-menu>li>div.btn-file:focus, .dropdown-menu>li>div.btn-file:hover { background-color: #2692b2; }
+.alert.files > .btn-group { margin-right: 5px; }
 .modal-dialog {
   position: absolute;
   left: 0;
