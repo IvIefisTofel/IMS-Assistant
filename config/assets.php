@@ -199,6 +199,7 @@ return [
 //        "http://maps.google.com/maps/api/js?sensor=false",
 
         "/js/plugins/ng-image-gallery/ng-image-gallery.js",
+        "/bower/tiff.js/tiff.min.js",
         "/bower/cropper/dist/cropper.min.js",
         "/bower/angular-ui-select/dist/select.min.js",
         "/bower/angular-tree-dnd/dist/ng-tree-dnd.min.js",

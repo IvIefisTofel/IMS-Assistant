@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * FilesCollections
  *
- * @ORM\Table(name="view_files_collections")
+ * @ORM\Table(name="files_collections")
  * @ORM\Entity
  */
-class FilesCollections
+class Collections
 {
     /**
      * @var integer
@@ -28,13 +28,6 @@ class FilesCollections
      * @ORM\Id
      */
     private $fileId;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="fileName", type="string", length=255, nullable=false)
-     */
-    private $name;
 
 
     /**
@@ -75,15 +68,5 @@ class FilesCollections
     public function setFileId(int $fileId)
     {
         $this->fileId = $fileId;
-    }
-
-    /**
-     * Get File Name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 }

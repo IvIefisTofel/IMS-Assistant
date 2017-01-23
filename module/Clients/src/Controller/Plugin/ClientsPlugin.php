@@ -51,8 +51,10 @@ class ClientsPlugin extends AbstractPlugin
             if ($withFiles) {
                 $collectionFiles = $this->controller->plugin('FilesPlugin')->getFiles(array_keys($collections), $allVersions);
                 foreach ($result as $key => $client) {
-                    if ($result[$key]['additions']) {
+                    if ($result[$key]['additions'] && isset($collectionFiles[$client['additions']])) {
                         $result[$key]['additions'] = array_values($collectionFiles[$client['additions']]);
+                    } else {
+                        $result[$key]['additions'] = null;
                     }
                 }
             }

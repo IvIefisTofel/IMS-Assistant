@@ -13,6 +13,8 @@ use MCms\Entity\MCmsEntity;
  */
 class FileVersion extends MCmsEntity
 {
+    const VERSIONS_MAX_COUNT = 5;
+
     /**
      * @var integer
      *

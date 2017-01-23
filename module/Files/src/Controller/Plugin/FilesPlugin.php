@@ -67,8 +67,28 @@ class FilesPlugin extends AbstractPlugin
         /* @var $stmt \Doctrine\DBAL\Statement */
         $stmt = $em->getConnection()->prepare($sql);
         $stmt->execute();
-        $result = (int)$stmt->fetchAll()[0]['id'];
+        $result = count($res = $stmt->fetchAll()) ? (int)$res[0]['id'] : 0;
 
         return $result;
+    }
+
+    public function dropVersions($versionIds = [])
+    {
+        $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $versions = $em->getRepository('Files\Entity\FileVersion')->findById($versionIds);
+        /* @var $version \Files\Entity\FileVersion */
+        foreach ($versions as $version) {
+            if (file_exists($version->getPath())) {
+                unlink($version->getPath());
+            }
+            if (file_exists($version->getPath() . '.h180')) {
+                unlink($version->getPath() . '.h180');
+            }
+            if (file_exists($version->getPath() . '.h950')) {
+                unlink($version->getPath() . '.h950');
+            }
+            $em->remove($version);
+        }
+        $em->flush();
     }
 }

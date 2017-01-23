@@ -43,14 +43,20 @@ class DetailsPlugin extends AbstractPlugin
             $collectionFiles = $this->controller->plugin('FilesPlugin')->getFiles(array_keys($collections), $allVersions);
 
             foreach ($result as $key => $detail) {
-                if ($detail['pattern']) {
+                if ($detail['pattern'] && isset($collectionFiles[$detail['pattern']])) {
                     $result[$key]['pattern'] = array_values($collectionFiles[$detail['pattern']]);
+                } else {
+                    $result[$key]['pattern'] = null;
                 }
-                if ($detail['model']) {
+                if ($detail['model'] && isset($collectionFiles[$detail['model']])) {
                     $result[$key]['model'] = array_values($collectionFiles[$detail['model']]);
+                } else {
+                    $result[$key]['model'] = null;
                 }
-                if ($detail['project']) {
+                if ($detail['project'] && isset($collectionFiles[$detail['project']])) {
                     $result[$key]['project'] = array_values($collectionFiles[$detail['project']]);
+                } else {
+                    $result[$key]['project'] = null;
                 }
             }
 

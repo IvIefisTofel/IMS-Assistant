@@ -41,21 +41,21 @@
                 </div>
             </div>
             <div class="panel-body">
-                <div ng-if="loading" class="no-data">
+                <div ng-show="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
-                <div ng-if="!loading && list.length == 0" class="no-data">
+                <div ng-show="!loading && list.length == 0" class="no-data">
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
-                <div ng-if="!loading && list.length != 0">
+                <div ng-show="!loading && list.length > 0">
                     <div class="row">
                         <div class="col-md-12">
                             <pre class="text">{{client.info}}</pre>
                         </div>
                     </div>
                     <div class="row">
-                        <div ng-if="(client.files != null && client.files.length != 0)" class="col-md-12 adds">
+                        <div ng-show="(client.files != null && client.files.length > 0)" class="col-md-12 adds">
                             <a ng-repeat="file in client.files" class="btn btn-primary btn-xs" href="/files/{{file.id}}/{{file.name}}" download="download">{{file.name}}</a>
                         </div>
                     </div>

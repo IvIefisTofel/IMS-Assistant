@@ -3794,8 +3794,7 @@ th {
   padding: 5px;
   color: #209e91; }
 
-.adds a {
-  margin-right: 10px; }
+.adds a { margin: 0 5px 5px 0; }
 
 .panel > .panel-heading {
   color: #fff;
@@ -6396,7 +6395,7 @@ ul.typeahead.dropdown-menu {
   white-space: nowrap;
   background-color: #2dacd1; }
 .dropdown-menu>li>div.btn-file:focus, .dropdown-menu>li>div.btn-file:hover { background-color: #2692b2; }
-.alert.files > .btn-group { margin-right: 5px; }
+.alert.files > .btn-group { margin: 0 5px 5px 0; }
 .modal-dialog {
   position: absolute;
   left: 0;

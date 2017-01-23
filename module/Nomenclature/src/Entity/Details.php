@@ -181,20 +181,6 @@ class Details extends MCmsEntity
     }
 
     /**
-     * Set orderCode
-     *
-     * @param string $orderCode
-     *
-     * @return Details
-     */
-    public function setOrderCode($orderCode)
-    {
-        $this->orderCode = $orderCode;
-
-        return $this;
-    }
-
-    /**
      * Get orderCode
      *
      * @return string

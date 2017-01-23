@@ -189,7 +189,7 @@
                             </div>
                         </div>
                         <div ng-class="edit ? 'col-md-7' : 'col-md-9'">
-                            <div ng-show="detail.pattern.length > 0">
+                            <div ng-show="detail.pattern.length > 0 || edit || new.patterns.length > 0">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="file-collection">
@@ -218,7 +218,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="alert alert-default">
+                                        <div class="alert alert-default" ng-show="detail.pattern.length > 0 || edit">
+                                            <h3 ng-hide="detail.pattern.length > 0">Чертежей нет.</h3>
                                             <div ng-repeat="(fKey, file) in detail.pattern" class="image-collection">
                                                 <div class="image-preview">
                                                     <div class="image-mask" ng-class="new.update.patterns[file.id] ? 'updated' : ''"></div>
@@ -245,7 +246,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <img ng-src="/files/{{file.versions[0].id}}/{{file.name}}">
+                                                    <img ng-src="/files/h/180/{{file.versions[0].id}}/{{file.name}}">
                                                 </div>
                                             </div>
                                         </div>
@@ -276,7 +277,7 @@
                                             <h3 ng-hide="detail.model.length > 0">Моделей нет.</h3>
                                             <div class="btn-group" uib-dropdown ng-repeat="model in detail.model">
                                                 <button class="btn btn-xs" ng-class="new.update.models[model.id] ? 'btn-info' : 'btn-primary'" uib-dropdown-toggle>
-                                                    {{model.name}}
+                                                    {{model.versions[0].date}}
                                                     <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu" uib-dropdown-menu role="menu">
@@ -287,7 +288,7 @@
                                                         </div>
                                                     </li>
                                                     <li role="menuitem" ng-repeat="version in model.versions">
-                                                        <a href="/files/{{version.id}}/{{model.name}}" download="download">{{version.date}}</a>
+                                                        <a href="/files/{{version.id}}/{{model.name}}" download="{{model.name}}">{{version.date}}</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -320,7 +321,7 @@
                                             <h3 ng-hide="detail.project.length > 0">Проектов нет.</h3>
                                             <div class="btn-group" uib-dropdown ng-repeat="project in detail.project">
                                                 <button class="btn btn-xs" ng-class="new.update.projects[project.id] ? 'btn-info' : 'btn-primary'" uib-dropdown-toggle>
-                                                    {{project.name}}
+                                                    {{project.versions[0].date}}
                                                     <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu" uib-dropdown-menu role="menu">
@@ -331,7 +332,7 @@
                                                         </div>
                                                     </li>
                                                     <li role="menuitem" ng-repeat="version in project.versions">
-                                                        <a href="/files/{{version.id}}/{{project.name}}" download="download">{{version.date}}</a>
+                                                        <a href="/files/{{version.id}}/{{project.name}}" download="{{project.name}}">{{version.date}}</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -346,7 +347,7 @@
             <div class="panel-footer">
                 <button ng-show="edit" ng-click="switchEdit()" type="button" class="btn btn-danger pull-right"><i class="fa fa-ban"></i> Отменить</button>
                 <span class="pull-right">&nbsp;&nbsp;</span>
-                <button ng-show="edit" ng-click="test()" type="button" class="btn btn-success pull-right"><i class="fa fa-floppy-o"></i> Сохранить</button>
+                <button ng-show="edit || edited" ng-click="saveData()" type="button" class="btn btn-success pull-right"><i class="fa fa-floppy-o"></i> Сохранить</button>
             </div>
         </div>
     </div>

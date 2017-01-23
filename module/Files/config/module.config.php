@@ -9,9 +9,11 @@ return [
             'files' => [
                 'type'    => 'Segment',
                 'options' => [
-                    'route'    => '/files[/:versionId[/:fileName]]',
+                    'route'    => '/files[/:aspect[/:size]][/:versionId[/:fileName]]',
                     'constraints' => [
-                        'versionId'  => '[0-9]+',
+                        'aspect' => 'w|h',
+                        'size' => '[0-9]+',
+                        'versionId' => '[0-9]+',
                     ],
                     'defaults' => [
                         '__NAMESPACE__' => 'Files\Controller',

@@ -9,7 +9,7 @@
         .controller('DetailCtrl', DetailCtrl);
 
     /** @ngInject */
-    function DetailCtrl($scope, $stateParams, $http, $window, $uibModal) {
+    function DetailCtrl($scope, $stateParams, $http, $window, $uibModal, $filter) {
         var cropper,
             currImgId = null,
             imgDef = {
@@ -111,6 +111,7 @@
         $scope.actions = $scope.actionVariants.view;
 
         $scope.edit = false;
+        $scope.edited = false;
         $scope.preview = {
             detail: null,
             selected: {
@@ -183,32 +184,69 @@
         $scope.change = {
             add: {
                 pattern: function (event) {
-                    var file = event.files[0], url, img;
-                    if (file != undefined) {
+                    var file = event.files[0], url, img,
+                        ext = (/[.]/.exec(file.name)) ? /[^.]+$/.exec(file.name)[0].toLowerCase() : undefined;
+                    if (file != undefined && ext != undefined) {
                         url = URL.createObjectURL(file);
-                        img = new Image;
-
-                        img.onload = function () {
-                            $('#pattern-loading').remove();
-                            if (isImageFile(file)) {
-                                if (cropper != undefined) {
-                                    cropper.cropper('destroy');
-                                }
-                                cropper = $('.pattern-wrapper img').cropper({
-                                    aspectRatio: getAspect(img),
-                                    viewMode: 2,
-                                    data: {x: 0, y: 0, width: img.width, height: img.height}
-                                });
-                                imgDef = {
-                                    width: img.width,
-                                    height: img.height
+                        if (ext.substr(0,3) == 'tif') {
+                            $('.pattern-wrapper').html('<div id="pattern-loading"><i class="fa fa-spinner fa-spin fa-5x" ></i></div>');
+                            var xhr = new XMLHttpRequest();
+                            xhr.open('GET', url);
+                            xhr.responseType = 'arraybuffer';
+                            xhr.onload = function (e) {
+                                var buffer = xhr.response;
+                                var tiff = new Tiff({buffer: buffer});
+                                var canvas = tiff.toCanvas();
+                                var img = {
+                                    width: tiff.width(),
+                                    height: tiff.height()
                                 };
-                            }
-                        };
+                                if (canvas) {
+                                    canvas.style = 'display: none;';
+                                    canvas.id = 'image-original-data';
+                                    $('.pattern-wrapper').html('').append(canvas);
 
-                        img.src = url;
-                        img.style = 'display: none;';
-                        $('.pattern-wrapper').html('<div id="pattern-loading"><i class="fa fa-spinner fa-spin fa-5x" ></i></div>').append(img);
+                                    if (cropper != undefined) {
+                                        cropper.cropper('destroy');
+                                    }
+                                    cropper = $('.pattern-wrapper canvas').cropper({
+                                        aspectRatio: getAspect(img),
+                                        viewMode: 2,
+                                        data: {x: 0, y: 0, width: img.width, height: img.height}
+                                    });
+                                    imgDef = {
+                                        width: img.width,
+                                        height: img.height
+                                    };
+                                }
+                            };
+                            xhr.send();
+                        } else {
+                            img = new Image;
+
+                            img.onload = function() {
+                                $('#pattern-loading').remove();
+                                if (isImageFile(file)) {
+                                    if (cropper != undefined) {
+                                        cropper.cropper('destroy');
+                                    }
+                                    cropper = $('.pattern-wrapper img').cropper({
+                                        aspectRatio: getAspect(img),
+                                        viewMode: 2,
+                                        data: {x: 0, y: 0, width: img.width, height: img.height}
+                                    });
+                                    imgDef = {
+                                        width: img.width,
+                                        height: img.height
+                                    };
+                                }
+                            };
+
+                            img.src = url;
+                            img.style = 'display: none;';
+                            img.id = 'image-original-data';
+                            $('.pattern-wrapper').html('<div id="pattern-loading"><i class="fa fa-spinner fa-spin fa-5x" ></i></div>').append(img);
+                        }
                     }
                 },
                 model: function (event) {
@@ -371,6 +409,7 @@
         $scope.switchEdit = function () {
             if ($scope.edit) {
                 $scope.edit = false;
+                $scope.edited = false;
                 $scope.actions = $scope.actionVariants.view;
                 if (angular.toJson($scope.detail) != angular.toJson($scope.preview.detail)) {
                     angular.forEach($scope.preview.detail, function (val, key) {
@@ -397,6 +436,7 @@
                 clearValues();
             } else {
                 $scope.edit = true;
+                $scope.edited = false;
                 $scope.actions = $scope.actionVariants.edit;
             }
         };
@@ -427,7 +467,7 @@
                     if (cropper != undefined) {
                         cropper.cropper('destroy');
                     }
-                    cropper = $('.pattern-wrapper img').cropper({
+                    cropper = $('.pattern-wrapper #image-original-data').cropper({
                         aspectRatio: 29.7 / 21.0,
                         viewMode: 2,
                         data: data
@@ -441,7 +481,7 @@
                     if (cropper != undefined) {
                         cropper.cropper('destroy');
                     }
-                    cropper = $('.pattern-wrapper img').cropper({
+                    cropper = $('.pattern-wrapper #image-original-data').cropper({
                         aspectRatio: 21.0 / 29.7,
                         viewMode: 2,
                         data: data
@@ -455,7 +495,7 @@
                     if (cropper != undefined) {
                         cropper.cropper('destroy');
                     }
-                    cropper = $('.pattern-wrapper img').cropper({
+                    cropper = $('.pattern-wrapper #image-original-data').cropper({
                         aspectRatio: NaN,
                         viewMode: 2,
                         data: data
@@ -512,9 +552,55 @@
         };
 
         $scope.saveData = function () {
-            $scope.edit = false;
-            $scope.actions = $scope.actionVariants.view;
-            console.log('Saving data!');
+            if (!$scope.edited) {
+                $scope.edit = false;
+                $scope.edited = true;
+                $scope.actions = [$scope.actionVariants.edit[0], $scope.actionVariants.view[0], $scope.actionVariants.view[1]];
+            } else {
+                var send = new FormData();
+                // Detail
+                send.append('id', $scope.detail.id);
+                send.append('orderId', $scope.selected.order.id);
+                if ($scope.detail.group) {
+                    send.append('group', $scope.detail.group);
+                }
+                send.append('code', $scope.detail.code);
+                send.append('name', $scope.detail.name);
+                send.append('dateCreation', $filter('date')($scope.calendar.dateCreation.date, "dd.MM.yyyy"));
+                send.append('dateEnd', $filter('date')($scope.calendar.dateEnd.date, "dd.MM.yyyy"));
+                // New
+                angular.forEach($scope.new.add.patterns, function (file, key) {
+                    send.append('patterns[new][]', file.img);
+                });
+                angular.forEach($scope.new.add.models, function (file, key) {
+                    send.append('new[models][]', file);
+                });
+                angular.forEach($scope.new.add.projects, function (file, key) {
+                    send.append('new[projects][]', file);
+                });
+                // Update
+                angular.forEach($scope.new.update.patterns, function (file, key) {
+                    send.append('patterns[' + key + ']', file.img);
+                });
+                angular.forEach($scope.new.update.models, function (file, key) {
+                    send.append('models[' + key + ']', file);
+                });
+                angular.forEach($scope.new.update.projects, function (file, key) {
+                    send.append('projects[' + key + ']', file);
+                });
+                var $url = "/api/nomenclature/update/" + $stateParams.id;
+                $http.post($url, send, {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}
+                }).then(function successCallback(response) {
+                    if (response.data.error) {
+                        console.log(response.data.message);
+                    } else {
+                        $scope.actions = $scope.actionVariants.view;
+                        $scope.refreshData();
+                    }
+                });
+            }
         };
 
         $scope.refreshData = function () {
@@ -524,6 +610,7 @@
             $scope.loading = true;
             if ($scope.edit) {
                 $scope.edit = false;
+                $scope.edited = false;
                 $scope.actions = $scope.actionVariants.view;
             }
 
@@ -559,13 +646,13 @@
                     $scope.galleries.main = [];
                     angular.forEach($scope.detail.pattern, function (image, key) {
                         $scope.galleries.main.push({
-                            url: '/files/' + image.versions[0].id + '/' + image.name,
+                            url: '/files/h/950/' + image.versions[0].id + '/' + image.name,
                             extUrl: '/files/' + image.versions[0].id + '/' + image.name
                         });
                         $scope.galleries[image.id] = [];
                         angular.forEach(image.versions, function (version, key) {
                             $scope.galleries[image.id].push({
-                                url: '/files/' + version.id + '/' + image.name,
+                                url: '/files/h/950/' + version.id + '/' + image.name,
                                 extUrl: '/files/' + version.id + '/' + image.name,
                                 desText: version.date
                             });
@@ -579,22 +666,5 @@
         };
 
         $scope.refreshData();
-
-        $scope.test = function () {
-            var send = new FormData();
-            angular.forEach($scope.new.models(), function (file, key) {
-                send.append('models[]', file);
-            });
-            angular.forEach($scope.new.projects(), function (file, key) {
-                send.append('projects[]', file);
-            });
-            var $url = "/api/nomenclature/get-with-parents/" + $stateParams.id;
-            $http.post($url, send, {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
-            }).then(function successCallback(response) {
-                console.log(response.data);
-            });
-        };
     }
 })();
