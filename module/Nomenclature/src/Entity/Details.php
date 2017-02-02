@@ -8,106 +8,11 @@ use MCms\Entity\MCmsEntity;
 /**
  * Details
  *
- * @ORM\Table(name="view_details")
+ * @ORM\Table(name="details")
  * @ORM\Entity
  */
-class Details extends MCmsEntity
+class Details extends DetailsEntity
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="detailId", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    protected $id;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="detailOrderId", type="integer", nullable=false)
-     */
-    protected $orderId;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="detailGroup", type="string", length=255, nullable=true)
-     */
-    protected $group;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="detailCode", type="string", length=255, nullable=false)
-     */
-    protected $code;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="orderCode", type="string", length=255, nullable=false)
-     */
-    protected $orderCode;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="detailName", type="string", length=255, nullable=false)
-     */
-    protected $name;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="detailPattern", type="integer", nullable=true)
-     */
-    protected $pattern;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="detailModel", type="integer", nullable=true)
-     */
-    protected $model;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="detailProject", type="integer", nullable=true)
-     */
-    protected $project;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="detailCreationDate", type="date", nullable=false)
-     */
-    protected $dateCreation;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="detailEndDate", type="date", nullable=true)
-     */
-    protected $dateEnd = null;
-
-    public function __construct()
-    {
-        $this->dateCreation = new \DateTime();
-    }
-
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
     /**
      * Set order id
      *
@@ -120,16 +25,6 @@ class Details extends MCmsEntity
         $this->orderId = $orderId;
 
         return $this;
-    }
-
-    /**
-     * Get order id
-     *
-     * @return integer
-     */
-    public function getOrderId()
-    {
-        return $this->orderId;
     }
 
     /**
@@ -147,16 +42,6 @@ class Details extends MCmsEntity
     }
 
     /**
-     * Get group
-     *
-     * @return string
-     */
-    public function getGroup()
-    {
-        return $this->group;
-    }
-
-    /**
      * Set code
      *
      * @param string $code
@@ -168,26 +53,6 @@ class Details extends MCmsEntity
         $this->code = $code;
 
         return $this;
-    }
-
-    /**
-     * Get code
-     *
-     * @return string
-     */
-    public function getCode()
-    {
-        return $this->code;
-    }
-
-    /**
-     * Get orderCode
-     *
-     * @return string
-     */
-    public function getOrderCode()
-    {
-        return $this->orderCode;
     }
 
     /**
@@ -205,16 +70,6 @@ class Details extends MCmsEntity
     }
 
     /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * Set pattern
      *
      * @param integer $pattern
@@ -226,16 +81,6 @@ class Details extends MCmsEntity
         $this->pattern = $pattern;
 
         return $this;
-    }
-
-    /**
-     * Get pattern
-     *
-     * @return integer
-     */
-    public function getPattern()
-    {
-        return $this->pattern;
     }
 
     /**
@@ -253,16 +98,6 @@ class Details extends MCmsEntity
     }
 
     /**
-     * Get model
-     *
-     * @return integer
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
      * Set project
      *
      * @param integer $project
@@ -277,86 +112,40 @@ class Details extends MCmsEntity
     }
 
     /**
-     * Get project
+     * Set dateCreation
      *
-     * @return integer
-     */
-    public function getProject()
-    {
-        return $this->project;
-    }
-
-    /**
-     * Get dateCreation
-     *
-     * @param bool $formatted
-     *
-     * @return \DateTime
-     */
-    public function getDateCreation($formatted = true)
-    {
-        if ($formatted)
-            return $this->getDateCreationFormat();
-        else
-            return $this->dateCreation;
-    }
-
-    /**
-     * Get Formatted End Date
-     *
-     * @param string $format
-     *
-     * @return \DateTime
-     */
-    public function getDateCreationFormat($format = "d.m.Y")
-    {
-        if ($this->dateCreation != null)
-            return date_format($this->dateCreation, $format);
-        else
-            return null;
-    }
-
-    /**
-     * Set dateEnd
-     *
-     * @param \DateTime $dateEnd
+     * @param \DateTime $date
      *
      * @return Details
      */
-    public function setDateEnd($dateEnd)
+    public function setDateCreation($date)
     {
-        $this->dateEnd = $dateEnd;
+        if ($date instanceof \DateTime) {
+            $this->dateCreation = $date;
+        } elseif ($date != null) {
+            $this->dateCreation = new \DateTime($date);
+        }
 
         return $this;
     }
 
     /**
-     * Get dateEnd
+     * Set dateEnd
      *
-     * @param bool $formatted
+     * @param \DateTime $date
      *
-     * @return \DateTime
+     * @return Details
      */
-    public function getDateEnd($formatted = true)
+    public function setDateEnd($date)
     {
-        if ($formatted)
-            return $this->getDateEndFormat();
-        else
-            return $this->dateEnd;
-    }
+        if ($date instanceof \DateTime) {
+            $this->dateEnd = $date;
+        } elseif ($date != null) {
+            $this->dateEnd = new \DateTime($date);
+        } else {
+            $this->dateEnd = null;
+        }
 
-    /**
-     * Get Formatted End Date
-     *
-     * @param string $format
-     *
-     * @return \DateTime
-     */
-    public function getDateEndFormat($format = "d.m.Y")
-    {
-        if ($this->dateEnd != null)
-            return date_format($this->dateEnd, $format);
-        else
-            return null;
+        return $this;
     }
 }

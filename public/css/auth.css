@@ -1318,3 +1318,10 @@ a.forgot-pass {
   background-color: #2dacd1; }
 .toast-warning {
   background-color: #dfb81c; }
+.bootstrap-select.btn-group.open > .btn.btn-default.dropdown-toggle,
+.bootstrap-select.btn-group button.btn.dropdown-toggle:hover { background: transparent !important; }
+.dropdown-menu { background-color: #1e3d3b; }
+.dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover {
+  background-color: #193437;
+  color: #fff; }
+.dropdown-menu>li>a, .bootstrap-select.btn-group button.btn.btn-default { color: #fff; }

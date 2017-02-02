@@ -9,7 +9,7 @@
       .controller('DetailsListCtrl', DetailsListCtrl);
 
   /** @ngInject */
-  function DetailsListCtrl($scope, $stateParams, $http, $filter) {
+  function DetailsListCtrl($scope, $state, $stateParams, $http, $filter) {
     $scope.showOrder = ($stateParams.id == null);
     $scope.order = null;
     $scope.list = [];
@@ -24,6 +24,12 @@
     $scope._filter = {};
 
     $scope.actions =  [
+      {
+        text: "Добавить",
+        class: "btn-primary",
+        iconClass: "fa fa-plus",
+        action: 'addDetail'
+      },
       {
         text: "Обновить",
         class: "btn-info",
@@ -114,9 +120,13 @@
       cellTemplate: '<div>{{node.dateEnd ? (node.dateEnd | date: "dd MMMM yyyy, EEEE") : "---"}}</div>',
       displayName: 'Дата исполнения'
     }, {
-      cellTemplate: '<a ng-if="node.id" ui-sref="nomenclature-detail({id: node.id})" class="btn btn-xs btn-primary">Деталь</a>'
+      cellTemplate: '<a ng-if="node.id" ui-sref="nomenclature-detail-edit({id: node.id})" class="btn btn-xs btn-primary">Деталь</a>'
       // cellTemplate: '<button ng-click="test(node)">Деталь</button>'
     }];
+
+    $scope.addDetail = function() {
+        $state.go('nomenclature-detail-add');
+    };
 
     $scope.refreshData = function () {
       $scope.loading = true;

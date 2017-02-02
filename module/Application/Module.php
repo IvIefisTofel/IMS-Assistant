@@ -80,7 +80,7 @@ class Module
 
         $role = Acl::DEFAULT_ROLE;
         if ($auth->hasIdentity())
-            $role = $auth->getIdentity()->getUserRoleId();
+            $role = $auth->getIdentity()->getRoleId();
 
         $controller = $routeMatch->getParam('controller');
         $action = $routeMatch->getParam('action');

@@ -42,6 +42,17 @@ class IndexController extends MCmsController
         }
 
         switch ($task) {
+            case "add":
+                $data = $request->getPost()->toArray();
+                /* @var $detail \Nomenclature\Entity\Details */
+                $detail = new \Nomenclature\Entity\Details();
+                $detail->setOrderId($data['orderId']);
+                $detail->setGroup((isset($data['group']) && $data['group'] != null) ? $data['group'] : null);
+                $detail->setCode($data['code']);
+                $detail->setName($data['name']);
+                $detail->setDateCreation(new \DateTime($data['dateCreation']));
+                $detail->setDateEnd((isset($data['dateEnd']) && $data['dateEnd'] != null) ? new \DateTime($data['dateEnd']) : null);
+                $id = true;
             case "update":
                 if ($id === null)
                     $error = "Error: id is not valid!";
@@ -76,12 +87,15 @@ class IndexController extends MCmsController
                     }
                     unset($data['new']);
 
-                    /* @var $detail \Nomenclature\Entity\Details */
-                    $detail = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
-                    $detail->setOrderId($data['orderId']);
-                    $detail->setGroup((isset($data['group']) && $data['group'] != null) ? $data['group'] : null);
-                    $detail->setCode($data['code']);
-                    $detail->setName($data['name']);
+                    if (!isset($detail)) {
+                        $detail = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
+                        $detail->setOrderId($data['orderId']);
+                        $detail->setGroup((isset($data['group']) && $data['group'] != null) ? $data['group'] : null);
+                        $detail->setCode($data['code']);
+                        $detail->setName($data['name']);
+                        $detail->setDateCreation(new \DateTime($data['dateCreation']));
+                        $detail->setDateEnd((isset($data['dateEnd']) && $data['dateEnd'] != null) ? new \DateTime($data['dateEnd']) : null);
+                    }
 
                     $flush = [];
                     $newCollectionId = $this->plugin('FilesPlugin')->getLastCollectionId() + 1;
@@ -338,18 +352,37 @@ class IndexController extends MCmsController
                         }
                         $this->entityManager->persist($detail);
                         $this->entityManager->flush();
-                        return new JsonModel(['error' => false, 'flush' => $flush]);
+
+                        $notDoneDetail = $this->entityManager->getRepository('Nomenclature\Entity\Details')->findOneBy(['orderId' => $detail->getOrderId(), 'dateEnd' => null]);
+                        if ($notDoneDetail == null) {
+                            /* @var $lastDoneDetail \Nomenclature\Entity\Details */
+                            $lastDoneDetail = $this->entityManager->getRepository('Nomenclature\Entity\Details')->findOneBy(['orderId' => $detail->getOrderId()], ['dateEnd' => 'DESC']);
+                            /* @var $order \Orders\Entity\Orders */
+                            $order = $this->entityManager->getRepository('Orders\Entity\Orders')->find($detail->getOrderId());
+                            $order->setDateEnd($lastDoneDetail->getDateEnd());
+                            $order->setStatus(\Orders\Entity\Orders::STATUS_DONE);
+                            $this->entityManager->persist($order);
+                            $this->entityManager->flush();
+                        }
+
+                        return new JsonModel(['error' => false, 'id' => $detail->getId()]);
                     } catch (\Exception $e) {
                         return new JsonModel(['error' => true, 'message' => $e->getMessage()]);
                     }
                 }
                 break;
+            case "get-only-parents": case "getonlyparents": case "getOnlyParents":
+                $tree = false;
+                $data = null;
+                $opts = ['withOrders' => true, 'withFiles' => false];
+                $clients = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
+            break;
             case "get-with-parents": case "getwithparents": case "getWithParents":
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
                     $tree = false;
-                    $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
+                    $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->find($id);
                     $opts = ['withOrders' => true, 'withFiles' => false];
                     $clients = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
                 }
@@ -358,7 +391,7 @@ class IndexController extends MCmsController
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
-                    $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
+                    $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->find($id);
                 }
                 break;
             case "get-by-order": case "getbyorder": case "getByOrder":
@@ -366,11 +399,11 @@ class IndexController extends MCmsController
                     $error = "Error: id is not valid!";
                 else {
                     $order = $this->entityManager->getRepository('Orders\Entity\Orders')->find($id)->toArray();
-                    $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->findByOrderId($id, ['dateCreation' => 'DESC']);
+                    $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findByOrderId($id, ['dateCreation' => 'DESC']);
                 }
                 break;
             default:
-                $data = $this->entityManager->getRepository('Nomenclature\Entity\Details')->findBy([], ['dateCreation' => 'DESC']);
+                $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findBy([], ['dateCreation' => 'DESC']);
                 break;
         }
 

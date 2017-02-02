@@ -22,7 +22,7 @@ class OrdersPlugin extends AbstractPlugin
 
             $orderKeys = [];
             foreach ($orders as $key => $order) {
-                if (get_class($order) == 'Orders\Entity\Orders') {
+                if (get_class($order) == 'Orders\Entity\Orders' || get_class($order) == 'Orders\Entity\OrdersView') {
                     /* @var $order \Orders\Entity\Orders */
                     $result[$order->getId()] = $order->toArray();
                     if ($withDetails) {
@@ -36,7 +36,7 @@ class OrdersPlugin extends AbstractPlugin
 
             if ($withDetails) {
                 $details = $this->getController()->plugin('DetailsPlugin')
-                    ->toArray($em->getRepository('Nomenclature\Entity\Details')->findByOrderId($orderKeys, ['dateCreation' => 'DESC']), $allVersions);
+                    ->toArray($em->getRepository('Nomenclature\Entity\DetailsView')->findByOrderId($orderKeys, ['dateCreation' => 'DESC']), $allVersions);
                 foreach ($details as $detail) {
                     $result[$detail['orderId']]['details'][] = $detail;
                 }

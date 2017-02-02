@@ -9,7 +9,7 @@
         .controller('DetailCtrl', DetailCtrl);
 
     /** @ngInject */
-    function DetailCtrl($scope, $stateParams, $http, $window, $uibModal, $filter) {
+    function DetailCtrl($scope, $state, $stateParams, $http, $window, $uibModal, $filter, $timeout) {
         var cropper,
             currImgId = null,
             imgDef = {
@@ -72,6 +72,17 @@
             $('input[type="file"][name^="file_id_"],#add-model,#add-project').val(null);
         }
 
+        $scope.caption = $stateParams.id == 'add' ? 'Новая деталь' : 'Деталь';
+
+        $scope.doAction = function(id){
+            if ($scope.actions[id].action !== undefined && $scope.actions[id].action !== null) {
+                if ($scope.actions[id].params !== undefined && $scope.actions[id].params !== null) {
+                    $scope[$scope.actions[id].action]($scope.actions[id].params);
+                } else {
+                    $scope[$scope.actions[id].action]();
+                }
+            }
+        };
         $scope.actionVariants = {
             view: [
                 {
@@ -119,11 +130,13 @@
                 order: null
             }
         };
+        $scope.showErrors = false;
 
         $scope.detail = {};
         $scope.orders = [];
         $scope.groups = [];
         $scope.loading = true;
+        $scope.showGallery = false;
         $scope.galleries = {
             main: [],
             new: []
@@ -330,12 +343,13 @@
             }
         };
 
+        var now = Date.now();
         $scope.calendar = {
             dateCreation: {
                 options: {
                     startingDay: 1
                 },
-                date: Date.now(),
+                date: now,
                 change: function () {
                     $scope.calendar.dateEnd.options.minDate = $scope.calendar.dateCreation.date;
                     if ($scope.calendar.dateEnd.date !== null
@@ -356,7 +370,7 @@
             dateEnd: {
                 options: {
                     startingDay: 1,
-                    minDate: null
+                    minDate: now
                 },
                 date: null,
                 open: function () {
@@ -432,11 +446,12 @@
                 }
                 $scope.calendar.dateCreation.date =
                     $scope.calendar.dateEnd.options.minDate = new Date($scope.preview.detail.dateCreation);
-                $scope.calendar.dateEnd.date = new Date($scope.preview.detail.dateEnd);
+                $scope.calendar.dateEnd.date = $scope.preview.detail.dateEnd ? new Date($scope.preview.detail.dateEnd) : null;
                 clearValues();
             } else {
                 $scope.edit = true;
                 $scope.edited = false;
+                $scope.showErrors = false;
                 $scope.actions = $scope.actionVariants.edit;
             }
         };
@@ -553,13 +568,20 @@
 
         $scope.saveData = function () {
             if (!$scope.edited) {
-                $scope.edit = false;
-                $scope.edited = true;
-                $scope.actions = [$scope.actionVariants.edit[0], $scope.actionVariants.view[0], $scope.actionVariants.view[1]];
+                if ($scope.detail.name == null && $scope.detail.name == undefined ||
+                    $scope.detail.code == null && $scope.detail.code == undefined ||
+                    $scope.selected.order.id == null || $scope.selected.order.id == undefined || $scope.selected.order == undefined ||
+                    $scope.calendar.dateCreation.date == null) {
+                    $scope.showErrors = true;
+                } else {
+                    $scope.edit = false;
+                    $scope.edited = true;
+                    $scope.actions = [$scope.actionVariants.edit[0], $scope.actionVariants.view[0], $scope.actionVariants.view[1]];
+                }
             } else {
+                $scope.loading = true;
                 var send = new FormData();
                 // Detail
-                send.append('id', $scope.detail.id);
                 send.append('orderId', $scope.selected.order.id);
                 if ($scope.detail.group) {
                     send.append('group', $scope.detail.group);
@@ -588,7 +610,7 @@
                 angular.forEach($scope.new.update.projects, function (file, key) {
                     send.append('projects[' + key + ']', file);
                 });
-                var $url = "/api/nomenclature/update/" + $stateParams.id;
+                var $url = (($stateParams.id == 'add') ? "/api/nomenclature/add" : "/api/nomenclature/update/" + $stateParams.id);
                 $http.post($url, send, {
                     transformRequest: angular.identity,
                     headers: {'Content-Type': undefined}
@@ -596,8 +618,12 @@
                     if (response.data.error) {
                         console.log(response.data.message);
                     } else {
-                        $scope.actions = $scope.actionVariants.view;
-                        $scope.refreshData();
+                        if (response.data.id != undefined && response.data.id == $stateParams.id) {
+                            $scope.actions = $scope.actionVariants.view;
+                            $scope.refreshData();
+                        } else {
+                            $state.go('nomenclature-detail-edit', {id: response.data.id}, {location: 'replace'});
+                        }
                     }
                 });
             }
@@ -611,6 +637,7 @@
             if ($scope.edit) {
                 $scope.edit = false;
                 $scope.edited = false;
+                $scope.showErrors = false;
                 $scope.actions = $scope.actionVariants.view;
             }
 
@@ -625,7 +652,7 @@
                     $scope.groups = data.groups;
                     $scope.calendar.dateCreation.date =
                         $scope.calendar.dateEnd.options.minDate = new Date($scope.detail.dateCreation);
-                    $scope.calendar.dateEnd.date = new Date($scope.detail.dateEnd);
+                    $scope.calendar.dateEnd.date = $scope.detail.dateEnd ? new Date($scope.detail.dateEnd) : null;
                     angular.forEach($scope.clients, function (client, key) {
                         angular.forEach(client.orders, function (order, key) {
                             if ($scope.detail.orderId == order.id) {
@@ -665,6 +692,39 @@
             });
         };
 
-        $scope.refreshData();
+        if ($stateParams.id !== 'add') {
+            $scope.refreshData();
+        } else {
+            $scope.loading = false;
+            $scope.edit = true;
+            $scope.actions = [$scope.actionVariants.edit[0]];
+
+            var $url = "/api/nomenclature/get-only-parents";
+            $http.post($url, null, {headers: {'All-Versions': true}}).then(function successCallback(response) {
+                var data = response.data;
+                if (data.error) {
+                    console.log(data);
+                } else {
+                    $scope.clients = data.clients;
+                    $scope.groups = data.groups;
+
+                    angular.forEach($scope.clients, function (client, key) {
+                        angular.forEach(client.orders, function (order, key) {
+                            if ($scope.detail.orderId == order.id) {
+                                $scope.selected.client = client;
+                                $scope.selected.order = order;
+                            }
+                            $scope.orders = $scope.orders.concat(order);
+                        });
+                    });
+                }
+            }, function errorCallback(response) {
+                console.log(response.statusText);
+            });
+        }
+
+        $timeout(function(){
+            $scope.showGallery = true;
+        }, 500);
     }
 })();

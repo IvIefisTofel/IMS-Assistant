@@ -97,6 +97,10 @@ function angularAppJs()
 //        "/app/pages/charts/amCharts/amCharts.module.js",
 //        "/app/pages/charts/charts.module.js",
 
+        "/app/pages/users/usersList/UsersListCtrl.js",
+        "/app/pages/users/usersList/usersList.directive.js",
+        "/app/pages/users/users.module.js",
+
         "/app/pages/nomenclature/detail/DetailCtrl.js",
         "/app/pages/nomenclature/detail/detail.directive.js",
         "/app/pages/nomenclature/detailsList/DetailsListCtrl.js",
@@ -154,6 +158,7 @@ return [
         "/app/theme/filters/image/kameleonImg.js",
         "/app/theme/filters/image/appImage.js",
         "/app/theme/components/widgets/widgets.directive.js",
+        "/app/theme/components/pageTop/PageTopCtrl.js",
         "/app/theme/components/pageTop/pageTop.directive.js",
         "/app/theme/components/msgCenter/msgCenter.directive.js",
         "/app/theme/components/msgCenter/MsgCenterCtrl.js",
@@ -198,6 +203,7 @@ return [
 
 //        "http://maps.google.com/maps/api/js?sensor=false",
 
+        "/bower/ng-idle/angular-idle.min.js",
         "/js/plugins/ng-image-gallery/ng-image-gallery.js",
         "/bower/tiff.js/tiff.min.js",
         "/bower/cropper/dist/cropper.min.js",

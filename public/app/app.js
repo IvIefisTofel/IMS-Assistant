@@ -11,6 +11,7 @@ angular.module('BlurAdmin', [
   'ngSanitize',
   'bootstrap3-typeahead',
   'thatisuday.ng-image-gallery',
+  'ngIdle',
   // 'ui.sortable',
   // 'ngTouch',
   // 'toastr',

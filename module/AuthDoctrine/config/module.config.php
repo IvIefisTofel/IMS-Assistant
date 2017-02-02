@@ -2,6 +2,8 @@
 
 namespace AuthDoctrine;
 
+use Users\Entity\Users;
+
 $env = (getenv('APP_ENV') == 'development') ? true : false;
 return [
     'router' => [
@@ -96,14 +98,11 @@ return [
         'authentication' => [
             'orm_default' => [
                 'object_manager' => 'Doctrine\ORM\EntityManager',
-                'identity_class' => 'Users\Entity\User',
-                'identity_property' => 'userName',
-                'credential_property' => 'userPassword',
-                'credential_callable' => function(\Users\Entity\User $user, $passwordGiven) {
-                    if ($user->getUserPassword() == md5($passwordGiven) && $user->getUserActive() == 1)
-                        return true;
-                    else
-                        return false;
+                'identity_class' => 'Users\Entity\Users',
+                'identity_property' => 'name',
+                'credential_property' => 'password',
+                'credential_callable' => function(Users $user, $passwordGiven) {
+                    return $user->getActive();
                 },
             ],
         ],

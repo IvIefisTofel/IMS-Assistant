@@ -21,13 +21,13 @@ class LoginForm extends Form
 
     public function addElements()
     {
-        $email = new Element\Text(self::NAME);
+        $email = new Element\Select(self::NAME);
         $email->setLabel('Логин')
             ->setLabelAttributes(['class' => 'col-sm-2 control-label'])
             ->setAttributes([
                 'id' => self::NAME,
                 'placeholder' => 'Имя пользователя',
-                'required' => true,
+                'required' => 'required',
             ])->setOptions([
                 'column-size' => 'sm-10',
             ]);
@@ -39,7 +39,6 @@ class LoginForm extends Form
             ->setAttributes([
                 'id' => self::PASSWORD,
                 'placeholder' => 'Пароль',
-                'required' => true,
             ])->setOptions([
                 'column-size' => 'sm-10'
             ]);
@@ -67,7 +66,7 @@ class LoginForm extends Form
         $inputFilter->add($email);
 
         $password = new Input(self::PASSWORD);
-        $password->setRequired(true)
+        $password->setRequired(false)
             ->getValidatorChain()
             ->attach(new Validator\StringLength(6));
         $inputFilter->add($password);

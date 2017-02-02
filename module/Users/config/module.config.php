@@ -4,20 +4,19 @@ namespace Users;
 
 $env = (getenv('APP_ENV') == 'development') ? true : false;
 return [
-    /*'router' => [
+    'router' => [
         'routes' => [
-            'admin-users' => [
+            'users' => [
                 'type'    => 'Segment',
                 'options' => [
-                    'route'    => '/admin/users[/[:action[/:id]]][[/:page]-page]',
+                    'route'    => '/api/users[/][/:task[/][/:id[/]]]',
                     'constraints' => [
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'id'         => '[0-9]+',
-                        'page'       => '[0-9]+',
+                        'task'  => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id'    => '[0-9]+',
                     ],
                     'defaults' => [
                         '__NAMESPACE__' => 'Users\Controller',
-                        'controller'    => 'Admin',
+                        'controller'    => 'Index',
                         'action'        => 'index',
                     ],
                 ],
@@ -28,20 +27,19 @@ return [
 
     'controllers' => [
         'invokables' => [
-            'Users\Controller\Admin' => Controller\AdminController::class,
+            'Users\Controller\Index' => Controller\IndexController::class,
         ],
     ],
 
     'acl' => [
         'resources' => [
             'allow' => [
-                'Users\Controller\Admin' => [
-                    'edituser' => MODERATOR_ROLE,
-                    ADMIN_ROLE,
+                'Users\Controller\Index' => [
+                    GUEST_ROLE,
                 ],
             ],
         ],
-    ],*/
+    ],
 
     'view_manager' => [
         'display_not_found_reason'  => $env,

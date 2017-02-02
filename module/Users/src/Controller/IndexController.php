@@ -1,8 +1,9 @@
 <?php
 
-namespace Orders\Controller;
+namespace Users\Controller;
 
 use MCms\Controller\MCmsController;
+use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 
 class IndexController extends MCmsController
@@ -25,28 +26,37 @@ class IndexController extends MCmsController
         $task   = $this->params()->fromRoute('task', null);
         $id     = $this->params()->fromRoute('id', null);
 
-
-        $clientName = null;
-        $data = [];
+        /* @var $user \Users\Entity\Users */
         switch ($task) {
+            case "get-identity": case "getidentity": case "getIdentity":
+                $data = $this->identity()->toArray();
+                break;
+            case "get-name-list": case "getnamelist": case "getNameList":
+                $data = $this->entityManager->getRepository('Users\Entity\Users')->findBy([], ['name' => 'ASC']);
+                foreach ($data as $key => $user) {
+                    $data[$key] = $user->getName();
+                }
+                break;
             case "get":
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
-                    $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('\Orders\Entity\Orders')->find($id));
-                }
-                break;
-            case 'getByClient' || "get-by-client" || 'getbyclient':
-                if ($id === null)
-                    $error = "Error: id is not valid!";
-                else {
-                    $clientName = $this->entityManager->getRepository('\Clients\Entity\Clients')->findOneById($id)->getName();
-                    $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('Orders\Entity\OrdersView')->findByClientId($id));
+                    $data = $this->entityManager->getRepository('Users\Entity\Users')->find($id);
                 }
                 break;
             default:
-                $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('Orders\Entity\OrdersView')->findBy([], ['dateCreation' => 'DESC']));
+                $data = $this->entityManager->getRepository('Users\Entity\Users')->findBy([], ['name' => 'ASC']);
                 break;
+        }
+
+        if (!is_array($data)) {
+            $data = [$data];
+        }
+
+        foreach ($data as $key => $user) {
+            if ($user instanceof \Users\Entity\Users) {
+                $data[$key] = $user->toArray();
+            }
         }
 
         if ($error) {
@@ -54,7 +64,6 @@ class IndexController extends MCmsController
         } else {
             $result = [
                 "data" => $data,
-                "clientName" => $clientName,
             ];
         }
         if ($dev) {

@@ -13,7 +13,7 @@
                 title: 'Номенклатура',
                 sidebarMeta: {
                     icon: 'fa fa-list',
-                    order: 10
+                    order: 20
                 }
             })
             .state('nomenclature-custom', {
@@ -27,11 +27,22 @@
                 template: '<details-list></details-list>',
                 title: 'Номенклатура'
             })
-            .state('nomenclature-detail', {
+            .state('nomenclature-detail-edit', {
                 url: '/orders/nomenclature/detail/{id:int}',
                 params: {
                     id: {
                         value:  null,
+                        squash: true
+                    }
+                },
+                template: '<detail></detail>',
+                title: 'Деталь'
+            })
+            .state('nomenclature-detail-add', {
+                url: '/orders/nomenclature/detail/add',
+                params: {
+                    id: {
+                        value:  'add',
                         squash: true
                     }
                 },

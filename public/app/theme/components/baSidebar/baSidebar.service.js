@@ -69,15 +69,19 @@
                 return s.sidebarMeta;
               })
               .map(function(s) {
-                var meta = s.sidebarMeta;
-                return {
-                  name: s.name,
-                  title: s.title,
-                  level: (s.name.match(/\./g) || []).length,
-                  order: meta.order,
-                  icon: meta.icon,
-                  stateRef: s.name,
-                };
+                var meta = s.sidebarMeta,
+                    result = {
+                      name: s.name,
+                      title: s.title,
+                      level: (s.name.match(/\./g) || []).length,
+                      order: meta.order,
+                      icon: meta.icon,
+                      stateRef: s.name
+                    };
+                if (meta.permissionsRequired) {
+                    result.permissionsRequired = meta.permissionsRequired ? meta.permissionsRequired : false;
+                }
+                return result;
               })
               .sort(function(a, b) {
                 return (a.level - b.level) * 100 + a.order - b.order;

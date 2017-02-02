@@ -9,7 +9,7 @@
     .run(themeRun);
 
   /** @ngInject */
-  function themeRun($timeout, $rootScope, layoutPaths, preloader, $q, baSidebarService, themeLayoutSettings) {
+  function themeRun($timeout, $rootScope, layoutPaths, preloader, $q, baSidebarService, themeLayoutSettings, Idle, $http) {
     var whatToWait = [
       preloader.loadAmCharts(),
       $timeout(3000)
@@ -36,23 +36,58 @@
     }, 7000);
 
     $rootScope.$baSidebarService = baSidebarService;
-    $rootScope.$getPermissions = function (r) {
-      var reload = typeof r !== 'undefined' ?  r : false;
-      if (reload || $rootScope.userAccess === undefined) {
-        $.ajax({
-          type: "POST",
-          url: '/api/get-permissions',
-          async: false,
-          data: {data: null}
-        }).success(function(response) {
-          $rootScope.userAccess = response.access;
-        }).error(function(response) {
-          console.log(response);
-        });
+    $rootScope.user = null;
+    $rootScope.$user = function(async) {
+      if (async == undefined) {
+          async = false;
       }
+      var result = null;
+      $.ajax({
+          type: "POST",
+          url: '/api/users/get-identity',
+          async: async,
+          data: {data: null}
+      }).success(function(response) {
+          result = response.data;
+      }).error(function(response) {
+          console.log(response);
+      });
 
-      return $rootScope.userAccess;
+      $rootScope.user = result;
+      return result;
     };
+
+    $rootScope.$getPermissions = function (r) {
+      var matches = document.cookie.match(new RegExp(
+        "(?:^|; )rights=([^;]*)"
+      ));
+      return matches ? decodeURIComponent(matches[1]) === 'true' : false;
+    };
+
+    $rootScope.$on('IdleStart', function () {
+      var form = new FormData();
+      form.append('assistant_name', $rootScope.$user()['name']);
+      form.append('assistant_password', '');
+
+      $http.post('/login', form, {
+        transformRequest: angular.identity,
+        headers: {'Content-Type': undefined}
+      }).then(function successCallback(response) {
+        if (response.data.auth) {
+          if (!response.data.permissions) {
+            Idle.unwatch();
+          }
+        } else {
+          console.log(response.data);
+        }
+      }, function errorCallback(response){
+        console.log(response);
+      });
+    });
+
+    if ($rootScope.$getPermissions()) {
+        Idle.watch();
+    }
   }
 
 })();

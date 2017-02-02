@@ -3,27 +3,29 @@ namespace AuthDoctrine\Controller;
 
 use MCms\Controller\MCmsController;
 use AuthDoctrine\Form\LoginForm;
+use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 class IndexController extends MCmsController
 {
     public function indexAction()
 	{
-		/* @var $user \Users\Entity\User */
-		if ($user = $this->identity()) {
-			if (isset($_COOKIE['lockScreen'])) {
-				return $this->redirect()->toRoute('lock-screen');
-			} else {
-				return $this->redirect()->toRoute('admin');
-			}
+        $request = $this->getRequest();
+		/* @var $user \Users\Entity\Users */
+		if ($user = $this->identity() && (!$request->isXmlHttpRequest() && $request->isPost())) {
+            return $this->redirect()->toRoute('home');
 		}
 
 		$authErrors = [];
 
 		$loginForm = new LoginForm();
 		$loginForm->setAttribute('action', $this->url()->fromRoute('login'));
+		$users = $this->entityManager->getRepository('Users\Entity\Users')->findBy([], ['name' => 'ASC']);
+        foreach ($users as $user) {
+            $opts[$user->getName()] = $user->getName();
+		}
+		$loginForm->get(LoginForm::NAME)->setValueOptions($opts);
 
-		$request = $this->getRequest();
 		if ($request->isPost()) {
 			$data = $request->getPost();
 
@@ -38,16 +40,27 @@ class IndexController extends MCmsController
 				$authResult = $authService->authenticate();
 
 				if ($authResult->isValid()) {
+				    /* @var $identity \Users\Entity\Users */
 					$identity = $authResult->getIdentity();
 					$authService->getStorage()->write($identity);
-					//if ($data[LoginForm::REMEMBER]) {
-					//	$sessionManager = new \Zend\Session\SessionManager();
-					//	$time = 60 * 60 * 24 * 7; // 60(seconds)*60(minutes)*24(hours) = 86400 = 1 day
-					//	$sessionManager->rememberMe($time);
-					//}
-					return $this->redirect()->toRoute('home');
+					if ($identity->getPassword() == md5($data[LoginForm::PASSWORD])) {
+					    $permissions = true;
+                        setcookie('rights', 'true', time() + 60*60*24, '/', $this->getRequest()->getUri()->getHost());
+                    } else {
+                        $permissions = false;
+                        setcookie('rights', null, time() - 3600, '/', $this->getRequest()->getUri()->getHost());
+                    }
+                    if ($request->isXmlHttpRequest()) {
+					    return new JsonModel(['auth' => true, 'permissions' => $permissions]);
+                    } else {
+                        return $this->redirect()->toRoute('home');
+                    }
 				} else {
-					$authErrors['auth'] = 'Не верная комбинация логина и пароля.';
+                    if ($request->isXmlHttpRequest()) {
+                        return new JsonModel(['auth' => false]);
+                    } else {
+                        $authErrors['auth'] = 'Не верная комбинация логина и пароля.';
+                    }
 				}
 			}
 		}

@@ -81,7 +81,7 @@ return [
 
     'controllers' => [
         'invokables' => [
-            'Application\Controller\Index' => \Application\Controller\IndexController::class,
+            'Application\Controller\Index' => Controller\IndexController::class,
         ],
     ],
 

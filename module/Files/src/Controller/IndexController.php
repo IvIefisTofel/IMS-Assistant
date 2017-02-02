@@ -10,6 +10,11 @@ class IndexController extends MCmsController
 {
     public function indexAction()
     {
+        if (!$this->identity()){
+            $this->getResponse()->setStatusCode(404);
+            return;
+        }
+
         $aspect = $this->params()->fromRoute('aspect', null);
         $size = $this->params()->fromRoute('size', null);
         $versionId = $this->params()->fromRoute('versionId', null);

@@ -1,23 +1,27 @@
 <?
-//$header = "Ошибка 404 на сайте " . $this->getSiteParam('main_title') . ".";
+use Zend\Mvc\Application;
+
 $this->headTitle('Страница не найдена (404)');
 $msg  = "<h1>" . $this->translate('A 404 error occurred') . "</h1>\n";
 $msg .= "<h2>" . $this->translate('Page not found.') . "</h2>\n";
 
 if (isset($this->reason) && $this->reason) {
 
-    $reasonMessage= '';
+    $reasonMessage = '';
     switch ($this->reason) {
-        case 'error-controller-cannot-dispatch':
+        case Application::ERROR_CONTROLLER_CANNOT_DISPATCH:
             $reasonMessage = $this->translate('The requested controller was unable to dispatch the request.');
             break;
-        case 'error-controller-not-found':
+        case Application::ERROR_MIDDLEWARE_CANNOT_DISPATCH:
+            $reasonMessage = $this->translate('The requested middleware was unable to dispatch the request.');
+            break;
+        case Application::ERROR_CONTROLLER_NOT_FOUND:
             $reasonMessage = $this->translate('The requested controller could not be mapped to an existing controller class.');
             break;
-        case 'error-controller-invalid':
+        case Application::ERROR_CONTROLLER_INVALID:
             $reasonMessage = $this->translate('The requested controller was not dispatchable.');
             break;
-        case 'error-router-no-match':
+        case Application::ERROR_ROUTER_NO_MATCH:
             $reasonMessage = $this->translate('The requested URL could not be matched by routing.');
             break;
         default:
@@ -45,7 +49,7 @@ if (isset($this->controller) && $this->controller) {
 }
 
 if (isset($this->display_exceptions) && $this->display_exceptions) {
-    if(isset($this->exception) && $this->exception instanceof Exception) {
+    if(isset($this->exception) && ($this->exception instanceof \Exception || $this->exception instanceof \Error)) {
         $message .= "<hr/>\n";
         $message .= "<h2>" . $this->translate('Additional information') . ":</h2>\n";
         $message .= "<h3>" . get_class($this->exception) . "</h3>\n";
@@ -63,12 +67,13 @@ if (isset($this->display_exceptions) && $this->display_exceptions) {
         $message .= "<pre class=\"prettyprint linenums\">" . $this->exception->getTraceAsString() . "</pre>\n";
         $message .= "</dd>\n";
         $message .= "</dl>\n";
-        
-        $e = $this->exception->getPrevious();
-        if ($e) {
+
+        if ($e = $this->exception->getPrevious()) {
             $message .= "<hr/>\n";
             $message .= "<h2>" . $this->translate('Previous exceptions') . ":</h2>\n";
             $message .= "<ul class=\"unstyled\">\n";
+
+            $icount = 0;
             while($e) {
                 $message .= "<li>\n";
                 $message .= "<h3>" . get_class($e) . "</h3>\n";
@@ -89,11 +94,16 @@ if (isset($this->display_exceptions) && $this->display_exceptions) {
                 $message .= "</li>\n";
                 
                 $e = $e->getPrevious();
+                if (++$icount >= 50) {
+                    $message .= "<li>There may be more exceptions, but we do not have enough memory to process it.</li>";
+                    break;
+                }
             }
             $message .= "</ul>\n";
         }
+    } else {
+        $message .= "<h3>" . $this->translate('No Exception available') . "</h3>\n";
     }
-    $message .= "<h3>" . $this->translate('No Exception available') . "</h3>\n";
 }
 
 $env = (getenv('APP_ENV') == 'development') ? true : false;
@@ -101,11 +111,11 @@ if ($env) {
     echo $msg . $message;
 } else {
     echo $msg;
-    /*echo $msg;
-    $this->sendMessage(
-        \Emails\Entity\Email::TYPE_ERROR,
-        [\Emails\Entity\Email::TYPE_ERROR => true],
-        $header,
-        $msg . $message
-    );*/
+//    echo $msg;
+//    $this->sendMessage(
+//        \Emails\Entity\Email::TYPE_ERROR,
+//        [\Emails\Entity\Email::TYPE_ERROR => true],
+//        $header,
+//        $msg . $message
+//    );
 }

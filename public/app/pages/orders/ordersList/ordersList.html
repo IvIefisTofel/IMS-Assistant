@@ -19,7 +19,7 @@
                 <div ng-if="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
-                <div ng-if="!loading && list.length == 0" class="no-data">
+                <div ng-if="!loading && ((list | filter:filterBy) | filter:search) == 0" class="no-data">
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
@@ -30,7 +30,7 @@
                 </div>
                 <table ng-if="!loading" class="table table-bordered table-hover table-text-center table-with-labels">
                     <thead>
-                    <tr ng-if="list.length != 0" class="black-muted-bg">
+                    <tr ng-if="((list | filter:filterBy) | filter:search) != 0" class="black-muted-bg">
                         <td class="first-fixed"></td>
                         <td>
                             <button class="btn btn-link" ng-click="sortBy('code')">Шифр</button>

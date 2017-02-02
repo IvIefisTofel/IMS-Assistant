@@ -21,7 +21,7 @@ class DetailsPlugin extends AbstractPlugin
 
             $collections = [];
             foreach ($details as $key => $detail) {
-                if (get_class($detail) == 'Nomenclature\Entity\Details') {
+                if (get_class($detail) == 'Nomenclature\Entity\Details' || get_class($detail) == 'Nomenclature\Entity\DetailsView') {
                     /* @var $detail \Nomenclature\Entity\Details */
                     $result[$detail->getId()] = $detail->toArray();
                     $result[$detail->getId()]['dateCreation'] = $detail->getDateCreationFormat('Y-m-d');
@@ -36,7 +36,7 @@ class DetailsPlugin extends AbstractPlugin
                         $collections[$detail->getProject()] = true;
                     }
                 } else {
-                    throw new \Exception('Array elements must be Nomenclature\Entity\Details class.');
+                    throw new \Exception('Array elements must be Nomenclature\Entity\Details or Nomenclature\Entity\DetailsView class.');
                 }
             }
 

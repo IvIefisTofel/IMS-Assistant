@@ -11,7 +11,7 @@ use MCms\Entity\MCmsEntity;
  * @ORM\Table(name="users")
  * @ORM\Entity
  */
-class User extends  MCmsEntity
+class Users extends  MCmsEntity
 {
     /**
      * Getting client IP Address
@@ -50,265 +50,269 @@ class User extends  MCmsEntity
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    protected $userId;
+    protected $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="userName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $userName;
+    protected $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="userFullName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $userFullName;
+    protected $fullName;
 
     /**
      * @var string
      *
      * @ORM\Column(name="userEmail", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $userEmail;
+    protected $email;
 
     /**
      * @var string
      *
      * @ORM\Column(name="userPassword", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $userPassword;
+    protected $password;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="userRoleId", type="integer", precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $userRole;
+    protected $role;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="userActive", type="boolean", precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $userActive;
+    protected $active;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="userRegistrationDate", type="datetime", precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $userRegistrationDate;
+    protected $registrationDate;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="userEmailConfirmed", type="boolean", precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $userEmailConfirmed = false;
+    protected $emailConfirmed = false;
 
     public function __construct()
     {
-        $this->userRegistrationDate = new \DateTime();
+        $this->registrationDate = new \DateTime();
     }
 
     /**
-     * Get userId
+     * Get user Id
      *
      * @return integer
      */
-    public function getUserId()
+    public function getId()
     {
-        return $this->userId;
+        return $this->id;
     }
 
     /**
-     * Set userName
+     * Set user Name
      *
-     * @param string $userName
-     * @return User
+     * @param string $name
+     * @return Users
      */
-    public function setUserName($userName)
+    public function setName($name)
     {
-        $this->userName = $userName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get userName
+     * Get user Name
      *
      * @return string
      */
-    public function getUserName()
+    public function getName()
     {
-        return $this->userName;
+        return $this->name;
     }
 
     /**
-     * Set userFullName
+     * Set user FullName
      *
-     * @param string $userFullName
-     * @return User
+     * @param string $fullName
+     * @return Users
      */
-    public function setUserFullName($userFullName)
+    public function setFullName($fullName)
     {
-        $this->userFullName = $userFullName;
+        $this->fullName = $fullName;
 
         return $this;
     }
 
     /**
-     * Get userFullName
+     * Get user FullName
      *
      * @return string
      */
-    public function getUserFullName()
+    public function getFullName()
     {
-        return $this->userFullName;
+        return $this->fullName;
     }
 
     /**
-     * Set userEmail
+     * Set user Email
      *
-     * @param string $userEmail
-     * @return User
+     * @param string $email
+     * @return Users
      */
-    public function setUserEmail($userEmail)
+    public function setEmail($email)
     {
-        $this->userEmail = $userEmail;
+        $this->email = $email;
 
         return $this;
     }
 
     /**
-     * Get userEmail
+     * Get user Email
      *
      * @return string 
      */
-    public function getUserEmail()
+    public function getEmail()
     {
-        return $this->userEmail;
+        return $this->email;
     }
 
     /**
-     * Set userPassword
+     * Set user Password
      *
-     * @param string $userPassword
-     * @return User
+     * @param string $password
+     * @return Users
      */
-    public function setUserPassword($userPassword)
+    public function setPassword($password)
     {
-        $this->userPassword = md5($userPassword);
+        $this->password = md5($password);
 
         return $this;
     }
 
     /**
-     * Get userPassword
+     * Get user Password
      *
      * @return string
      */
-    public function getUserPassword()
+    public function getPassword()
     {
-        return $this->userPassword;
+        return $this->password;
     }
 
     /**
-     * Set userRole
+     * Set user Role
      *
-     * @param integer $userRole
-     * @return User
+     * @param integer $role
+     * @return Users
      */
-    public function setUserRoleID($userRole)
+    public function setRoleID($role)
     {
-        $this->userRole = $userRole;
+        $this->role = $role;
 
         return $this;
     }
 
     /**
-     * Get userRole
+     * Get user Role
      *
      * @return integer
      */
-    public function getUserRoleID()
+    public function getRoleID()
     {
-        return $this->userRole;
+        return $this->role;
     }
 
     /**
-     * @return string
-     */
-    public function getUserRoleName()
-    {
-        return self::$ROLE_NAME[$this->userRole];
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserRoleLabel()
-    {
-        return self::$ROLE_LABEL[$this->userRole];
-    }
-
-    /**
-     * Set userActive
+     * Get user Role Name
      *
-     * @param boolean $userActive
-     * @return User
+     * @return string
      */
-    public function setUserActive($userActive)
+    public function getRoleName()
     {
-        $this->userActive = $userActive;
+        return self::$ROLE_NAME[$this->role];
+    }
+
+    /**
+     * Get user Role Label
+     *
+     * @return string
+     */
+    public function getRoleLabel()
+    {
+        return self::$ROLE_LABEL[$this->role];
+    }
+
+    /**
+     * Set user Active
+     *
+     * @param boolean $active
+     * @return Users
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
 
         return $this;
     }
 
     /**
-     * Get userActive
+     * Get user Active
      *
      * @return boolean 
      */
-    public function getUserActive()
+    public function getActive()
     {
-        return $this->userActive;
+        return $this->active;
     }
 
     /**
-     * Set userRegistrationDate
+     * Set user Registration Date
      *
-     * @param \DateTime $userRegistrationDate
-     * @return User
+     * @param \DateTime $registrationDate
+     * @return Users
      */
-    public function setUserRegistrationDate($userRegistrationDate)
+    public function setRegistrationDate($registrationDate)
     {
-        $this->userRegistrationDate = $userRegistrationDate;
+        $this->registrationDate = $registrationDate;
 
         return $this;
     }
 
     /**
-     * Get userRegistrationDate
+     * Get user Registration Date
      *
      * @return \DateTime
      */
-    public function getUserRegistrationDate()
+    public function getRegistrationDate()
     {
-        return $this->userRegistrationDate;
+        return $this->registrationDate;
     }
 
     /**
-     * Set userEmailConfirmed
+     * Set user Email Confirmed
      *
-     * @param boolean $userEmailConfirmed
-     * @return User
+     * @param boolean $emailConfirmed
+     * @return Users
      */
-    public function setUserEmailConfirmed($userEmailConfirmed)
+    public function setEmailConfirmed($emailConfirmed)
     {
-        $this->userEmailConfirmed = $userEmailConfirmed;
+        $this->emailConfirmed = $emailConfirmed;
 
         return $this;
     }
@@ -318,9 +322,9 @@ class User extends  MCmsEntity
      *
      * @return boolean
      */
-    public function getUserEmailConfirmed()
+    public function getEmailConfirmed()
     {
-        return $this->userEmailConfirmed;
+        return $this->emailConfirmed;
     }
 
     /**
@@ -336,7 +340,7 @@ class User extends  MCmsEntity
      */
     public function getGrAvatar( $s = 80, $d = 'mm', $r = 'g', $img = false, $atts = array() ) {
         $url = 'http://www.gravatar.com/avatar/';
-        $url .= md5( strtolower( trim( $this->userEmail ) ) );
+        $url .= md5( strtolower( trim( $this->email ) ) );
         $url .= "?s=$s&d=$d&r=$r";
         if ( $img ) {
             $url = '<img src="' . $url . '"';

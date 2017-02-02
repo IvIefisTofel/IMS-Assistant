@@ -1,47 +1,17 @@
 <?php
-/**
- * File for Acl Class
- *
- * @category  User
- * @package   User_Acl
- * @author    Marco Neumann <webcoder_at_binware_dot_org>
- * @copyright Copyright (c) 2011, Marco Neumann
- * @license   http://binware.org/license/index/type:new-bsd New BSD License
- * http://p0l0.binware.org/index.php/2012/02/18/zend-framework-2-authentication-acl-using-eventmanager/
- */
 
-/**
- * @namespace
- */
 namespace AuthDoctrine\Acl;
-// namespace User\Acl;
 
-/**
- * @uses Zend\Acl\Acl
- * @uses Zend\Acl\Role\GenericRole
- * @uses Zend\Acl\Resource\GenericResource
- */
-use Zend\Permissions\Acl\Acl as ZendAcl,
-    Zend\Permissions\Acl\Role\GenericRole as Role,
-    Zend\Permissions\Acl\Resource\GenericResource as Resource;
+use Zend\Permissions\Acl\Acl as ZendAcl;
+use Zend\Permissions\Acl\Role\GenericRole as Role;
+use Zend\Permissions\Acl\Resource\GenericResource as Resource;
+use Users\Entity\Users;
 
-use Users\Entity\User;
-
-/**
- * Class to handle Acl
- *
- * This class is for loading ACL defined in a config
- *
- * @category User
- * @package  User_Acl
- * @copyright Copyright (c) 2011, Marco Neumann
- * @license   http://binware.org/license/index/type:new-bsd New BSD License
- */
 class Acl extends ZendAcl {
     /**
      * Default Role
      */
-    const DEFAULT_ROLE = User::GUEST_ROLE;
+    const DEFAULT_ROLE = Users::GUEST_ROLE;
     /**
      * md5 (Ural_SM_Assistant)
     */

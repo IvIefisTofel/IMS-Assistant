@@ -3781,7 +3781,7 @@ th {
 
 .adds {
   border-top: 1px solid #209e91;
-  padding: 15px 20px; }
+  padding: 25px 20px 15px 20px; }
 
 .adds:before {
   content: "Вложения";
@@ -6239,20 +6239,24 @@ th.last-fixed, td.last-fixed { width: 130px;}
 
 .panel.content-actions .panel-body h2:first-child {
   display: inline; }
-  .content-actions div.actions {
+  .panel-footer .actions,
+  .content-actions .actions {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     min-height: 56px; }
-    .content-actions div.actions button {
+    .panel-footer .actions button,
+    .content-actions .actions button {
       margin-left: 10px; }
 
 .modal-content textarea {
   max-width: 100%; }
 
+.uib-datepicker .btn:hover,
 .ui-select-container .btn:hover,
-.btn-no-transform .btn:hover {
+.btn-no-transform .btn:hover,
+.btn.btn-no-transform:hover{
   -webkit-transform: scale(1) !important;
   transform: scale(1) !important;
 }
@@ -6430,3 +6434,34 @@ ul.typeahead.dropdown-menu {
   -webkit-transform: scale(1);
   transform: scale(1); }
 /* pattern-modal */
+
+.help-block {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 0;
+  height: 15px;
+  color: #959595;
+}
+.form-group.has-error .ui-select-bootstrap .form-control.btn { border-color: #ed7878; }
+a.change-user {
+  -webkit-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+  margin: 10px 30px 0 0;
+  font-size: 20px;
+  color: #fff; }
+  a.change-user.admin {
+    color: #e85656;
+  }
+  a.change-user:hover {
+    color: #2dacd1;
+    -webkit-transform: scale(1.7);
+    transform: scale(1.7); }
+.dropdown-menu>li>span {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #a2a2a2;
+  white-space: nowrap;
+}

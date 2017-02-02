@@ -11,8 +11,8 @@ return [
                 'options' => [
                     'route'    => '/api/nomenclature[/][/:task[/][/:id[/]]]',
                     'constraints' => [
-                        'task'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'id'         => '[0-9]+',
+                        'task'  => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id'    => '[0-9]+',
                     ],
                     'defaults' => [
                         '__NAMESPACE__' => 'Nomenclature\Controller',

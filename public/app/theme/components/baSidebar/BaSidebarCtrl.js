@@ -9,10 +9,14 @@
     .controller('BaSidebarCtrl', BaSidebarCtrl);
 
   /** @ngInject */
-  function BaSidebarCtrl($scope, baSidebarService) {
+  function BaSidebarCtrl($scope, baSidebarService, $rootScope) {
 
     $scope.menuItems = baSidebarService.getMenuItems();
     $scope.defaultSidebarState = $scope.menuItems[0].stateRef;
+
+    $scope.filterBy = function(item){
+        return !item.permissionsRequired || (item.permissionsRequired && item.permissionsRequired == $rootScope.$getPermissions());
+    };
 
     $scope.hoverItem = function ($event) {
       $scope.showHoverElem = true;

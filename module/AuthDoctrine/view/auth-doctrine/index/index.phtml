@@ -18,6 +18,7 @@
         ->appendStylesheet($this->basePath('/bower/Ionicons/css/ionicons.css'))
         ->appendStylesheet($this->basePath('/bower/animate.css/animate.css'))
         ->appendStylesheet($this->basePath('/bower/bootstrap/dist/css/bootstrap.min.css'))
+        ->appendStylesheet($this->basePath('/bower/bootstrap-select/dist/css/bootstrap-select.min.css'))
         ->appendStylesheet($this->basePath('/bower/jstree/dist/themes/default/style.css'))
         ->appendStylesheet($this->basePath('/bower/toastr/toastr.min.css'))
         ->appendStylesheet($this->basePath('/css/auth.css'))
@@ -38,12 +39,20 @@
 </body>
 </html>
 <?=$this->headScript()
+    ->prependFile($this->basePath('/bower/bootstrap-select/dist/js/i18n/defaults-ru_RU.min.js'))
+    ->prependFile($this->basePath('/bower/bootstrap-select/dist/js/bootstrap-select.min.js'))
+    ->prependFile($this->basePath('/bower/bootstrap/dist/js/bootstrap.min.js'))
     ->prependFile($this->basePath('/bower/toastr/toastr.min.js'))
     ->prependFile($this->basePath('/bower/jquery/dist/jquery.js'))
 /* @todo: Добавить login.core.js */
 ?>
+<script type="application/javascript">
+    $(document).ready(function () {
+        $('#assistant_name').selectpicker({});
+    });
+</script>
 <? if (isset($authErrors['auth'])): ?>
-    <script type="text/javascript">
+    <script type="application/javascript">
         $(document).ready(function () {
             setTimeout(function () {
                 toastr.options = {
