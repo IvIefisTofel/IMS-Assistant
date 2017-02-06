@@ -43,7 +43,8 @@ class IndexController extends MCmsController
 				    /* @var $identity \Users\Entity\Users */
 					$identity = $authResult->getIdentity();
 					$authService->getStorage()->write($identity);
-					if ($identity->getPassword() == md5($data[LoginForm::PASSWORD])) {
+					if ($identity->getPassword() == md5($data[LoginForm::PASSWORD])
+                        && $identity->getRoleID() == \Users\Entity\Users::ADMIN_ROLE) {
 					    $permissions = true;
                         setcookie('rights', 'true', time() + 60*60*24, '/', $this->getRequest()->getUri()->getHost());
                     } else {

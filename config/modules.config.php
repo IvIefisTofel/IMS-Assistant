@@ -17,6 +17,7 @@ return [
     'Files',
     'Nomenclature',
     'Orders',
+    'Services',
 
     // Модули, в основном отвечающие за вывод (Admin/Client)
     'Application',

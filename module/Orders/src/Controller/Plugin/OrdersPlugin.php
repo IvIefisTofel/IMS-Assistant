@@ -22,7 +22,7 @@ class OrdersPlugin extends AbstractPlugin
 
             $orderKeys = [];
             foreach ($orders as $key => $order) {
-                if (get_class($order) == 'Orders\Entity\Orders' || get_class($order) == 'Orders\Entity\OrdersView') {
+                if (in_array(get_class($order), ['Orders\Entity\Orders', 'Orders\Entity\OrdersView'])) {
                     /* @var $order \Orders\Entity\Orders */
                     $result[$order->getId()] = $order->toArray();
                     if ($withDetails) {
@@ -30,7 +30,7 @@ class OrdersPlugin extends AbstractPlugin
                     }
                     $orderKeys[] = $order->getId();
                 } else {
-                    throw new \Exception('Array elements must be Orders\Entity\Orders class.');
+                    throw new \Exception('Array elements must be Order class.');
                 }
             }
 

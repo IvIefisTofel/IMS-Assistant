@@ -2,7 +2,6 @@
 
 namespace Files;
 
-$env = (getenv('APP_ENV') == 'development') ? true : false;
 return [
     'router' => [
         'routes' => [
@@ -23,21 +22,6 @@ return [
                 ],
                 'may_terminate' => true,
             ],
-            /*'api-files' => [
-                'type'    => 'Segment',
-                'options' => [
-                    'route'    => '/api/files[/:action[/:id]]',
-                    'constraints' => [
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'id'         => '[0-9]+',
-                    ],
-                    'defaults' => [
-                        '__NAMESPACE__' => 'Files\Controller',
-                        'controller'    => 'Index',
-                        'action'        => 'index',
-                    ],
-                ],
-            ],*/
         ],
     ],
 
@@ -59,18 +43,6 @@ return [
                     GUEST_ROLE,
                 ],
             ],
-        ],
-    ],
-
-    'view_manager' => [
-        'display_not_found_reason'  => $env,
-        'display_exceptions'        => $env,
-        'doctype'                   => 'HTML5',
-        'template_path_stack' => [
-            __DIR__ . '/../view',
-        ],
-        'strategies' => [
-            'ViewJsonStrategy',
         ],
     ],
 

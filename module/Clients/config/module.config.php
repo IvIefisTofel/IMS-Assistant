@@ -2,7 +2,6 @@
 
 namespace Clients;
 
-$env = (getenv('APP_ENV') == 'development') ? true : false;
 return [
     'router' => [
         'routes' => [
@@ -62,18 +61,6 @@ return [
                     GUEST_ROLE,
                 ],
             ],
-        ],
-    ],
-
-    'view_manager' => [
-        'display_not_found_reason'  => $env,
-        'display_exceptions'        => $env,
-        'doctype'                   => 'HTML5',
-        'template_path_stack' => [
-            __DIR__ . '/../view',
-        ],
-        'strategies' => [
-            'ViewJsonStrategy',
         ],
     ],
 
