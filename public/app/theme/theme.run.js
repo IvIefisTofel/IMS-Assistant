@@ -88,6 +88,11 @@
     if ($rootScope.$getPermissions()) {
         Idle.watch();
     }
+
+    $rootScope.gallery = {
+        images: null,
+        methods: {}
+    };
   }
 
 })();

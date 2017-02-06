@@ -9,7 +9,7 @@
         .controller('DetailCtrl', DetailCtrl);
 
     /** @ngInject */
-    function DetailCtrl($scope, $state, $stateParams, $http, $window, $uibModal, $filter, $timeout) {
+    function DetailCtrl($scope, $rootScope, $state, $stateParams, $http, $window, $uibModal, $filter) {
         var cropper,
             currImgId = null,
             imgDef = {
@@ -141,17 +141,13 @@
             main: [],
             new: []
         };
-        $scope.gallery = {
-            images: null,
-            methods: {}
-        };
         $scope.openGallery = function (id, index) {
             if (index == undefined) {
                 index = 0;
             }
             if ($scope.galleries[id] != undefined) {
-                $scope.gallery.images = $scope.galleries[id];
-                $scope.gallery.methods.open(index);
+                $rootScope.gallery.images = $scope.galleries[id];
+                $rootScope.gallery.methods.open(index);
             }
         };
 
@@ -722,9 +718,5 @@
                 console.log(response.statusText);
             });
         }
-
-        $timeout(function(){
-            $scope.showGallery = true;
-        }, 500);
     }
 })();

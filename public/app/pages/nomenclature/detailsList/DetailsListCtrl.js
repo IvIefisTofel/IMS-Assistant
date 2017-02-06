@@ -9,7 +9,7 @@
         .controller('DetailsListCtrl', DetailsListCtrl);
 
     /** @ngInject */
-    function DetailsListCtrl($scope, $state, $stateParams, $http, $filter, $timeout, $uibModal) {
+    function DetailsListCtrl($scope, $rootScope, $state, $stateParams, $http, $filter, $uibModal) {
         $scope.showOrder = ($stateParams.id == null);
         $scope.order = null;
         $scope.list = [];
@@ -152,17 +152,13 @@
 
         $scope.showGallery = false;
         $scope.galleries = [];
-        $scope.gallery = {
-            images: null,
-            methods: {}
-        };
         $scope.openGallery = function (id, index) {
             if (index == undefined) {
                 index = 0;
             }
             if ($scope.galleries[id] != undefined) {
-                $scope.gallery.images = $scope.galleries[id];
-                $scope.gallery.methods.open(index);
+                $rootScope.gallery.images = $scope.galleries[id];
+                $rootScope.gallery.methods.open(index);
             }
         };
 
@@ -250,8 +246,6 @@
         };
 
         $scope.refreshData();
-        $timeout(function(){
-            $scope.showGallery = true;
-        }, 500);
+
     }
 })();

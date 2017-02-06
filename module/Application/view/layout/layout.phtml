@@ -46,6 +46,12 @@ echo $this->doctype();
 <div id="preloader" ng-show="!$pageFinishedLoading">
     <div></div>
 </div>
+<ng-image-gallery
+    images="gallery.images"
+    methods="gallery.methods"
+    thumbnails="false"
+    bg-close="true"
+></ng-image-gallery>
 <?=$this->inlineScript() ?>
 
 <? foreach ($this->getJsCollection() as $js) $this->headScript()->prependFile($this->basePath($js)); ?>
