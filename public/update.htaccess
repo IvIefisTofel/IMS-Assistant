@@ -1,0 +1,5 @@
+SetEnv APP_ENV update
+RewriteEngine on
+RewriteRule ^img/(.+) - [L]
+RewriteRule ^app/404.css - [L]
+RewriteRule ^(.*)$ %{ENV:BASE}update.html [NC,L]

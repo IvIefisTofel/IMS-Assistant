@@ -17,14 +17,20 @@
             "bower install", "\n",
             "@compile-mo"
         ],
+        "pre-update-cmd": [
+            "mv public/.htaccess public/default.htaccess",
+            "mv public/update.htaccess public/.htaccess"
+        ],
         "post-update-cmd": [
             "\n", "@clearCache", "\n",
             "@bower-update",
-            "@compile-mo"
+            "@compile-mo",
+            "mv public/.htaccess public/update.htaccess",
+            "mv public/default.htaccess public/.htaccess"
         ],
         "bower-update" : [
-            "bower prune",
-            "bower update"
+            "find bower_components -mindepth 1  -delete",
+            "bower update --force-latest"
         ],
         "clearCache": [
             "find data/cache -mindepth 1 ! -name '.gitignore' -delete",
