@@ -15,3 +15,8 @@ RewriteRule ^.*$ - [NC,L]
 RewriteCond %{REQUEST_URI}::$1 ^(/.+)(.+)::\2$
 RewriteRule ^(.*) - [E=BASE:%1]
 RewriteRule ^(.*)$ %{ENV:BASE}index.php [NC,L]
+
+AuthType Basic
+AuthName "ural-sm-2017"
+AuthUserFile /var/www/.htpasswd
+require valid-user
