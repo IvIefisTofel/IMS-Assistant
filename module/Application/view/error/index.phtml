@@ -1,8 +1,9 @@
 <?
+$env = (getenv('APP_ENV') == 'development') ? true : false;
 //$header = "Ошибка на сайте " . $this->getSiteParam('main_title') . ".";
 $this->headTitle('Упс... Что-то пошло не так');
 $msg  = "<h1>" .  $this->translate('An error occurred') . "</h1>\n";
-$msg .= "<h2>" .  $this->translate($this->message) . "</h2>\n";
+$msg .= "<p>" .  $this->translate($this->message) . (($env) ? '' : "<br>Вы можете вернуться <a href='javascript:window.history.back(-1)'>назад</a> или на <a href='/'>главную страницу</a>") . "</p>\n";
 
 if (isset($this->display_exceptions) && $this->display_exceptions) {
     if (isset($this->exception) && $this->exception instanceof Exception) {
@@ -58,7 +59,6 @@ if (isset($this->display_exceptions) && $this->display_exceptions) {
     }
 }
 
-$env = (getenv('APP_ENV') == 'development') ? true : false;
 if ($env) {
     echo $msg . $message;
 } else {

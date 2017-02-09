@@ -109,8 +109,10 @@ if (isset($this->display_exceptions) && $this->display_exceptions) {
 $env = (getenv('APP_ENV') == 'development') ? true : false;
 if ($env) {
     echo $msg . $message;
-} else {
-    echo $msg;
+} else {?>
+    <h1>Ошибка 404</h1>
+    <p>К сожалению, эта страница не существует. <br>Вы можете вернуться <a href='javascript:window.history.back(-1)'>назад</a> или на <a href='/'>главную страницу</a></p>
+<?
 //    echo $msg;
 //    $this->sendMessage(
 //        \Emails\Entity\Email::TYPE_ERROR,
