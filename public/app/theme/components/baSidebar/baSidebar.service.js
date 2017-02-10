@@ -1,6 +1,5 @@
 (function() {
   'use strict';
-
   angular.module('BlurAdmin.theme.components')
       .provider('baSidebarService', baSidebarServiceProvider);
 
@@ -96,8 +95,6 @@
           return window.innerWidth <= layoutSizes.resWidthHideSidebar;
         }
       }
-
     };
-
   }
 })();

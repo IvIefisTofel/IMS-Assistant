@@ -1,9 +1,5 @@
-/**
- * Animated load block
- */
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
       .directive('zoomIn', zoomIn);
 
@@ -25,5 +21,4 @@
       }
     };
   }
-
 })();

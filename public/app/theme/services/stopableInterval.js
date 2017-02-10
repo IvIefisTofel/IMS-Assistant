@@ -1,10 +1,5 @@
-/**
- * @author a.demeshko
- * created on 12/21/15
- */
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
     .service('stopableInterval', stopableInterval);
 
@@ -29,5 +24,4 @@
       }
     }
   }
-
 })();

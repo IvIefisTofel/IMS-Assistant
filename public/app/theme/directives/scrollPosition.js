@@ -1,6 +1,5 @@
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
       .directive('scrollPosition', scrollPosition);
 
@@ -24,5 +23,4 @@
       }
     };
   }
-
 })();

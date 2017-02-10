@@ -1,6 +1,5 @@
 (function () {
     'use strict';
-
     angular.module('BlurAdmin.pages.users', [])
         .config(routeConfig);
 

@@ -1,9 +1,5 @@
-/**
- * Change top "Daily Downloads", "Active Users" values with animation effect
- */
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
       .directive('animatedChange', animatedChange);
 
@@ -37,5 +33,4 @@
       }
     };
   }
-
 })();

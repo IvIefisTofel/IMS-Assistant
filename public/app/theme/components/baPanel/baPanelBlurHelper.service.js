@@ -1,10 +1,5 @@
-/**
- * @author v.lugovsky
- * created on 15.01.2016
- */
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
       .service('baPanelBlurHelper', baPanelBlurHelper);
 
@@ -43,5 +38,4 @@
       return { width: finalWidth, height: finalHeight, positionX: (elemW - finalWidth)/2, positionY: (elemH - finalHeight)/2};
     };
   }
-
 })();

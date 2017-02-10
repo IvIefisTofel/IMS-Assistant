@@ -1,6 +1,5 @@
 (function() {
   'use strict';
-
   angular.module('BlurAdmin.theme.components')
     .controller('baWizardCtrl', baWizardCtrl);
 
@@ -51,4 +50,3 @@
     }
   }
 })();
-

@@ -1,6 +1,5 @@
 (function () {
     'use strict';
-
     angular.module('BlurAdmin.pages.nomenclature', [])
         .config(routeConfig);
 
@@ -50,5 +49,4 @@
                 title: 'Деталь'
             });
     }
-
 })();

@@ -1,10 +1,5 @@
-/**
- * @author a.demeshko
- * created on 22.12.2015
- */
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
     .directive('ionSlider', ionSlider);
 
@@ -87,5 +82,4 @@
       }
     };
   }
-
 })();

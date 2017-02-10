@@ -1,9 +1,5 @@
-/**
- * Auto expand textarea field
- */
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
       .directive('autoExpand', autoExpand);
 
@@ -31,5 +27,4 @@
       }
     };
   }
-
 })();

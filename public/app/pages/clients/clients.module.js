@@ -1,6 +1,5 @@
 (function () {
     'use strict';
-
     angular.module('BlurAdmin.pages.clients', [])
         .config(routeConfig);
 
@@ -17,5 +16,4 @@
                 }
             });
     }
-
 })();

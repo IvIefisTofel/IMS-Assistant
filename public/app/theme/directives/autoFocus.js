@@ -1,6 +1,5 @@
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
       .directive('autoFocus', autoFocus);
 
@@ -23,5 +22,4 @@
       }
     };
   }
-
 })();

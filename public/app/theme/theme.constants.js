@@ -1,10 +1,5 @@
-/**
- * @author v.lugovsky
- * created on 15.12.2015
- */
 (function () {
   'use strict';
-
   var IMAGES_ROOT = 'assets/img/';
 
   angular.module('BlurAdmin.theme')

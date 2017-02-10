@@ -1,6 +1,5 @@
 (function () {
     'use strict';
-
     angular.module('BlurAdmin.pages.orders', [])
         .config(routeConfig);
 
@@ -28,5 +27,4 @@
                 title: 'Заказы'
             });
     }
-
 })();

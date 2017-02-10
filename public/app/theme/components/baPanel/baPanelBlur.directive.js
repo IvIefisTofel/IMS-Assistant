@@ -1,10 +1,5 @@
-/**
- * @author v.lugovsky
- * created on 15.01.2016
- */
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
       .directive('baPanelBlur', baPanelBlur);
 
@@ -43,9 +38,7 @@
             backgroundPosition: Math.floor(bodyBgSize.positionX) + 'px ' + Math.floor(bodyBgSize.positionY) + 'px'
           });
         }
-
       }
     };
   }
-
 })();

@@ -1,6 +1,5 @@
 (function () {
   'use strict';
-
   angular.module('BlurAdmin.theme')
       .directive('trackWidth', trackWidth);
 
@@ -27,5 +26,4 @@
       }
     };
   }
-
 })();

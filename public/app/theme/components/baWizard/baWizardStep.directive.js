@@ -1,6 +1,5 @@
 (function() {
   'use strict';
-
   angular.module('BlurAdmin.theme.components')
     .directive('baWizardStep', baWizardStep);
 

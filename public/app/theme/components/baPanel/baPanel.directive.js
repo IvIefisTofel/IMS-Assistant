@@ -1,13 +1,5 @@
-/**
- * @author v.lugovsky
- * created on 23.12.2015
- */
 (function () {
   'use strict';
-
-  /**
-   * Includes basic panel layout inside of current element.
-   */
   angular.module('BlurAdmin.theme')
       .directive('baPanel', baPanel);
 
