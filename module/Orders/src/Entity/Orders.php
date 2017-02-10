@@ -20,7 +20,7 @@ class Orders extends OrdersEntity
     public static $STATUS = [
         self::STATUS_ORDER  => "Заказ",
         self::STATUS_WORK   => "В работе",
-        self::STATUS_DONE   => "Исполненно",
+        self::STATUS_DONE   => "Исполнено",
     ];
 
     /**
