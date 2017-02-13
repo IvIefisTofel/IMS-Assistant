@@ -4,7 +4,7 @@
       .directive('contentTop', contentTop);
 
   /** @ngInject */
-  function contentTop($location, $state) {
+  function contentTop($state) {
     return {
       restrict: 'E',
       templateUrl: 'app/theme/components/contentTop/contentTop.html',

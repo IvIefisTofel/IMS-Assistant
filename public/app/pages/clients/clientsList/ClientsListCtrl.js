@@ -76,9 +76,7 @@
     };
 
     $scope.refreshData = function () {
-      // if ($scope.current === null) {
-        $scope.loading = true;
-      // }
+      $scope.loading = true;
 
       $http.post('/api/clients', null).then(function successCallback(response) {
         var data = response.data;
