@@ -56,22 +56,139 @@
                             <button class="btn btn-link" ng-click="sortBy('dateDeadline')">Срок исполнения</button>
                             <span class="sortorder" ng-show="propertyName === 'dateDeadline'" ng-class="{reverse: reverse}"></span>
                         </td>
-                        <td class="last-fixed"></td>
+                        <td width="165px"></td>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-if="list.length != 0" ng-repeat="item in ((list | filter:filterBy) | filter:search) | orderBy:propertyName:reverse" class="no-top-border" ng-class="{active: item.id == current}">
+                    <tr ng-if="list.length != 0" ng-repeat="(key, item) in list | filter:filterBy | filter:search | orderBy:propertyName:reverse" class="no-top-border" ng-class="{active: item.id == current}">
                         <td ng-init="labelClass = (item.statusCode == 1) ? 'label-primary' : (item.statusCode == 2) ? 'label-warning' : 'label-success'">
                             <span class="label" ng-class="labelClass">{{item.status}}</span>
                         </td>
-                        <td>{{item.code}}</td>
-                        <td ng-if="showClient">{{item.clientName}}</td>
-                        <td>{{item.dateCreation}}</td>
-                        <td>{{(item.dateStart == null) ? '---' : item.dateStart}}</td>
-                        <td>{{(item.dateEnd == null) ? '---' : item.dateEnd}}</td>
-                        <td>{{(item.dateDeadline == null) ? '---' : item.dateDeadline}}</td>
+                        <td>
+                            <span ng-hide="item.edit">{{item.code}}</span>
+                            <span ng-show="item.edit" class="editable-wrap"><div class="editable-controls form-group">
+                                <input type="text" name="name" required="required" class="form-control" ng-model="item.code">
+                            </div></span>
+                        </td>
+                        <td ng-if="showClient">
+                            <span ng-hide="item.edit">{{item.clientName}}</span>
+                            <span ng-show="item.edit" class="editable-wrap"><div class="editable-controls form-group">
+                                <input type="text" name="name" required="required" class="form-control" ng-model="item.clientName">
+                            </div></span>
+                        </td>
+                        <td>
+                            <span ng-hide="item.edit">{{item.dateCreation != null ? (item.dateCreation | date:"dd MMMM yyyy г.") : '---'}}</span>
+                            <span ng-show="item.edit" class="form-horizontal editable-wrap"><div class="editable-controls form-group">
+                                <div class="btn-group calendar-btn-group btn-no-transform">
+                                    <button type="button" class="btn btn-default col-md-8" ng-click="calendar.dateCreation[item.id].opened = true"
+                                            uib-datepicker-popup="dd MMMM yyyy г." ng-model="item.dateCreation"
+                                            is-open="calendar.dateCreation[item.id].opened" datepicker-options="calendar.options"
+                                            current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
+                                            show-button-bar="false" datepicker-append-to-body="true">
+                                        {{item.dateCreation != null ? (item.dateCreation | date:"dd.MM.yyyy") : '---'}}
+                                    </button>
+                                    <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateCreation)"
+                                            ng-mouseenter="calendar.dateCreation[item.id].tooltips.today = true"
+                                            ng-mouseleave="calendar.dateCreation[item.id].tooltips.today = false">
+                                        <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
+                                           tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.today" uib-tooltip="Сегодня"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateCreation)"
+                                            ng-mouseenter="calendar.dateCreation.tooltips.clear = true"
+                                            ng-mouseleave="calendar.dateCreation.tooltips.clear = false">
+                                        <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                           tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.clear" uib-tooltip="Очистить"></i>
+                                    </button>
+                                </div>
+                            </div></span>
+                        </td>
+                        <td>
+                            <span ng-hide="item.edit">{{item.dateStart != null ? (item.dateStart | date:"dd MMMM yyyy г.") : '---'}}</span>
+                            <span ng-show="item.edit" class="form-horizontal editable-wrap"><div class="editable-controls form-group">
+                                <div class="btn-group calendar-btn-group btn-no-transform">
+                                    <button type="button" class="btn btn-default col-md-8" ng-click="calendar.dateStart[item.id].opened = true"
+                                            uib-datepicker-popup="dd MMMM yyyy г." ng-model="item.dateStart"
+                                            is-open="calendar.dateStart[item.id].opened" datepicker-options="calendar.options"
+                                            current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
+                                            show-button-bar="false" datepicker-append-to-body="true">
+                                        {{item.dateStart != null ? (item.dateStart | date:"dd.MM.yyyy") : '---'}}
+                                    </button>
+                                    <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateStart)"
+                                            ng-mouseenter="calendar.dateStart.tooltips.today = true"
+                                            ng-mouseleave="calendar.dateStart.tooltips.today = false">
+                                        <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
+                                           tooltip-animation="false" tooltip-is-open="calendar.dateStart.tooltips.today" uib-tooltip="Сегодня"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateStart)"
+                                            ng-mouseenter="calendar.dateStart.tooltips.clear = true"
+                                            ng-mouseleave="calendar.dateStart.tooltips.clear = false">
+                                        <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                           tooltip-animation="false" tooltip-is-open="calendar.dateStart.tooltips.clear" uib-tooltip="Очистить"></i>
+                                    </button>
+                                </div>
+                            </div></span>
+                        </td>
+                        <td>
+                            <span ng-hide="item.edit">{{item.dateEnd != null ? (item.dateEnd | date:"dd MMMM yyyy г.") : '---'}}</span>
+                            <span ng-show="item.edit" class="form-horizontal editable-wrap"><div class="editable-controls form-group">
+                                <div class="btn-group calendar-btn-group btn-no-transform">
+                                    <button type="button" class="btn btn-default col-md-8" ng-click="calendar.dateEnd[item.id].opened = true"
+                                            uib-datepicker-popup="dd MMMM yyyy г." ng-model="item.dateEnd"
+                                            is-open="calendar.dateEnd[item.id].opened" datepicker-options="calendar.options"
+                                            current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
+                                            show-button-bar="false" datepicker-append-to-body="true">
+                                        {{item.dateEnd != null ? (item.dateEnd | date:"dd.MM.yyyy") : '---'}}
+                                    </button>
+                                    <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateEnd)"
+                                            ng-mouseenter="calendar.dateEnd.tooltips.today = true"
+                                            ng-mouseleave="calendar.dateEnd.tooltips.today = false">
+                                        <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
+                                           tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.today" uib-tooltip="Сегодня"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateEnd)"
+                                            ng-mouseenter="calendar.dateEnd.tooltips.clear = true"
+                                            ng-mouseleave="calendar.dateEnd.tooltips.clear = false">
+                                        <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                           tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.clear" uib-tooltip="Очистить"></i>
+                                    </button>
+                                </div>
+                            </div></span>
+                        </td>
+                        <td>
+                            <span ng-hide="item.edit">{{item.dateDeadline != null ? (item.dateDeadline | date:"dd MMMM yyyy г.") : '---'}}</span>
+                            <span ng-show="item.edit" class="form-horizontal editable-wrap"><div class="editable-controls form-group">
+                                <div class="btn-group calendar-btn-group btn-no-transform">
+                                    <button type="button" class="btn btn-default col-md-8" ng-click="calendar.dateDeadline[item.id].opened = true"
+                                            uib-datepicker-popup="dd MMMM yyyy г." ng-model="item.dateDeadline"
+                                            is-open="calendar.dateDeadline[item.id].opened" datepicker-options="calendar.options"
+                                            current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
+                                            show-button-bar="false" datepicker-append-to-body="true">
+                                        {{item.dateDeadline != null ? (item.dateDeadline | date:"dd.MM.yyyy") : '---'}}
+                                    </button>
+                                    <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateDeadline)"
+                                            ng-mouseenter="calendar.dateDeadline.tooltips.today = true"
+                                            ng-mouseleave="calendar.dateDeadline.tooltips.today = false">
+                                        <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
+                                           tooltip-animation="false" tooltip-is-open="calendar.dateDeadline.tooltips.today" uib-tooltip="Сегодня"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateDeadline)"
+                                            ng-mouseenter="calendar.dateDeadline.tooltips.clear = true"
+                                            ng-mouseleave="calendar.dateDeadline.tooltips.clear = false">
+                                        <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                           tooltip-animation="false" tooltip-is-open="calendar.dateDeadline.tooltips.clear" uib-tooltip="Очистить"></i>
+                                    </button>
+                                </div>
+                            </div></span>
+                        </td>
                         <td class="align-right">
-                            <a ui-sref="nomenclature-custom({id: item.id})" class="btn btn-xs btn-primary">Номенклатура</a>
+                            <span ng-hide="item.edit">
+                                <button type="button" class="btn btn-xs btn-no-transform btn-info" ng-click="editItem(item)"><i class="ng-scope fa fa-pencil"></i></button>
+                                <a ui-sref="nomenclature-custom({id: item.id})" class="btn btn-xs btn-no-transform btn-primary">Номенклатура</a>
+                            </span>
+                            <span ng-show="item.edit">
+                                <button type="button" class="btn btn-xs btn-no-transform btn-success" ng-click="saveItem(item)"><i class="fa fa-floppy-o"></i> Сохранить</button>
+                                <button type="button" class="btn btn-xs btn-no-transform btn-danger" ng-click="abortItem(item)"><i class="fa fa-undo"></i></button>
+                            </span>
                         </td>
                     </tr>
                     </tbody>

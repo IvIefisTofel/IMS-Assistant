@@ -398,7 +398,6 @@
                     $scope.calendar.dateEnd.date = null;
                 } else {
                     model.date = null;
-                    2
                 }
             }
         };

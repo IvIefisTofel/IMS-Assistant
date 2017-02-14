@@ -6472,3 +6472,5 @@ a.change-user {
   white-space: nowrap;
 }
 .modal-exlg { width: 1150px; }
+.calendar-btn-group { min-width: 200px; }
+.calendar-btn-group .btn.btn-default { background-color: #fff; }

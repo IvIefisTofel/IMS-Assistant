@@ -25,6 +25,10 @@ class OrdersPlugin extends AbstractPlugin
                 if (in_array(get_class($order), ['Orders\Entity\Orders', 'Orders\Entity\OrdersView'])) {
                     /* @var $order \Orders\Entity\Orders */
                     $result[$order->getId()] = $order->toArray();
+                    $result[$order->getId()]['dateCreation'] = $order->getDateCreationFormat('Y-m-d');
+                    $result[$order->getId()]['dateStart'] = $order->getDateStartFormat('Y-m-d');
+                    $result[$order->getId()]['dateEnd'] = $order->getDateEndFormat('Y-m-d');
+                    $result[$order->getId()]['dateDeadline'] = $order->getDateDeadlineFormat('Y-m-d');
                     if ($withDetails) {
                         $result[$order->getId()]['details'] = null;
                     }
