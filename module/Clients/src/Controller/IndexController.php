@@ -24,6 +24,14 @@ class IndexController extends MCmsController
 
         $task = $this->params()->fromRoute('task', null);
         $id   = $this->params()->fromRoute('id', null);
+        $onlyNames = false;
+        $task = str_replace(['only-names', 'onlynames'], '', strtolower($task), $countReplace);
+        if ($countReplace == 1) {
+            $onlyNames = true;
+            if (substr($task, -1) == '-') {
+                $task = substr($task, 0, -1);
+            }
+        }
 
         $data = [];
 
@@ -32,11 +40,11 @@ class IndexController extends MCmsController
                 if ($id === null) {
                     $error = "Error: id is not valid!";
                 } else {
-                    $data = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->find($id));
+                    $data = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->find($id), ['onlyNames' => $onlyNames]);
                 }
                 break;
             default:
-                $data = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']));
+                $data = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), ['onlyNames' => $onlyNames]);
                 break;
         }
 

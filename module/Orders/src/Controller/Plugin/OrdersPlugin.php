@@ -11,6 +11,7 @@ class OrdersPlugin extends AbstractPlugin
         if ($orders !== null) {
             $withDetails = isset($options['withDetails']) ? $options['withDetails'] : false;
             $allVersions = isset($options['allVersions']) ? $options['allVersions'] : false;
+            $saveIds = isset($options['clearIds']) ? $options['clearIds'] : false;
 
             /* @var $em \Doctrine\ORM\EntityManager */
             $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
@@ -46,7 +47,11 @@ class OrdersPlugin extends AbstractPlugin
                 }
             }
 
-            return array_values($result);
+            if ($saveIds) {
+                return $result;
+            } else {
+                return array_values($result);
+            }
         }
 
         return null;

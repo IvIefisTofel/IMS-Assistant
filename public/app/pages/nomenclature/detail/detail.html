@@ -67,6 +67,11 @@
                                             <ui-select-choices repeat="item in clients | filter: $select.search">
                                                 <span ng-bind-html="item.name | highlight: $select.search"></span>
                                             </ui-select-choices>
+                                            <ui-select-no-choice>
+                                                <div class="no-found">
+                                                    По этому запросу ничего не найдено.
+                                                </div>
+                                            </ui-select-no-choice>
                                         </ui-select>
                                     </div>
                                     <div class="col-md-4">

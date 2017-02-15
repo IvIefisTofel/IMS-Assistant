@@ -6474,3 +6474,16 @@ a.change-user {
 .modal-exlg { width: 1150px; }
 .calendar-btn-group { min-width: 200px; }
 .calendar-btn-group .btn.btn-default { background-color: #fff; }
+.ui-select-fixed { width:185px }
+  .ui-select-fixed .btn {
+    height: 29px;
+    background-color: #fff; }
+    .ui-select-fixed .btn:hover,
+    .editable-controls input:hover {
+      background-color: #fff;
+      border-color: #bebebe; }
+  .ui-select-fixed .btn-default-focus {
+    outline: none;
+    box-shadow: none;
+    background-color: transparent; }
+.editable-controls input:focus { border-color: #4db1a7; }

@@ -15,7 +15,7 @@
     $scope.propertyName = 'dateCreation';
     $scope.reverse = true;
 
-    $scope.actions =  [
+    $scope.actions = [
       {
         text: "Обновить",
         class: "btn-info",
@@ -23,6 +23,11 @@
         action: 'refreshData'
       }
     ];
+    var statuses = {
+      1: 'Заказ',
+      2: 'В работе',
+      3: 'Исполнено'
+    };
 
     function getCropDate(date) {
       if (date !== null && date instanceof Date) {
@@ -46,13 +51,128 @@
     };
 
     function noFilter(filterObj) {
-      return Object.
-      keys(filterObj).
-      every(function (key) { return !filterObj[key]; });
+      return Object.keys(filterObj).every(function (key) {
+        return !filterObj[key];
+      });
     }
 
     $scope.filterBy = function(item) {
       return $scope.filter[item.statusCode] || noFilter($scope.filter);
+    };
+
+    $scope.selected = {client: null};
+    $scope.clients = {obj: null, arr: null};
+    $scope.calendar = {
+      dateCreation: {options: {startingDay: 1}},
+      dateStart: {options: {startingDay: 1}},
+      dateEnd: {options: {startingDay: 1}},
+      dateDeadline: {options: {startingDay: 1}},
+      init: function () {
+        $scope.calendar.dateStart.options.minDate = $scope.listEdit.editable.dateCreation;
+        $scope.calendar.dateDeadline.options.minDate = $scope.listEdit.editable.dateCreation;
+        if ($scope.listEdit.editable.dateStart != null) {
+          $scope.calendar.dateEnd.options.minDate = $scope.listEdit.editable.dateStart;
+        } else {
+          $scope.calendar.dateEnd.options.minDate = $scope.calendar.dateStart.options.minDate;
+        }
+      },
+      checkDate: function (state, minDate) {
+        if (minDate != undefined && minDate != null) {
+          minDate = getCropDate(minDate);
+        } else {
+          minDate = null;
+        }
+        switch (state) {
+          case 'dateCreation':
+          case 1:
+            if (minDate !== null) {
+              if ($scope.listEdit.editable.dateStart !== null
+                  && minDate > getCropDate($scope.listEdit.editable.dateStart)) {
+                $scope.listEdit.editable.dateStart = null;
+              }
+              if ($scope.listEdit.editable.dateDeadline !== null
+                  && minDate > getCropDate($scope.listEdit.editable.dateDeadline)) {
+                $scope.listEdit.editable.dateDeadline = null;
+              }
+            }
+            $scope.calendar.dateStart.options.minDate = $scope.calendar.dateDeadline.options.minDate = minDate;
+          case 'dateStart':
+          case 2:
+            if (minDate !== null && $scope.listEdit.editable.dateEnd !== null
+                && minDate > getCropDate($scope.listEdit.editable.dateEnd)) {
+              $scope.listEdit.editable.dateEnd = null;
+            }
+            if ($scope.listEdit.editable.dateStart == null) {
+              $scope.calendar.dateEnd.options.minDate = $scope.listEdit.editable.dateCreation;
+            } else {
+              $scope.calendar.dateEnd.options.minDate = $scope.listEdit.editable.dateStart;
+            }
+        }
+      },
+      today: function (model) {
+        var now = getCropDate(Date.now());
+        if (model === $scope.calendar.dateCreation) {
+          $scope.listEdit.editable.dateCreation = now;
+          $scope.calendar.checkDate('dateCreation', now);
+        } else if (model === $scope.calendar.dateStart) {
+          $scope.listEdit.editable.dateStart = now;
+          $scope.calendar.checkDate('dateStart', now);
+        } else if (model === $scope.calendar.dateEnd) {
+          $scope.listEdit.editable.dateEnd = now;
+          $scope.calendar.checkDate('dateEnd', now);
+        } else if (model === $scope.calendar.dateDeadline) {
+          $scope.listEdit.editable.dateDeadline = now;
+        }
+      },
+      clear: function (model) {
+        if (model === $scope.calendar.dateStart) {
+          $scope.listEdit.editable.dateStart = null;
+          $scope.listEdit.editable.dateEnd = null;
+          $scope.calendar.checkDate('dateStart');
+        } else if (model === $scope.calendar.dateEnd) {
+          $scope.listEdit.editable.dateEnd = null;
+          $scope.calendar.checkDate('dateEnd');
+        } else if (model === $scope.calendar.dateDeadline) {
+          $scope.listEdit.editable.dateDeadline = null;
+        }
+      }
+    };
+    $scope.listEdit = {editable: {}};
+    var lastEditId = null;
+    $scope.editItem = function (item) {
+      if (lastEditId == null) {
+        lastEditId = item.id;
+      } else {
+        $scope.listEdit[lastEditId] = false;
+        lastEditId = item.id;
+      }
+      $scope.listEdit.editable = angular.copy(item);
+      $scope.calendar.init();
+      $scope.selected.client = angular.copy($scope.clients.obj[item.clientId]);
+      $scope.listEdit[item.id] = true;
+    };
+    $scope.saveItem = function (item) {
+      item.code = $scope.listEdit.editable.code;
+      item.clientId = $scope.selected.client.id;
+      item.clientName = $scope.selected.client.name;
+      item.dateCreation = $scope.listEdit.editable.dateCreation;
+      item.dateStart = $scope.listEdit.editable.dateStart;
+      item.dateEnd = $scope.listEdit.editable.dateEnd;
+      item.dateDeadline = $scope.listEdit.editable.dateDeadline;
+      if (item.dateEnd != null) {
+        item.statusCode = 3;
+        item.status = statuses[item.statusCode];
+      } else if (item.dateStart != null) {
+        item.statusCode = 2;
+        item.status = statuses[item.statusCode];
+      } else {
+        item.statusCode = 1;
+        item.status = statuses[item.statusCode];
+      }
+      $scope.listEdit[item.id] = false;
+    };
+    $scope.abortItem = function (item) {
+      $scope.listEdit[item.id] = false;
     };
 
     $scope.refreshData = function () {
@@ -64,135 +184,40 @@
       var $url = ($stateParams.id == null) ? "/api/orders" : "/api/orders/get-by-client/" + $stateParams.id;
       $http.post($url).then(function successCallback(response) {
         var data = response.data;
-          if (data.error) {
-            console.log(data);
-          } else {
-            $scope.list = data.data;
-            angular.forEach($scope.list, function (order, key) {
-                $scope.list[key]['dateCreation'] = (order.dateCreation) ? new Date(order.dateCreation) : null;
-                $scope.list[key]['dateStart'] = (order.dateStart) ? new Date(order.dateStart) : null;
-                $scope.list[key]['dateEnd'] = (order.dateEnd) ? new Date(order.dateEnd) : null;
-                $scope.list[key]['dateDeadline'] = (order.dateDeadline) ? new Date(order.dateDeadline) : null;
-            });
-            $scope.original = angular.copy($scope.list);
-            $scope.loading = false;
-            if (data.clientName != null) {
-              $scope.clientName = data.clientName;
-            }
+        if (data.error) {
+          console.log(data);
+        } else {
+          $scope.list = data.data;
+          angular.forEach($scope.list, function (order, key) {
+            $scope.list[key]['dateCreation'] = (order.dateCreation) ? new Date(order.dateCreation) : null;
+            $scope.list[key]['dateStart'] = (order.dateStart) ? new Date(order.dateStart) : null;
+            $scope.list[key]['dateEnd'] = (order.dateEnd) ? new Date(order.dateEnd) : null;
+            $scope.list[key]['dateDeadline'] = (order.dateDeadline) ? new Date(order.dateDeadline) : null;
+          });
+          $scope.listEdit = {
+            editable: {}
+          };
+          if (data.clientName != null) {
+            $scope.clientName = data.clientName;
           }
+          $scope.loading = false;
+        }
+      }, function errorCallback(response) {
+        console.log(response.statusText);
+      });
+      $http.post('api/clients/only-names').then(function successCallback(response) {
+        var data = response.data;
+        if (data.error) {
+          console.log(data);
+        } else {
+          $scope.clients.obj = data;
+          $scope.clients.arr = Object.values($scope.clients.obj);
+        }
       }, function errorCallback(response) {
         console.log(response.statusText);
       });
     };
 
     $scope.refreshData();
-    $scope.calendar = {
-        options: {startingDay: 1},
-        dateCreation: {
-            change: function () {
-                $scope.calendar.dateStart.options.minDate = $scope.calendar.dateCreation.date;
-                if ($scope.calendar.dateEnd.options.minDate == null) {
-                    $scope.calendar.dateEnd.options.minDate = $scope.calendar.dateCreation.date;
-                }
-                if ($scope.calendar.dateDeadline.options.minDate == null) {
-                    $scope.calendar.dateDeadline.options.minDate = $scope.calendar.dateCreation.date;
-                }
-                if ($scope.calendar.dateStart.date !== null
-                    && getCropDate($scope.calendar.dateCreation.date) > getCropDate($scope.calendar.dateStart.date)) {
-                    $scope.calendar.dateStart.date = null;
-                }
-            }
-        },
-        dateStart: {
-            change: function () {
-                $scope.calendar.dateEnd.options.minDate = $scope.calendar.dateStart.date;
-                if ($scope.calendar.dateDeadline.options.minDate == null) {
-                    $scope.calendar.dateDeadline.options.minDate = $scope.calendar.dateStart.date;
-                }
-                if ($scope.calendar.dateEnd.date !== null
-                    && getCropDate($scope.calendar.dateStart.date) > getCropDate($scope.calendar.dateEnd.date)) {
-                    $scope.calendar.dateEnd.date = null;
-                }
-            }
-        },
-        dateEnd: {
-            change: function () {
-                $scope.calendar.dateDeadline.options.minDate = $scope.calendar.dateEnd.date;
-                if ($scope.calendar.dateDeadline.date !== null
-                    && getCropDate($scope.calendar.dateEnd.date) > getCropDate($scope.calendar.dateDeadline.date)) {
-                    $scope.calendar.dateDeadline.date = null;
-                }
-            }
-        },
-        today: function (model) {
-            if (model === $scope.calendar.dateCreation) {
-                $scope.calendar.dateCreation.date = getCropDate(Date.now());
-                if ($scope.calendar.dateStart.date !== null
-                    && getCropDate($scope.calendar.dateCreation.date) > getCropDate($scope.calendar.dateStart.date)) {
-                    $scope.calendar.dateStart.date = getCropDate(Date.now());
-                }
-                if ($scope.calendar.dateEnd.date !== null
-                    && getCropDate($scope.calendar.dateCreation.date) > getCropDate($scope.calendar.dateEnd.date)) {
-                    $scope.calendar.dateEnd.date = getCropDate(Date.now());
-                }
-            } else if (model === $scope.calendar.dateStart) {
-                if ($scope.calendar.dateCreation.date !== null) {
-                    if (getCropDate($scope.calendar.dateCreation.date) <= getCropDate(Date.now())) {
-                        $scope.calendar.dateStart.date = getCropDate(Date.now());
-                    } else {
-                        $scope.calendar.dateStart.date = new Date($scope.calendar.dateCreation.date.valueOf());
-                        $scope.calendar.dateStart.date.setDate($scope.calendar.dateCreation.date.getDate() + 1);
-                    }
-
-                    if ($scope.calendar.dateEnd.date !== null
-                        && getCropDate($scope.calendar.dateStart.date) > getCropDate($scope.calendar.dateEnd.date)) {
-                        $scope.calendar.dateEnd.date = getCropDate(Date.now());
-                    }
-                }
-            } else if (model === $scope.calendar.dateEnd) {
-                if ($scope.calendar.dateStart.date !== null) {
-                    if (getCropDate($scope.calendar.dateStart.date) <= getCropDate(Date.now())) {
-                        $scope.calendar.dateEnd.date = getCropDate(Date.now());
-                    } else {
-                        $scope.calendar.dateEnd.date = new Date($scope.calendar.dateStart.date.valueOf());
-                        $scope.calendar.dateEnd.date.setDate($scope.calendar.dateStart.date.getDate() + 1);
-                    }
-                }
-            }
-        },
-        clear: function (model) {
-            if (model === $scope.calendar.dateCreation) {
-                $scope.calendar.dateCreation.date = null;
-                $scope.calendar.dateStart.date = null;
-                $scope.calendar.dateEnd.date = null;
-            } else if (model === $scope.calendar.dateStart) {
-                $scope.calendar.dateStart.date = null;
-                $scope.calendar.dateEnd.date = null;
-            } else {
-                model.date = null;
-            }
-        }
-  };
-    $scope.editItem = function(item){
-        item.edit = true;
-    };
-    $scope.saveItem = function(item){
-        item.edit = false;
-        for (var i = 0; i < $scope.list.length; i++) {
-            if ($scope.list[i].id == item.id) {
-                $scope.original[i] = angular.copy(item);
-                break;
-            }
-        }
-    };
-    $scope.abortItem = function(item){
-        item.edit = false;
-        for (var i = 0; i < $scope.original.length; i++) {
-            if ($scope.original[i].id == item.id) {
-                item = angular.copy($scope.original[i]);
-                break;
-            }
-        }
-    };
   }
 })();
