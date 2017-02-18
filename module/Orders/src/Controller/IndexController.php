@@ -36,7 +36,7 @@ class IndexController extends MCmsController
                     $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('\Orders\Entity\Orders')->find($id));
                 }
                 break;
-            case 'getByClient' || "get-by-client" || 'getbyclient':
+            case "get-by-client": case "getbyclient": case "getByClient":
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
@@ -44,6 +44,12 @@ class IndexController extends MCmsController
                     $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('Orders\Entity\OrdersView')->findByClientId($id));
                 }
                 break;
+            case "get-with-client": case "getwithclient": case "getWithClient":
+                if ($id === null)
+                    $error = "Error: id is not valid!";
+                else {
+                    $clientName = $this->entityManager->getRepository('\Clients\Entity\Clients')->findOneById($id)->getName();
+                }
             default:
                 $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('Orders\Entity\OrdersView')->findBy([], ['dateCreation' => 'DESC']));
                 break;

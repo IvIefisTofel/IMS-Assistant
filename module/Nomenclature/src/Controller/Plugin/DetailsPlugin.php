@@ -9,7 +9,9 @@ class DetailsPlugin extends AbstractPlugin
     public function toArray($details = null, $options = [])
     {
         if ($details !== null) {
+            $onlyNames = isset($options['onlyNames']) ? $options['onlyNames'] : false;
             $allVersions = isset($options['allVersions']) ? $options['allVersions'] : false;
+            $saveIds = isset($options['saveIds']) ? $options['saveIds'] : false;
 
             /* @var $em \Doctrine\ORM\EntityManager */
             $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
@@ -23,44 +25,59 @@ class DetailsPlugin extends AbstractPlugin
             foreach ($details as $key => $detail) {
                 if (get_class($detail) == 'Nomenclature\Entity\Details' || get_class($detail) == 'Nomenclature\Entity\DetailsView') {
                     /* @var $detail \Nomenclature\Entity\Details */
-                    $result[$detail->getId()] = $detail->toArray();
-                    $result[$detail->getId()]['dateCreation'] = $detail->getDateCreationFormat('Y-m-d');
-                    $result[$detail->getId()]['dateEnd'] = $detail->getDateEndFormat('Y-m-d');
-                    if ($detail->getPattern()) {
-                        $collections[$detail->getPattern()] = true;
-                    }
-                    if ($detail->getModel()) {
-                        $collections[$detail->getModel()] = true;
-                    }
-                    if ($detail->getProject()) {
-                        $collections[$detail->getProject()] = true;
+                    if ($onlyNames) {
+                        $result[$detail->getId()] = [
+                            'id' => $detail->getId(),
+                            'orderId' => $detail->getOrderId(),
+                            'name' => $detail->getName(),
+                            'code' => $detail->getCode(),
+                        ];
+                    } else {
+                        $result[$detail->getId()] = $detail->toArray();
+                        $result[$detail->getId()]['dateCreation'] = $detail->getDateCreationFormat('Y-m-d');
+                        $result[$detail->getId()]['dateEnd'] = $detail->getDateEndFormat('Y-m-d');
+                        if ($detail->getPattern()) {
+                            $collections[$detail->getPattern()] = true;
+                        }
+                        if ($detail->getModel()) {
+                            $collections[$detail->getModel()] = true;
+                        }
+                        if ($detail->getProject()) {
+                            $collections[$detail->getProject()] = true;
+                        }
                     }
                 } else {
                     throw new \Exception('Array elements must be Nomenclature\Entity\Details or Nomenclature\Entity\DetailsView class.');
                 }
             }
 
-            $collectionFiles = $this->controller->plugin('FilesPlugin')->getFiles(array_keys($collections), $allVersions);
+            if (!$onlyNames) {
+                $collectionFiles = $this->controller->plugin('FilesPlugin')->getFiles(array_keys($collections), $allVersions);
 
-            foreach ($result as $key => $detail) {
-                if ($detail['pattern'] && isset($collectionFiles[$detail['pattern']])) {
-                    $result[$key]['pattern'] = array_values($collectionFiles[$detail['pattern']]);
-                } else {
-                    $result[$key]['pattern'] = null;
-                }
-                if ($detail['model'] && isset($collectionFiles[$detail['model']])) {
-                    $result[$key]['model'] = array_values($collectionFiles[$detail['model']]);
-                } else {
-                    $result[$key]['model'] = null;
-                }
-                if ($detail['project'] && isset($collectionFiles[$detail['project']])) {
-                    $result[$key]['project'] = array_values($collectionFiles[$detail['project']]);
-                } else {
-                    $result[$key]['project'] = null;
+                foreach ($result as $key => $detail) {
+                    if ($detail['pattern'] && isset($collectionFiles[$detail['pattern']])) {
+                        $result[$key]['pattern'] = array_values($collectionFiles[$detail['pattern']]);
+                    } else {
+                        $result[$key]['pattern'] = null;
+                    }
+                    if ($detail['model'] && isset($collectionFiles[$detail['model']])) {
+                        $result[$key]['model'] = array_values($collectionFiles[$detail['model']]);
+                    } else {
+                        $result[$key]['model'] = null;
+                    }
+                    if ($detail['project'] && isset($collectionFiles[$detail['project']])) {
+                        $result[$key]['project'] = array_values($collectionFiles[$detail['project']]);
+                    } else {
+                        $result[$key]['project'] = null;
+                    }
                 }
             }
 
-            return array_values($result);
+            if ($saveIds) {
+                return $result;
+            } else {
+                return array_values($result);
+            }
         }
 
         return null;

@@ -4,8 +4,8 @@
       .controller('OrdersListCtrl', OrdersListCtrl);
 
   /** @ngInject */
-  function OrdersListCtrl($scope, $stateParams, $http) {
-    $scope.showClient = ($stateParams.id == null);
+  function OrdersListCtrl($scope, $stateParams, $http, $uibModal) {
+    $scope.search = {clientId: $stateParams.id};
     $scope.clientName = null;
     $scope.defList = [];
     $scope.list = [];
@@ -16,6 +16,12 @@
     $scope.reverse = true;
 
     $scope.actions = [
+      {
+        text: "Добавить",
+        class: "btn-success",
+        iconClass: "fa fa-user-plus",
+        action: 'addOrder'
+      },
       {
         text: "Обновить",
         class: "btn-info",
@@ -28,17 +34,6 @@
       2: 'В работе',
       3: 'Исполнено'
     };
-
-    function getCropDate(date) {
-      if (date !== null && date instanceof Date) {
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      } else if (date !== null && typeof(date) == 'number') {
-        date = new Date(date);
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      } else {
-        return null
-      }
-    }
 
     $scope.sortBy = function(propertyName) {
       if (propertyName.indexOf('date') != -1) {
@@ -60,8 +55,126 @@
       return $scope.filter[item.statusCode] || noFilter($scope.filter);
     };
 
-    $scope.selected = {client: null};
-    $scope.clients = {obj: null, arr: null};
+    $scope.selected = {
+      client: null,
+      change: {
+        client: null,
+        order: null,
+        detail: null
+      },
+      details: {
+        new: {},
+        showNew: false,
+        import: []
+      },
+      new: {
+        add: function(event) {
+          $scope.selected.details.showNew = false;
+          for (var i = 0; i < event.files.length; i++) {
+            var file = event.files[i], indStart, indEnd,
+                fName = (/[.]/.exec(file.name)) ? /[^.]+/.exec(file.name)[0] : undefined;
+            var first = true;
+            indStart = fName.indexOf('{');
+            indEnd = fName.indexOf('}');
+            if (indStart != -1 && indEnd != -1) {
+              fName = fName.substr(0, indStart) + fName.substr(indEnd + 1);
+              first = false;
+            }
+            indStart = fName.indexOf('(');
+            indEnd = fName.indexOf(')');
+            var code = '', name = '';
+            if (indStart != -1 && indEnd != -1) {
+              code = (fName.substr(0, indStart) + fName.substr(indEnd + 1)).replace(/(^\s*)|(\s*)$/g, '');
+              name = (fName.substr(indStart + 1, indEnd - indStart - 1)).replace(/(^\s*)|(\s*)$/g, '');
+            } else {
+              code = fName.replace(/(^\s*)|(\s*)$/g, '');
+              name = '';
+            }
+            if ($scope.selected.details.new[code] === undefined) {
+              $scope.selected.details.new[code] = {files: [], base64: []};
+            }
+            $scope.selected.details.new[code].name = name;
+            $scope.selected.details.new[code].code = code;
+            $scope.selected.details.new[code].files.push({first: first, file: file})
+          }
+          angular.forEach($scope.selected.details.new, function (detail, code) {
+            $scope.selected.details.showNew = true;
+            angular.forEach(detail.files, function(file, index){
+              var url, ext = (/[.]/.exec(file.file.name)) ? /[^.]+$/.exec(file.file.name)[0].toLowerCase() : undefined;
+              if (!isNull(file.file) && !isNull(ext)) {
+                url = URL.createObjectURL(file.file);
+                if (ext.substr(0, 3) == 'tif') {
+                  var xhr = new XMLHttpRequest();
+                  xhr.open('GET', url);
+                  xhr.responseType = 'arraybuffer';
+                  xhr.onload = function (e) {
+                    $scope.$apply(function() {
+                      var buffer = xhr.response;
+                      var tiff = new Tiff({buffer: buffer});
+                      var canvas = tiff.toCanvas();
+                      if (canvas) {
+                        var base64 = canvas.toDataURL('image/jpeg'),
+                            ind = $scope.selected.details.new[code].files.indexOf(file);
+                        if ($scope.selected.details.new[code].base64.indexOf(base64) == -1) {
+                          if ($scope.selected.details.new[code].files[ind].first) {
+                            $scope.selected.details.new[code].base64.unshift(base64);
+                          } else {
+                            $scope.selected.details.new[code].base64.push(base64);
+                          }
+                        }
+                        $scope.selected.details.new[code].files.splice(ind, 1);
+                      }
+                    });
+                  };
+                  xhr.send();
+                } else {
+                  toDataUrl(url, function (base64Img) {
+                    $scope.$apply(function(){
+                      var ind = $scope.selected.details.new[code].files.indexOf(file);
+                      if ($scope.selected.details.new[code].base64.indexOf(base64Img) == -1) {
+                        if ($scope.selected.details.new[code].files[ind].first) {
+                          $scope.selected.details.new[code].base64.unshift(base64Img);
+                        } else {
+                          $scope.selected.details.new[code].base64.push(base64Img);
+                        }
+                      }
+                      $scope.selected.details.new[code].files.splice(ind, 1);
+                    });
+                  }, 'image/jpeg');
+                }
+              }
+            });
+          });
+          $('#fromFile').val(null);
+        },
+        remove: function(code, key){
+          $scope.selected.details.new[code].base64.splice(key, 1);
+          if ($scope.selected.details.new[code].base64.length == 0) {
+            delete $scope.selected.details.new[code];
+            if (isNull($scope.selected.details.new)) {
+              $scope.selected.details.showNew = false;
+            }
+          }
+        }
+      },
+      import: {
+        add: function(){
+          if (!isNull($scope.selected.change.detail)) {
+            $scope.selected.details.import.push($scope.selected.change.detail);
+
+            var key = $scope.details.indexOf($scope.selected.change.detail);
+            $scope.selected.change.detail = null;
+            $scope.details.splice(key, 1);
+          }
+        },
+        remove: function(key){
+          $scope.details.push($scope.selected.details.import[key]);
+          $scope.selected.details.import.splice(key, 1);
+        }
+      }
+    };
+    $scope.clients = {};
+    $scope.details = [];
     $scope.calendar = {
       dateCreation: {options: {startingDay: 1}},
       dateStart: {options: {startingDay: 1}},
@@ -77,7 +190,7 @@
         }
       },
       checkDate: function (state, minDate) {
-        if (minDate != undefined && minDate != null) {
+        if (!isNull(minDate)) {
           minDate = getCropDate(minDate);
         } else {
           minDate = null;
@@ -102,7 +215,7 @@
                 && minDate > getCropDate($scope.listEdit.editable.dateEnd)) {
               $scope.listEdit.editable.dateEnd = null;
             }
-            if ($scope.listEdit.editable.dateStart == null) {
+            if (isNull($scope.listEdit.editable.dateStart)) {
               $scope.calendar.dateEnd.options.minDate = $scope.listEdit.editable.dateCreation;
             } else {
               $scope.calendar.dateEnd.options.minDate = $scope.listEdit.editable.dateStart;
@@ -140,7 +253,7 @@
     $scope.listEdit = {editable: {}};
     var lastEditId = null;
     $scope.editItem = function (item) {
-      if (lastEditId == null) {
+      if (isNull(lastEditId)) {
         lastEditId = item.id;
       } else {
         $scope.listEdit[lastEditId] = false;
@@ -148,7 +261,10 @@
       }
       $scope.listEdit.editable = angular.copy(item);
       $scope.calendar.init();
-      $scope.selected.client = angular.copy($scope.clients.obj[item.clientId]);
+      $scope.selected.client = {
+        key: item.clientId,
+        value: $scope.clients[item.clientId]
+      };
       $scope.listEdit[item.id] = true;
     };
     $scope.saveItem = function (item) {
@@ -159,10 +275,10 @@
       item.dateStart = $scope.listEdit.editable.dateStart;
       item.dateEnd = $scope.listEdit.editable.dateEnd;
       item.dateDeadline = $scope.listEdit.editable.dateDeadline;
-      if (item.dateEnd != null) {
+      if (!isNull(item.dateEnd)) {
         item.statusCode = 3;
         item.status = statuses[item.statusCode];
-      } else if (item.dateStart != null) {
+      } else if (!isNull(item.dateStart)) {
         item.statusCode = 2;
         item.status = statuses[item.statusCode];
       } else {
@@ -175,13 +291,55 @@
       $scope.listEdit[item.id] = false;
     };
 
+
+    var modalInstance = null;
+    $scope.modal = {
+      open: function () {
+        if (!isNull(lastEditId)) {
+          $scope.listEdit[lastEditId] = false;
+        }
+        $scope.listEdit.editable = {dateCreation: getCropDate(Date.now())};
+        $scope.calendar.init();
+        $scope.selected.client = null;
+        modalInstance = $uibModal.open({
+          animation: true,
+          templateUrl: 'app/pages/orders/modal/addOrder.html',
+          size: 'exlg',
+          backdrop: 'static',
+          scope: $scope
+        });
+      },
+      close: function () {
+        modalInstance.dismiss();
+        modalInstance = null;
+        $scope.details = angular.copy($scope.detailsOriginal);
+        $scope.selected.details.import = [];
+        $scope.selected.details.new = [];
+      },
+      clear: {
+        client: function(){
+          $scope.selected.new.client = null;
+        },
+        order: function(){
+          $scope.selected.new.order = null;
+        }
+      }
+    };
+    $scope.addOrder = function(){
+      $scope.modal.open();
+    };
+    $scope.getSrc = function(src){
+      return (typeof src == 'string') ? src : '';
+    };
+
     $scope.refreshData = function () {
       $scope.loading = true;
-      if ($stateParams.id == null) {
+      $scope.search.clientId = $stateParams.id;
+      if (isNull($stateParams.id)) {
         $scope.clientName = null;
       }
 
-      var $url = ($stateParams.id == null) ? "/api/orders" : "/api/orders/get-by-client/" + $stateParams.id;
+      var $url = (isNull($stateParams.id)) ? "/api/orders" : "/api/orders/get-with-client/" + $stateParams.id;
       $http.post($url).then(function successCallback(response) {
         var data = response.data;
         if (data.error) {
@@ -197,7 +355,7 @@
           $scope.listEdit = {
             editable: {}
           };
-          if (data.clientName != null) {
+          if (!isNull(data.clientName)) {
             $scope.clientName = data.clientName;
           }
           $scope.loading = false;
@@ -205,19 +363,29 @@
       }, function errorCallback(response) {
         console.log(response.statusText);
       });
-      $http.post('api/clients/only-names').then(function successCallback(response) {
-        var data = response.data;
-        if (data.error) {
-          console.log(data);
-        } else {
-          $scope.clients.obj = data;
-          $scope.clients.arr = Object.values($scope.clients.obj);
-        }
-      }, function errorCallback(response) {
-        console.log(response.statusText);
-      });
     };
 
+    $http.post('api/clients/only-names').then(function successCallback(response) {
+      var data = response.data;
+      if (data.error) {
+        console.log(data);
+      } else {
+        $scope.clients = data;
+      }
+    }, function errorCallback(response) {
+      console.log(response.statusText);
+    });
+    $http.post('/api/nomenclature/only-names').then(function successCallback(response) {
+      var data = response.data;
+      if (data.error) {
+        console.log(data);
+      } else {
+        $scope.details = data.data;
+        $scope.detailsOriginal = angular.copy($scope.details);
+      }
+    }, function errorCallback(response) {
+      console.log(response.statusText);
+    });
     $scope.refreshData();
   }
 })();

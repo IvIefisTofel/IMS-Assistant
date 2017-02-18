@@ -26,9 +26,9 @@
                         <div class="col-md-5" ng-show="edit" ng-class="edit ? 'animated fadeIn' : ''">
                             <div class="form-horizontal">
                                 <div class="form-group" ng-class="{ 'has-error': showErrors && (detail.name == null || detail.name == '') }">
-                                    <label for="usm_detail_name" class="col-md-3 control-label">Имя детали</label>
+                                    <label for="usm_detail_name" class="col-md-3 control-label">Наименование</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" placeholder="Имя детали"
+                                        <input type="text" class="form-control" placeholder="Наименование детали"
                                            id="usm_detail_name"
                                            name="usm_detail_name"
                                            ng-model="detail.name">
@@ -165,7 +165,7 @@
                         <div class="col-md-3" ng-hide="edit" ng-class="edit ? '' : 'animated fadeIn'">
                             <div class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-md-5 control-label">Имя детали</label>
+                                    <label class="col-md-5 control-label">Наименование</label>
                                     <div class="col-md-7">
                                         <p class="form-control-static">{{detail.name}}</p>
                                     </div>

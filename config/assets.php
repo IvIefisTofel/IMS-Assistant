@@ -105,6 +105,7 @@ return [
         "/app/theme/theme.configProvider.js",
         "/app/theme/theme.config.js",
         "/app/theme/theme.module.js",
+        "/app/publicFunctions.js",
         "/app/app.js",
 
 //        "http://maps.google.com/maps/api/js?sensor=false",

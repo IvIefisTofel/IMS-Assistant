@@ -33,12 +33,19 @@ class IndexController extends MCmsController
         }
 
         $data = [];
-        $order = null;
-        $clients = null;
+        $onlyNames = false;
         $tree = false;
-        if (strstr($task, "tree")) {
-            $task = substr($task, 0, -5);
-            $tree = true;
+        $task = str_replace(['only-names', 'onlynames'], '', strtolower($task), $countReplace);
+        if ($countReplace == 1) {
+            $onlyNames = true;
+            if (substr($task, -1) == '-') {
+                $task = substr($task, 0, -1);
+            }
+        } else {
+            if (strstr($task, "tree")) {
+                $task = substr($task, 0, -5);
+                $tree = true;
+            }
         }
 
         switch ($task) {
@@ -375,7 +382,7 @@ class IndexController extends MCmsController
                 $tree = false;
                 $data = null;
                 $opts = ['withOrders' => true, 'withFiles' => false];
-                $clients = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
+                $result['clients'] = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
             break;
             case "get-with-parents": case "getwithparents": case "getWithParents":
                 if ($id === null)
@@ -384,7 +391,7 @@ class IndexController extends MCmsController
                     $tree = false;
                     $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->find($id);
                     $opts = ['withOrders' => true, 'withFiles' => false];
-                    $clients = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
+                    $result['clients'] = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
                 }
                 break;
             case "get":
@@ -398,7 +405,7 @@ class IndexController extends MCmsController
                 if ($id === null)
                     $error = "Error: id is not valid!";
                 else {
-                    $order = $this->entityManager->getRepository('Orders\Entity\Orders')->find($id)->toArray();
+                    $result['order'] = $this->entityManager->getRepository('Orders\Entity\Orders')->find($id)->toArray();
                     $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findByOrderId($id, ['dateCreation' => 'DESC']);
                 }
                 break;
@@ -445,25 +452,21 @@ class IndexController extends MCmsController
                     $data[] = $item;
                 }
             }
-            $data = array_values($data);
+            $result['data'] = array_values($data);
         } else {
-            $data = $this->plugin('DetailsPlugin')->toArray($data, ['allVersions' => $allVersions]);
+            $result['data'] = $this->plugin('DetailsPlugin')->toArray($data, ['allVersions' => $allVersions, 'onlyNames' => $onlyNames]);
         }
 
-        $groups = $this->entityManager->getRepository('Nomenclature\Entity\Groups')->findAll();
-        foreach ($groups as $key => $group) {
-            $groups[$key] = $group->toArray()['group'];
+        if (!$onlyNames) {
+            $groups = $this->entityManager->getRepository('Nomenclature\Entity\Groups')->findAll();
+            foreach ($groups as $key => $group) {
+                $groups[$key] = $group->toArray()['group'];
+            }
+            $result['groups'] = $groups;
         }
 
         if ($error) {
             $result = ["error" => $error];
-        } else {
-            $result = [
-                "data" => $data,
-                "groups" => $groups,
-                "order" => $order,
-                'clients' => $clients,
-            ];
         }
         if ($dev) {
             var_dump($result);

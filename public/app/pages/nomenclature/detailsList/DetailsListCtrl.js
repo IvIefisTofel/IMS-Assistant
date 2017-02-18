@@ -68,7 +68,7 @@
             titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'name\')">{{expandingProperty.displayName || expandingProperty.field}}</button>' +
                 '<span class="sortorder" ng-show="propertyName === \'name\'" ng-class="{reverse: reverse}"></span>',
             firstStatus: true,
-            displayName: 'Имя детали'
+            displayName: 'Наименование детали'
         };
 
         var filesTemplate = function () {
@@ -148,10 +148,10 @@
         $scope.showGallery = false;
         $scope.galleries = [];
         $scope.openGallery = function (id, index) {
-            if (index == undefined) {
+            if (isNull(index)) {
                 index = 0;
             }
-            if ($scope.galleries[id] != undefined) {
+            if (!isNull($scope.galleries[id])) {
                 $rootScope.gallery.images = $scope.galleries[id];
                 $rootScope.gallery.methods.open(index);
             }
@@ -212,26 +212,26 @@
                     $scope.list = $filter('orderBy')(data.data, $scope.propertyName, $scope.reverse);
                     $scope.loading = false;
                     $scope.galleries = [];
-                    if (data.order != null) {
+                    if (!isNull(data.order)) {
                         $scope.galleries.main = [];
                         $scope.order = data.order;
                     }
                     angular.forEach($scope.list, function (detail, key) {
-                        if (detail['__children__'] == undefined) {
-                            if (detail.pattern != null && detail.pattern.length) {
+                        if (isNull(detail['__children__'])) {
+                            if (!isNull(detail.pattern)) {
                                 $scope.galleries[detail.id] = [];
-                                addGalleryItem(detail, data.order != null);
+                                addGalleryItem(detail, !isNull(data.order));
                             }
                         } else {
                             angular.forEach(detail['__children__'], function (detail, key) {
-                                if (detail.pattern != null && detail.pattern.length) {
+                                if (!isNull(detail.pattern)) {
                                     $scope.galleries[detail.id] = [];
-                                    addGalleryItem(detail, data.order != null);
+                                    addGalleryItem(detail, !isNull(data.order));
                                 }
                             });
                         }
                     });
-                    if (data.order != null && $scope.galleries.main.length) {
+                    if (!isNull(data.order) && $scope.galleries.main.length) {
                         $scope.actions = [$scope.actionVariants.openGallery, $scope.actionVariants.default[0], $scope.actionVariants.default[1]];
                     }
                 }

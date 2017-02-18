@@ -67,7 +67,7 @@
           $scope.client.files = item.additions
         }, 10);
 
-        if (item.description != null && item.description != "") {
+        if (!isNull(item.description)) {
           $scope.client.info = item.description;
         } else {
           $scope.client.info = "Нет информации.";
@@ -86,7 +86,7 @@
           $scope.list = data;
           $scope.loading = false;
           if ($scope.list.length > 0) {
-            if ($scope.current === null) {
+            if (isNull($scope.current)) {
               $scope.current = data[Object.keys(data)[0]].id;
             }
             $scope.showInfo($scope.current);

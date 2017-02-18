@@ -6487,3 +6487,32 @@ a.change-user {
     box-shadow: none;
     background-color: transparent; }
 .editable-controls input:focus { border-color: #4db1a7; }
+.alert-mt { margin: 20px 0 0; }
+.browser-icons .btn.btn-danger.btn-no-transform.btn-sm { margin: 0 -11px 3px -3px; }
+.little-collectoin.table > tbody > tr > td { vertical-align:middle; }
+.little-collectoin .image-collection {margin: 0 5px 0 0;}
+.little-collectoin .image-collection:nth-child(-n+3) { margin-top:12px; }
+.little-collectoin .image-collection .image-preview {
+  height: 50px;
+  min-width: 35px;
+  max-width: 90px;
+  border-width: 3px;
+  box-shadow: 0 0 7px rgba(0,0,0,0.5); }
+.little-collectoin tr>th.cell-patterns, .little-collectoin tr>td.cell-patterns { width: 255px }
+.little-collectoin .image-preview .btn-rm-col-item {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  font-size: 11px;
+  padding: 1px 4px;
+  display:none;
+  z-index: 2; }
+.little-collectoin .image-preview:hover .btn-rm-col-item { display:block; }
+.little-collectoin .image-preview > .image-mask {
+  opacity: 0.2;
+  z-index: 1; }
+.little-collectoin .image-preview:hover > .image-mask { opacity: 0; }
+.little-collectoin .image-preview:hover > img {
+  -webkit-filter: blur(0);
+  filter: blur(0); }
+.table tr:hover>td> .form-control { background-color: #fff; }

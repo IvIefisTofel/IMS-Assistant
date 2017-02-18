@@ -11,15 +11,15 @@
                         </h3>
                     </div>
                     <div class="col-md-6 col-lg-4 col-sm-12 col-xs-12">
-                        <input ng-model="search.$" type="text" name="criteria" class="form-control" placeholder="Поиск..."/>
+                        <input ng-model="search.$" type="text" class="form-control" placeholder="Поиск..."/>
                     </div>
                 </div>
             </div>
             <div class="panel-body">
-                <div ng-if="loading" class="no-data">
+                <div ng-show="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
-                <div ng-if="!loading && ((list | filter:filterBy) | filter:search) == 0" class="no-data">
+                <div ng-show="!loading && ((list | filter:filterBy) | filter:search) == 0" class="no-data">
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
@@ -28,7 +28,7 @@
                     <switch color="warning" ng-model="filter[2]">В работе</switch>
                     <switch color="success" ng-model="filter[3]">Исполнено</switch>
                 </div>
-                <table ng-if="!loading" class="table table-bordered table-hover table-text-center table-with-labels">
+                <table ng-show="!loading" class="table table-bordered table-hover table-text-center table-with-labels">
                     <thead>
                     <tr ng-if="((list | filter:filterBy) | filter:search) != 0" class="black-muted-bg">
                         <td class="first-fixed"></td>
@@ -36,7 +36,7 @@
                             <button class="btn btn-link" ng-click="sortBy('code')">Шифр</button>
                             <span class="sortorder" ng-show="propertyName === 'code'" ng-class="{reverse: reverse}"></span>
                         </td>
-                        <td ng-if="showClient">
+                        <td ng-if="clientName != null">
                             <button class="btn btn-link" ng-click="sortBy('clientName')">Клиент</button>
                             <span class="sortorder" ng-show="propertyName === 'clientName'" ng-class="{reverse: reverse}"></span>
                         </td>
@@ -67,17 +67,16 @@
                         <td>
                             <span ng-hide="listEdit[item.id]">{{item.code}}</span>
                             <span ng-show="listEdit[item.id]" class="editable-wrap"><div class="editable-controls form-group">
-                                <input type="text" name="name" required="required" class="form-control" ng-model="listEdit.editable.code">
+                                <input type="text" class="form-control" ng-model="listEdit.editable.code" placeholder="Шифр заказа">
                             </div></span>
                         </td>
-                        <td ng-if="showClient">
+                        <td ng-if="clientName != null">
                             <span ng-hide="listEdit[item.id]">{{item.clientName}}</span>
                             <span ng-show="listEdit[item.id]" class="form-horizontal editable-wrap"><div class="editable-controls form-group ui-select-fixed">
-                                <!--<input type="text" name="name" required="required" class="form-control" ng-model="listEdit.editable.clientName">-->
                                 <ui-select ng-model="selected.client">
-                                    <ui-select-match placeholder="Клиент...">{{$select.selected.name}}</ui-select-match>
-                                    <ui-select-choices repeat="item in clients.arr | filter: $select.search">
-                                        <span ng-bind-html="item.name | highlight: $select.search"></span>
+                                    <ui-select-match placeholder="Клиент...">{{$select.selected.value.name}}</ui-select-match>
+                                    <ui-select-choices repeat="client.value as (key, client) in clients | filter: {value:{name:$select.search}}">
+                                        <span ng-bind-html="client.value.name | highlight: $select.search"></span>
                                     </ui-select-choices>
                                     <ui-select-no-choice>
                                         <div class="no-found">

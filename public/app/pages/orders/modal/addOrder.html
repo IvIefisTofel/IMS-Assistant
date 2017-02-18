@@ -1,0 +1,260 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="modal.close()" aria-label="Close">
+            <em class="ion-ios-close-empty sn-link-close"></em>
+        </button>
+        <h4 class="modal-title" id="pattern-modal-label">Добавить заказ</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-horizontal alert alert-default">
+                    <div class="form-group">
+                        <label for="code" class="col-md-4 control-label">Шифр заказа</label>
+                        <div class="col-md-8">
+                            <input id="code" type="text" class="form-control" ng-model="listEdit.editable.code" placeholder="Шифр заказа">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Клиент</label>
+                        <div class="col-md-8">
+                            <ui-select ng-model="selected.client">
+                                <ui-select-match placeholder="Клиент...">{{$select.selected.value.name}}</ui-select-match>
+                                <ui-select-choices repeat="client.value as (key, client) in clients | filter: {value:{name:$select.search}}">
+                                    <span ng-bind-html="client.value.name | highlight: $select.search"></span>
+                                </ui-select-choices>
+                                <ui-select-no-choice>
+                                    <div class="no-found">
+                                        По этому запросу ничего не найдено.
+                                    </div>
+                                </ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateCreation" class="col-md-4 control-label">Дата создания</label>
+                        <div class="col-md-8">
+                            <div class="btn-group btn-block btn-no-transform">
+                                <button id="dateCreation" type="button" class="btn btn-default col-md-10" ng-click="calendar.dateCreation[item.id].opened = true"
+                                        uib-datepicker-popup="dd MMMM yyyy г." ng-model="listEdit.editable.dateCreation"
+                                        is-open="calendar.dateCreation[item.id].opened" datepicker-options="calendar.dateCreation.options"
+                                        show-button-bar="false"
+                                        ng-change="calendar.checkDate(1, listEdit.editable.dateCreation)">
+                                    {{listEdit.editable.dateCreation != null ? (listEdit.editable.dateCreation | date:"dd.MM.yyyy") : '---'}}
+                                </button>
+                                <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateCreation, item)"
+                                        ng-mouseenter="calendar.dateCreation.tooltips.today = true"
+                                        ng-mouseleave="calendar.dateCreation.tooltips.today = false">
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                       tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.today" uib-tooltip="Сегодня"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateStart" class="col-md-4 control-label">Дата начала</label>
+                        <div class="col-md-8">
+                            <div class="btn-group btn-block btn-no-transform">
+                                <button id="dateStart" type="button" class="btn btn-default col-md-8" ng-click="calendar.dateStart[item.id].opened = true"
+                                        uib-datepicker-popup="dd MMMM yyyy г." ng-model="listEdit.editable.dateStart"
+                                        is-open="calendar.dateStart[item.id].opened" datepicker-options="calendar.dateStart.options"
+                                        show-button-bar="false"
+                                        ng-change="calendar.checkDate(2, listEdit.editable.dateStart)">
+                                    {{listEdit.editable.dateStart != null ? (listEdit.editable.dateStart | date:"dd.MM.yyyy") : '---'}}
+                                </button>
+                                <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateStart)"
+                                        ng-mouseenter="calendar.dateStart.tooltips.today = true"
+                                        ng-mouseleave="calendar.dateStart.tooltips.today = false">
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                       tooltip-animation="false" tooltip-is-open="calendar.dateStart.tooltips.today" uib-tooltip="Сегодня"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateStart)"
+                                        ng-mouseenter="calendar.dateStart.tooltips.clear = true"
+                                        ng-mouseleave="calendar.dateStart.tooltips.clear = false">
+                                    <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom-right"
+                                       tooltip-animation="false" tooltip-is-open="calendar.dateStart.tooltips.clear" uib-tooltip="Очистить"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateEnd" class="col-md-4 control-label">Дата исполнения</label>
+                        <div class="col-md-8">
+                            <div class="btn-group btn-block btn-no-transform">
+                                <button id="dateEnd" type="button" class="btn btn-default col-md-8" ng-click="calendar.dateEnd[item.id].opened = true"
+                                        uib-datepicker-popup="dd MMMM yyyy г." ng-model="listEdit.editable.dateEnd"
+                                        is-open="calendar.dateEnd[item.id].opened" datepicker-options="calendar.dateEnd.options"
+                                        show-button-bar="false" ng-disabled="listEdit.editable.dateStart == null"
+                                        ng-change="calendar.checkDate(3, listEdit.editable.dateEnd)">
+                                    {{listEdit.editable.dateEnd != null ? (listEdit.editable.dateEnd | date:"dd.MM.yyyy") : '---'}}
+                                </button>
+                                <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateEnd)"
+                                        ng-mouseenter="calendar.dateEnd.tooltips.today = true"
+                                        ng-mouseleave="calendar.dateEnd.tooltips.today = false"
+                                        ng-disabled="listEdit.editable.dateStart == null">
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                       tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.today" uib-tooltip="Сегодня"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateEnd)"
+                                        ng-mouseenter="calendar.dateEnd.tooltips.clear = true"
+                                        ng-mouseleave="calendar.dateEnd.tooltips.clear = false"
+                                        ng-disabled="listEdit.editable.dateStart == null">
+                                    <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom-right"
+                                       tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.clear" uib-tooltip="Очистить"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateDeadline" class="col-md-4 control-label">Срок исполнения</label>
+                        <div class="col-md-8">
+                            <div class="btn-group btn-block btn-no-transform">
+                                <button id="dateDeadline" type="button" class="btn btn-default col-md-8" ng-click="calendar.dateDeadline[item.id].opened = true"
+                                        uib-datepicker-popup="dd MMMM yyyy г." ng-model="listEdit.editable.dateDeadline"
+                                        is-open="calendar.dateDeadline[item.id].opened" datepicker-options="calendar.dateDeadline.options"
+                                        show-button-bar="false"
+                                        ng-change="calendar.checkDate(4, listEdit.editable.dateDeadline)">
+                                    {{listEdit.editable.dateDeadline != null ? (listEdit.editable.dateDeadline | date:"dd.MM.yyyy") : '---'}}
+                                </button>
+                                <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateDeadline)"
+                                        ng-mouseenter="calendar.dateDeadline.tooltips.today = true"
+                                        ng-mouseleave="calendar.dateDeadline.tooltips.today = false">
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                       tooltip-animation="false" tooltip-is-open="calendar.dateDeadline.tooltips.today" uib-tooltip="Сегодня"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateDeadline)"
+                                        ng-mouseenter="calendar.dateDeadline.tooltips.clear = true"
+                                        ng-mouseleave="calendar.dateDeadline.tooltips.clear = false">
+                                    <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom-right"
+                                       tooltip-animation="false" tooltip-is-open="calendar.dateDeadline.tooltips.clear" uib-tooltip="Очистить"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-default">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4>Добавить детали</h4>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="btn btn-primary btn-xs btn-file pull-right">
+                                        <i class="fa fa-plus"></i> Из файла
+                                        <input type="file" id="fromFile" multiple="multiple" onchange="angular.element(this).scope().selected.new.add(this)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                        <ui-select ng-model="selected.change.client">
+                                            <ui-select-match allow-clear placeholder="Клиент...">{{$select.selected.value.name}}</ui-select-match>
+                                            <ui-select-choices repeat="client.value as (key, client) in clients | filter: {value:{name:$select.search}} | orderBy:'value.name'">
+                                                <span ng-bind-html="client.value.name | highlight: $select.search"></span>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>
+                                                <div class="no-found">
+                                                    По этому запросу ничего не найдено.
+                                                </div>
+                                            </ui-select-no-choice>
+                                        </ui-select>
+                            </div>
+                                <div class="col-md-4">
+                                    <ui-select ng-model="selected.change.order">
+                                        <ui-select-match allow-clear placeholder="Заказ...">{{$select.selected.code}}</ui-select-match>
+                                        <ui-select-choices repeat="order in list | filter: {clientId:selected.change.client.id} | orderBy:'dateCreation':true">
+                                            <div ng-bind-html="order.code | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>
+                                            <div class="no-found">
+                                                По этому запросу ничего не найдено.
+                                            </div>
+                                        </ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                                <div class="col-md-4">
+                                    <ui-select ng-model="selected.change.detail">
+                                        <ui-select-match placeholder="Деталь...">{{$select.selected.code}} ({{$select.selected.name}})</ui-select-match>
+                                        <ui-select-choices repeat="detail in details | filter: {orderId:selected.change.order.id} | orderBy:'code'">
+                                            <div ng-bind-html="(detail.code + ' (' + detail.name + ')') | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>
+                                            <div class="no-found">
+                                                По этому запросу ничего не найдено.
+                                            </div>
+                                        </ui-select-no-choice>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-primary btn-icon pull-right" ng-click="selected.import.add()">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row" ng-show="selected.details.import.length">
+                                <div class="col-md-12">
+                                    <div class="alert alert-default alert-mt">
+                                        <table class="table table-hover table-bordered table-text-center">
+                                            <thead>
+                                            <tr class="black-muted-bg">
+                                                <th>Наименование детали</th>
+                                                <th>Шифр детали</th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat="(key, detail) in selected.details.import">
+                                                <td>{{detail.name}}</td>
+                                                <td>{{detail.code}}</td>
+                                                <td class="browser-icons">
+                                                    <button type="button" class="btn btn-danger btn-no-transform btn-sm" ng-click="selected.import.remove(key)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" ng-show="selected.details.showNew == true">
+                                <div class="col-md-12">
+                                    <div class="alert alert-default alert-mt">
+                                        <table class="table table-hover table-bordered table-text-center little-collectoin">
+                                            <thead>
+                                            <tr class="black-muted-bg">
+                                                <th>Чертежи</th>
+                                                <th>Шифр детали</th>
+                                                <th>Наименование детали</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat="(code, detail) in selected.details.new">
+                                                <td class="cell-patterns">
+                                                    <div ng-repeat="(key, base64) in detail.base64" class="image-collection">
+                                                        <div class="image-preview">
+                                                            <div class="image-mask"></div>
+                                                            <button type="button" class="btn btn-danger btn-no-transform btn-rm-col-item"
+                                                                ng-click="selected.new.remove(code, key)"><i class="fa fa-times"></i>
+                                                            </button>
+                                                            <img ng-src="{{base64}}">
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="ng-binding"><input type="text" class="form-control" ng-model="detail.code"></td>
+                                                <td class="ng-binding"><input type="text" class="form-control" ng-model="detail.name"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

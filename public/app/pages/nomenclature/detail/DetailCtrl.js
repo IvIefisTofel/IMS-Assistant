@@ -20,37 +20,6 @@
       }
     }
 
-    function isImageFile(file) {
-      if (file.type) {
-        return /^image\/\w+$/.test(file.type);
-      } else {
-        return /\.(jpg|jpeg|png|gif)$/.test(file);
-      }
-    }
-
-    function isEmpty(obj) {
-      if (obj == null) return true;
-      if (obj.length > 0)    return false;
-      if (obj.length === 0)  return true;
-      if (typeof obj !== "object") return true;
-      for (var key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) return false;
-      }
-
-      return true;
-    }
-
-    function getCropDate(date) {
-      if (date !== null && date instanceof Date) {
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      } else if (date !== null && typeof(date) == 'number') {
-        date = new Date(date);
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      } else {
-        return null
-      }
-    }
-
     function clearValues() {
       $scope.new.patterns = [];
       $scope.galleries.new = [];
@@ -137,10 +106,10 @@
       new: []
     };
     $scope.openGallery = function (id, index) {
-      if (index == undefined) {
+      if (isNull(index)) {
         index = 0;
       }
-      if ($scope.galleries[id] != undefined) {
+      if (!isNull($scope.galleries[id])) {
         $rootScope.gallery.images = $scope.galleries[id];
         $rootScope.gallery.methods.open(index);
       }
@@ -190,7 +159,7 @@
         pattern: function (event) {
           var file = event.files[0], url, img,
               ext = (/[.]/.exec(file.name)) ? /[^.]+$/.exec(file.name)[0].toLowerCase() : undefined;
-          if (file != undefined && ext != undefined) {
+          if (!isNull(file) && !isNull(ext)) {
             url = URL.createObjectURL(file);
             if (ext.substr(0, 3) == 'tif') {
               $('.pattern-wrapper').html('<div id="pattern-loading"><i class="fa fa-spinner fa-spin fa-5x" ></i></div>');
@@ -210,7 +179,7 @@
                   canvas.id = 'image-original-data';
                   $('.pattern-wrapper').html('').append(canvas);
 
-                  if (cropper != undefined) {
+                  if (!isNull(cropper)) {
                     cropper.cropper('destroy');
                   }
                   cropper = $('.pattern-wrapper canvas').cropper({
@@ -231,7 +200,7 @@
               img.onload = function () {
                 $('#pattern-loading').remove();
                 if (isImageFile(file)) {
-                  if (cropper != undefined) {
+                  if (!isNull(cropper)) {
                     cropper.cropper('destroy');
                   }
                   cropper = $('.pattern-wrapper img').cropper({
@@ -293,7 +262,7 @@
     };
     $scope.delNewImage = function (key) {
       var img = $scope.new.patterns[key];
-      if (img.id == null) {
+      if (isNull(img.id)) {
         $scope.new.add.patterns.splice(img.arrId, 1);
       } else {
         delete $scope.new.update.patterns[img.id];
@@ -451,7 +420,7 @@
       close: function () {
         $('.pattern-wrapper').html('');
         $('#patternInput').val(null);
-        if (cropper != undefined) {
+        if (!isNull(cropper)) {
           cropper.cropper('destroy');
         }
         currImgId = null;
@@ -466,10 +435,10 @@
       aspect: {
         hA4: function () {
           var data = {};
-          if (imgDef.width != undefined && imgDef.height != undefined) {
+          if (!isNull(imgDef.width) && !isNull(imgDef.height)) {
             data = {x: 0, y: 0, width: imgDef.width, height: imgDef.height};
           }
-          if (cropper != undefined) {
+          if (!isNull(cropper)) {
             cropper.cropper('destroy');
           }
           cropper = $('.pattern-wrapper #image-original-data').cropper({
@@ -480,10 +449,10 @@
         },
         vA4: function () {
           var data = {};
-          if (imgDef.width != undefined && imgDef.height != undefined) {
+          if (!isNull(imgDef.width) && !isNull(imgDef.height)) {
             data = {x: 0, y: 0, width: imgDef.width, height: imgDef.height};
           }
-          if (cropper != undefined) {
+          if (!isNull(cropper)) {
             cropper.cropper('destroy');
           }
           cropper = $('.pattern-wrapper #image-original-data').cropper({
@@ -494,10 +463,10 @@
         },
         free: function () {
           var data = {};
-          if (imgDef.width != undefined && imgDef.height != undefined) {
+          if (!isNull(imgDef.width) && !isNull(imgDef.height)) {
             data = {x: 0, y: 0, width: imgDef.width, height: imgDef.height};
           }
-          if (cropper != undefined) {
+          if (!isNull(cropper)) {
             cropper.cropper('destroy');
           }
           cropper = $('.pattern-wrapper #image-original-data').cropper({
@@ -509,13 +478,13 @@
       },
       rotate: {
         p90: function () {
-          if (cropper != undefined) cropper.cropper('rotate', 90);
+          if (!isNull(cropper)) cropper.cropper('rotate', 90);
         },
         m90: function () {
-          if (cropper != undefined) cropper.cropper('rotate', -90);
+          if (!isNull(cropper)) cropper.cropper('rotate', -90);
         },
         mirror: function () {
-          if (cropper != undefined) cropper.cropper('scaleX', cropper.cropper('getData')['scaleX'] * -1);
+          if (!isNull(cropper)) cropper.cropper('scaleX', cropper.cropper('getData')['scaleX'] * -1);
         }
       },
       update: function (imgId) {
@@ -523,12 +492,12 @@
           delete $scope.new.update.patterns[imgId];
           $scope.new.updPatterns();
         } else {
-          currImgId = (imgId != undefined) ? imgId : null;
+          currImgId = (!isNull(imgId)) ? imgId : null;
           $scope.modal();
         }
       },
       save: function () {
-        if (cropper != undefined) {
+        if (!isNull(cropper)) {
           var dataURL = cropper.cropper('getCroppedCanvas').toDataURL('image/jpeg');
           if (currImgId !== null) {
             $scope.new.update.patterns[currImgId] = {
@@ -558,10 +527,10 @@
 
     $scope.saveData = function () {
       if (!$scope.edited) {
-        if ($scope.detail.name == null && $scope.detail.name == undefined ||
-            $scope.detail.code == null && $scope.detail.code == undefined ||
-            $scope.selected.order.id == null || $scope.selected.order.id == undefined || $scope.selected.order == undefined ||
-            $scope.calendar.dateCreation.date == null) {
+        if (isNull($scope.detail.name) ||
+            isNull($scope.detail.code) ||
+            isNull($scope.selected.order.id) || isNull($scope.selected.order) ||
+            isNull($scope.calendar.dateCreation.date)) {
           $scope.showErrors = true;
         } else {
           $scope.edit = false;
@@ -579,7 +548,7 @@
         send.append('code', $scope.detail.code);
         send.append('name', $scope.detail.name);
         send.append('dateCreation', $filter('date')($scope.calendar.dateCreation.date, "dd.MM.yyyy"));
-        if ($scope.calendar.dateEnd.date != null) {
+        if (!isNull($scope.calendar.dateEnd.date)) {
           send.append('dateEnd', $filter('date')($scope.calendar.dateEnd.date, "dd.MM.yyyy"));
         }
         // New
@@ -610,7 +579,7 @@
           if (response.data.error) {
             console.log(response.data.message);
           } else {
-            if (response.data.id != undefined && response.data.id == $stateParams.id) {
+            if (!isNull(response.data.id) && response.data.id == $stateParams.id) {
               $scope.actions = $scope.actionVariants.view;
               $scope.refreshData();
             } else {
@@ -622,7 +591,7 @@
     };
 
     $scope.refreshData = function () {
-      if ($stateParams.id == null) {
+      if (isNull($stateParams.id)) {
         $window.history.back();
       }
       $scope.loading = true;
