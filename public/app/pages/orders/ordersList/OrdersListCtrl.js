@@ -4,7 +4,7 @@
       .controller('OrdersListCtrl', OrdersListCtrl);
 
   /** @ngInject */
-  function OrdersListCtrl($scope, $stateParams, $http, $uibModal) {
+  function OrdersListCtrl($scope, $stateParams, $http, $uibModal, $filter) {
     $scope.search = {clientId: $stateParams.id};
     $scope.clientName = null;
     $scope.defList = [];
@@ -12,8 +12,8 @@
     $scope.loading = true;
 
     $scope.filter = {1:true, 2:true, 3:false};
-    $scope.propertyName = 'dateCreation';
-    $scope.reverse = true;
+    $scope.propertyName = 'code';
+    $scope.reverse = false;
 
     $scope.actions = [
       {
@@ -91,18 +91,21 @@
               name = '';
             }
             if ($scope.selected.details.new[code] === undefined) {
-              $scope.selected.details.new[code] = {files: [], base64: []};
+              $scope.selected.details.new[code] = {files: []};
             }
             $scope.selected.details.new[code].name = name;
             $scope.selected.details.new[code].code = code;
-            $scope.selected.details.new[code].files.push({first: first, file: file})
+            if (first) {
+              $scope.selected.details.new[code].files.unshift({data: file});
+            } else {
+              $scope.selected.details.new[code].files.push({data: file});
+            }
           }
           angular.forEach($scope.selected.details.new, function (detail, code) {
-            $scope.selected.details.showNew = true;
             angular.forEach(detail.files, function(file, index){
-              var url, ext = (/[.]/.exec(file.file.name)) ? /[^.]+$/.exec(file.file.name)[0].toLowerCase() : undefined;
-              if (!isNull(file.file) && !isNull(ext)) {
-                url = URL.createObjectURL(file.file);
+              var url, ext = (/[.]/.exec(file.data.name)) ? /[^.]+$/.exec(file.data.name)[0].toLowerCase() : undefined;
+              if (!isNull(file.data) && !isNull(ext)) {
+                url = URL.createObjectURL(file.data);
                 if (ext.substr(0, 3) == 'tif') {
                   var xhr = new XMLHttpRequest();
                   xhr.open('GET', url);
@@ -115,44 +118,38 @@
                       if (canvas) {
                         var base64 = canvas.toDataURL('image/jpeg'),
                             ind = $scope.selected.details.new[code].files.indexOf(file);
-                        if ($scope.selected.details.new[code].base64.indexOf(base64) == -1) {
-                          if ($scope.selected.details.new[code].files[ind].first) {
-                            $scope.selected.details.new[code].base64.unshift(base64);
-                          } else {
-                            $scope.selected.details.new[code].base64.push(base64);
-                          }
+                        if (ind != -1 && isNull($scope.selected.details.new[code].files[ind].url)) {
+                          $scope.selected.details.new[code].files[ind].url = base64;
                         }
-                        $scope.selected.details.new[code].files.splice(ind, 1);
                       }
                     });
                   };
                   xhr.send();
                 } else {
-                  toDataUrl(url, function (base64Img) {
-                    $scope.$apply(function(){
-                      var ind = $scope.selected.details.new[code].files.indexOf(file);
-                      if ($scope.selected.details.new[code].base64.indexOf(base64Img) == -1) {
-                        if ($scope.selected.details.new[code].files[ind].first) {
-                          $scope.selected.details.new[code].base64.unshift(base64Img);
-                        } else {
-                          $scope.selected.details.new[code].base64.push(base64Img);
-                        }
-                      }
-                      $scope.selected.details.new[code].files.splice(ind, 1);
-                    });
-                  }, 'image/jpeg');
+                  $scope.$apply(function(){
+                    var ind = $scope.selected.details.new[code].files.indexOf(file);
+                    if (ind != -1 && isNull($scope.selected.details.new[code].files[ind].url)) {
+                      $scope.selected.details.new[code].files[ind].url = url;
+                    }
+                  });
                 }
               }
             });
           });
+          $scope.$apply(function(){
+            if (Object.keys($scope.selected.details.new).length) {
+              $scope.selected.details.showNew = true;
+            }
+          });
           $('#fromFile').val(null);
         },
         remove: function(code, key){
-          $scope.selected.details.new[code].base64.splice(key, 1);
-          if ($scope.selected.details.new[code].base64.length == 0) {
+          $scope.selected.details.new[code].files.splice(key, 1);
+          if ($scope.selected.details.new[code].files.length == 0) {
             delete $scope.selected.details.new[code];
             if (isNull($scope.selected.details.new)) {
               $scope.selected.details.showNew = false;
+              $scope.selected.details.new = {};
             }
           }
         }
@@ -160,6 +157,8 @@
       import: {
         add: function(){
           if (!isNull($scope.selected.change.detail)) {
+            $scope.selected.change.detail.viewCode = $scope.selected.change.detail.code;
+            $scope.selected.change.detail.viewName = $scope.selected.change.detail.name;
             $scope.selected.details.import.push($scope.selected.change.detail);
 
             var key = $scope.details.indexOf($scope.selected.change.detail);
@@ -168,8 +167,71 @@
           }
         },
         remove: function(key){
+          delete $scope.selected.details.import[key].viewCode;
+          delete $scope.selected.details.import[key].viewName;
           $scope.details.push($scope.selected.details.import[key]);
           $scope.selected.details.import.splice(key, 1);
+        }
+      },
+      save: function() {
+        if (isNull($scope.listEdit.editable.code) || isNull($scope.selected.client)) {
+          $scope.showErrors = true;
+        } else {
+          var send = new FormData();
+          send.append('order[code]', $scope.listEdit.editable.code);
+          if ($scope.selected.client != null) {
+            send.append('order[clientId]', $scope.selected.client.id);
+          }
+          send.append('order[dateCreation]', $filter('date')($scope.listEdit.editable.dateCreation, "dd.MM.yyyy"));
+          if (!isNull($scope.listEdit.editable.dateStart)) {
+            send.append('order[dateStart]', $filter('date')($scope.listEdit.editable.dateStart, "dd.MM.yyyy"));
+          }
+          if (!isNull($scope.listEdit.editable.dateEnd)) {
+            send.append('order[dateEnd]', $filter('date')($scope.listEdit.editable.dateEnd, "dd.MM.yyyy"));
+          }
+          if (!isNull($scope.listEdit.editable.dateDeadline)) {
+            send.append('order[dateDeadline]', $filter('date')($scope.listEdit.editable.dateDeadline, "dd.MM.yyyy"));
+          }
+
+          angular.forEach($scope.selected.details.import, function(detail, key){
+            send.append('details[import][' + detail.id + '][code]', detail.viewCode);
+            send.append('details[import][' + detail.id + '][name]', detail.viewName);
+          });
+          angular.forEach($scope.selected.details.new, function(detail, code){
+            send.append('details[new][' + code + '][name]', detail.name);
+            if (detail.files[0].url.substr(0,22) == 'data:image/jpeg;base64') {
+              send.append('details[new][' + code + '][base64][first]', detail.files[0].url);
+            } else {
+              send.append('files[' + code + '][first]', detail.files[0].data);
+            }
+            for (var i = 1; i < detail.files.length; i++) {
+              if (detail.files[i].url.substr(0,22) == 'data:image/jpeg;base64') {
+                send.append('details[new][' + code + '][base64][' + i + ']', detail.files[i].url);
+              } else {
+                send.append('files[' + code + '][' + i + ']', detail.files[i].data);
+              }
+            }
+          });
+
+          $http.post("/api/orders/add", send, {
+            transformRequest: angular.identity,
+            headers: {'Content-Type': undefined}
+          }).then(function successCallback(response) {
+            if (response.data.error) {
+              console.log(response.data.message);
+            } else {
+              var data = response.data.data;
+              data.dateCreation = !isNull(data.dateCreation) ? new Date(data.dateCreation) : null;
+              data.dateStart = !isNull(data.dateStart) ? new Date(datadata.dateStart) : null;
+              data.dateEnd = !isNull(data.dateEnd) ? new Date(data.dateEnd) : null;
+              data.dateDeadline = !isNull(data.dateDeadline) ? new Date(data.dateDeadline) : null;
+              data.clientName = $scope.clients[data.clientId].name;
+              $scope.list.push(data);
+              modalInstance.dismiss();
+              modalInstance = null;
+              $scope.refreshAddData();
+            }
+          });
         }
       }
     };
@@ -261,36 +323,56 @@
       }
       $scope.listEdit.editable = angular.copy(item);
       $scope.calendar.init();
-      $scope.selected.client = {
-        key: item.clientId,
-        value: $scope.clients[item.clientId]
-      };
+      $scope.selected.client = $scope.clients[item.clientId];
       $scope.listEdit[item.id] = true;
     };
     $scope.saveItem = function (item) {
+      var send = new FormData();
       item.code = $scope.listEdit.editable.code;
-      item.clientId = $scope.selected.client.id;
-      item.clientName = $scope.selected.client.name;
+      send.append('order[code]', item.code);
+      if ($scope.clientName == null && $scope.selected.client != null) {
+        item.clientId = $scope.selected.client.id;
+        item.clientName = $scope.selected.client.name;
+      }
+      send.append('order[clientId]', item.clientId);
       item.dateCreation = $scope.listEdit.editable.dateCreation;
+      send.append('order[dateCreation]', $filter('date')(item.dateCreation, "dd.MM.yyyy"));
       item.dateStart = $scope.listEdit.editable.dateStart;
+      if (!isNull(item.dateStart)) {
+        send.append('order[dateStart]', $filter('date')(item.dateStart, "dd.MM.yyyy"));
+      }
       item.dateEnd = $scope.listEdit.editable.dateEnd;
+      if (!isNull(item.dateEnd)) {
+        send.append('order[dateEnd]', $filter('date')(item.dateEnd, "dd.MM.yyyy"));
+      }
       item.dateDeadline = $scope.listEdit.editable.dateDeadline;
+      if (!isNull(item.dateDeadline)) {
+        send.append('order[dateDeadline]', $filter('date')(item.dateDeadline, "dd.MM.yyyy"));
+      }
       if (!isNull(item.dateEnd)) {
         item.statusCode = 3;
-        item.status = statuses[item.statusCode];
       } else if (!isNull(item.dateStart)) {
         item.statusCode = 2;
-        item.status = statuses[item.statusCode];
       } else {
         item.statusCode = 1;
-        item.status = statuses[item.statusCode];
       }
-      $scope.listEdit[item.id] = false;
+      send.append('order[statusCode]', item.statusCode);
+
+      $http.post("/api/orders/update/" + item.id, send, {
+        transformRequest: angular.identity,
+        headers: {'Content-Type': undefined}
+      }).then(function successCallback(response) {
+        if (response.data.error) {
+          console.log(response.data.message);
+        } else {
+          $scope.listEdit[item.id] = false;
+          item.status = statuses[item.statusCode];
+        }
+      });
     };
     $scope.abortItem = function (item) {
       $scope.listEdit[item.id] = false;
     };
-
 
     var modalInstance = null;
     $scope.modal = {
@@ -308,28 +390,18 @@
           backdrop: 'static',
           scope: $scope
         });
-      },
-      close: function () {
-        modalInstance.dismiss();
-        modalInstance = null;
-        $scope.details = angular.copy($scope.detailsOriginal);
-        $scope.selected.details.import = [];
-        $scope.selected.details.new = [];
-      },
-      clear: {
-        client: function(){
-          $scope.selected.new.client = null;
-        },
-        order: function(){
-          $scope.selected.new.order = null;
-        }
+        modalInstance.closed.then(function(){
+          modalInstance = null;
+          $scope.details = angular.copy($scope.detailsOriginal);
+          $scope.selected.details.import = [];
+          $scope.selected.details.new = {};
+          $scope.selected.details.showNew = false;
+          $scope.showErrors = false;
+        });
       }
     };
     $scope.addOrder = function(){
       $scope.modal.open();
-    };
-    $scope.getSrc = function(src){
-      return (typeof src == 'string') ? src : '';
     };
 
     $scope.refreshData = function () {
@@ -363,29 +435,32 @@
       }, function errorCallback(response) {
         console.log(response.statusText);
       });
+      $scope.refreshAddData();
     };
 
-    $http.post('api/clients/only-names').then(function successCallback(response) {
-      var data = response.data;
-      if (data.error) {
-        console.log(data);
-      } else {
-        $scope.clients = data;
-      }
-    }, function errorCallback(response) {
-      console.log(response.statusText);
-    });
-    $http.post('/api/nomenclature/only-names').then(function successCallback(response) {
-      var data = response.data;
-      if (data.error) {
-        console.log(data);
-      } else {
-        $scope.details = data.data;
-        $scope.detailsOriginal = angular.copy($scope.details);
-      }
-    }, function errorCallback(response) {
-      console.log(response.statusText);
-    });
+    $scope.refreshAddData = function(){
+      $http.post('api/clients/only-names').then(function successCallback(response) {
+        var data = response.data;
+        if (data.error) {
+          console.log(data);
+        } else {
+          $scope.clients = data;
+        }
+      }, function errorCallback(response) {
+        console.log(response.statusText);
+      });
+      $http.post('/api/nomenclature/only-names').then(function successCallback(response) {
+        var data = response.data;
+        if (data.error) {
+          console.log(data);
+        } else {
+          $scope.details = data.data;
+          $scope.detailsOriginal = angular.copy($scope.details);
+        }
+      }, function errorCallback(response) {
+        console.log(response.statusText);
+      });
+    };
     $scope.refreshData();
   }
 })();

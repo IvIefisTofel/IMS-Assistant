@@ -6,7 +6,7 @@
                 <div class="row">
                     <div class="col-md-6 col-lg-8 hidden-sm hidden-xs">
                         <h3>
-                            Список заказов <discription ng-if="clientName != null">(от клиента "{{clientName}}")</discription>
+                            Список заказов <discription ng-show="clientName != null">(от клиента "{{clientName}}")</discription>
                             <a ng-if="clientName != null" href="javascript:window.history.back(-1)" class="pull-right ng-scope">Назад</a>
                         </h3>
                     </div>
@@ -36,7 +36,7 @@
                             <button class="btn btn-link" ng-click="sortBy('code')">Шифр</button>
                             <span class="sortorder" ng-show="propertyName === 'code'" ng-class="{reverse: reverse}"></span>
                         </td>
-                        <td ng-if="clientName != null">
+                        <td ng-hide="clientName != null">
                             <button class="btn btn-link" ng-click="sortBy('clientName')">Клиент</button>
                             <span class="sortorder" ng-show="propertyName === 'clientName'" ng-class="{reverse: reverse}"></span>
                         </td>
@@ -70,7 +70,7 @@
                                 <input type="text" class="form-control" ng-model="listEdit.editable.code" placeholder="Шифр заказа">
                             </div></span>
                         </td>
-                        <td ng-if="clientName != null">
+                        <td ng-hide="clientName != null">
                             <span ng-hide="listEdit[item.id]">{{item.clientName}}</span>
                             <span ng-show="listEdit[item.id]" class="form-horizontal editable-wrap"><div class="editable-controls form-group ui-select-fixed">
                                 <ui-select ng-model="selected.client">

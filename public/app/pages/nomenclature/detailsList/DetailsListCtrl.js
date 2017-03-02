@@ -11,8 +11,8 @@
         $scope.loading = true;
 
         $scope.filter = {true: true, false: true};
-        $scope.propertyName = 'dateCreation';
-        $scope.reverse = true;
+        $scope.propertyName = 'code';
+        $scope.reverse = false;
 
         var tree;
         $scope.treeControl = tree = {};
@@ -64,11 +64,12 @@
         };
 
         $scope.expanding_property = {
-            field: 'name',
-            titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'name\')">{{expandingProperty.displayName || expandingProperty.field}}</button>' +
-                '<span class="sortorder" ng-show="propertyName === \'name\'" ng-class="{reverse: reverse}"></span>',
+            field: 'code',
+            titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'code\')">{{expandingProperty.displayName || expandingProperty.field}}</button>' +
+                '<span class="sortorder" ng-show="propertyName === \'code\'" ng-class="{reverse: reverse}"></span>',
+            colspan: "node.__children__.length > 0 ? 2 : 1",
             firstStatus: true,
-            displayName: 'Наименование детали'
+            displayName: 'Шифр детали'
         };
 
         var filesTemplate = function () {
@@ -98,16 +99,16 @@
         };
 
         $scope.defaults = [{
-            field: 'code',
-            titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'code\')">{{col.displayName || col.field}}</button>' +
-                '<span class="sortorder" ng-show="propertyName === \'code\'" ng-class="{reverse: reverse}"></span>',
+            field: 'name',
+            titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'name\')">{{col.displayName || col.field}}</button>' +
+                '<span class="sortorder" ng-show="propertyName === \'name\'" ng-class="{reverse: reverse}"></span>',
             colspan: "node.__children__.length > 0 ? 0 : 1",
-            displayName: 'Шифр детали'
+            displayName: 'Наименование детали'
         }, {
             field: 'orderCode',
             titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'orderCode\')">{{col.displayName || col.field}}</button>' +
                 '<span class="sortorder" ng-show="propertyName === \'orderCode\'" ng-class="{reverse: reverse}"></span>',
-            colspan: "node.__children__.length > 0 ? 2 : 1",
+            hidden: function(){ return $scope.order != null; },
             displayName: 'Шифр заказа'
         }, {
             field: 'pattern',

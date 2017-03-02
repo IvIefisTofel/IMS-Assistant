@@ -109,6 +109,24 @@ class FileVersion extends MCmsEntity
     }
 
     /**
+     * Set Date
+     *
+     * @param \DateTime $date
+     *
+     * @return FileVersion
+     */
+    public function setDate($date)
+    {
+        if ($date instanceof \DateTime) {
+            $this->date = $date;
+        } elseif ($date != null) {
+            $this->date = new \DateTime($date);
+        }
+
+        return $this;
+    }
+
+    /**
      * Get date
      *
      * @param bool $formatted

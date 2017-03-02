@@ -84,5 +84,9 @@
         images: null,
         methods: {}
     };
+
+    $rootScope.isNull = function(v) {
+      return isNull(v);
+    }
   }
 })();

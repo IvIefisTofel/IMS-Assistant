@@ -1,6 +1,6 @@
 <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" ng-click="modal.close()" aria-label="Close">
+        <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
             <em class="ion-ios-close-empty sn-link-close"></em>
         </button>
         <h4 class="modal-title" id="pattern-modal-label">Добавить заказ</h4>
@@ -9,13 +9,16 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="form-horizontal alert alert-default">
-                    <div class="form-group">
+                    <div class="form-group" ng-class="{ 'has-error': showErrors && isNull(listEdit.editable.code) }">
                         <label for="code" class="col-md-4 control-label">Шифр заказа</label>
                         <div class="col-md-8">
                             <input id="code" type="text" class="form-control" ng-model="listEdit.editable.code" placeholder="Шифр заказа">
+                            <div class="help-block" ng-show="showErrors && isNull(listEdit.editable.code)">
+                                <p>Поле обязательно к заполнению.</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" ng-class="{ 'has-error': showErrors && isNull(selected.client) }">
                         <label class="col-md-4 control-label">Клиент</label>
                         <div class="col-md-8">
                             <ui-select ng-model="selected.client">
@@ -29,6 +32,9 @@
                                     </div>
                                 </ui-select-no-choice>
                             </ui-select>
+                            <div class="help-block" ng-show="showErrors && isNull(selected.client)">
+                                <p>Поле обязательно к заполнению.</p>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -45,7 +51,7 @@
                                 <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateCreation, item)"
                                         ng-mouseenter="calendar.dateCreation.tooltips.today = true"
                                         ng-mouseleave="calendar.dateCreation.tooltips.today = false">
-                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-right"
                                        tooltip-animation="false" tooltip-is-open="calendar.dateCreation.tooltips.today" uib-tooltip="Сегодня"></i>
                                 </button>
                             </div>
@@ -65,7 +71,7 @@
                                 <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateStart)"
                                         ng-mouseenter="calendar.dateStart.tooltips.today = true"
                                         ng-mouseleave="calendar.dateStart.tooltips.today = false">
-                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
                                        tooltip-animation="false" tooltip-is-open="calendar.dateStart.tooltips.today" uib-tooltip="Сегодня"></i>
                                 </button>
                                 <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateStart)"
@@ -92,7 +98,7 @@
                                         ng-mouseenter="calendar.dateEnd.tooltips.today = true"
                                         ng-mouseleave="calendar.dateEnd.tooltips.today = false"
                                         ng-disabled="listEdit.editable.dateStart == null">
-                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
                                        tooltip-animation="false" tooltip-is-open="calendar.dateEnd.tooltips.today" uib-tooltip="Сегодня"></i>
                                 </button>
                                 <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateEnd)"
@@ -119,7 +125,7 @@
                                 <button type="button" class="btn btn-info col-md-2" ng-click="calendar.today(calendar.dateDeadline)"
                                         ng-mouseenter="calendar.dateDeadline.tooltips.today = true"
                                         ng-mouseleave="calendar.dateDeadline.tooltips.today = false">
-                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom"
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
                                        tooltip-animation="false" tooltip-is-open="calendar.dateDeadline.tooltips.today" uib-tooltip="Сегодня"></i>
                                 </button>
                                 <button type="button" class="btn btn-danger col-md-2" ng-click="calendar.clear(calendar.dateDeadline)"
@@ -161,11 +167,11 @@
                                                 </div>
                                             </ui-select-no-choice>
                                         </ui-select>
-                            </div>
+                                </div>
                                 <div class="col-md-4">
                                     <ui-select ng-model="selected.change.order">
                                         <ui-select-match allow-clear placeholder="Заказ...">{{$select.selected.code}}</ui-select-match>
-                                        <ui-select-choices repeat="order in list | filter: {clientId:selected.change.client.id} | orderBy:'dateCreation':true">
+                                        <ui-select-choices repeat="order in list | filter: {clientId:selected.change.client.id, code:$select.search} | orderBy:'dateCreation':true">
                                             <div ng-bind-html="order.code | highlight: $select.search"></div>
                                         </ui-select-choices>
                                         <ui-select-no-choice>
@@ -178,8 +184,10 @@
                                 <div class="col-md-4">
                                     <ui-select ng-model="selected.change.detail">
                                         <ui-select-match placeholder="Деталь...">{{$select.selected.code}} ({{$select.selected.name}})</ui-select-match>
-                                        <ui-select-choices repeat="detail in details | filter: {orderId:selected.change.order.id} | orderBy:'code'">
-                                            <div ng-bind-html="(detail.code + ' (' + detail.name + ')') | highlight: $select.search"></div>
+                                        <ui-select-choices repeat="detail in details | filter: {orderId:selected.change.order.id, code:$select.search} | orderBy:'code'">
+                                            <div ng-bind-html="(detail.code + ' (' + detail.name + ')') | highlight: $select.search"
+                                                 tooltip-append-to-body="true" tooltip-placement="left"
+                                                 uib-tooltip="{{(detail.code + ' (' + detail.name + ')')}}"></div>
                                         </ui-select-choices>
                                         <ui-select-no-choice>
                                             <div class="no-found">
@@ -196,18 +204,18 @@
                             <div class="row" ng-show="selected.details.import.length">
                                 <div class="col-md-12">
                                     <div class="alert alert-default alert-mt">
-                                        <table class="table table-hover table-bordered table-text-center">
+                                        <table class="table table-hover table-bordered table-text-center orders-import">
                                             <thead>
                                             <tr class="black-muted-bg">
-                                                <th>Наименование детали</th>
                                                 <th>Шифр детали</th>
+                                                <th>Наименование детали</th>
                                                 <th></th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <tr ng-repeat="(key, detail) in selected.details.import">
-                                                <td>{{detail.name}}</td>
-                                                <td>{{detail.code}}</td>
+                                                <td><input type="text" class="form-control" ng-model="detail.viewCode"></td>
+                                                <td><input type="text" class="form-control" ng-model="detail.viewName"></td>
                                                 <td class="browser-icons">
                                                     <button type="button" class="btn btn-danger btn-no-transform btn-sm" ng-click="selected.import.remove(key)">
                                                         <i class="fa fa-trash"></i>
@@ -219,7 +227,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" ng-show="selected.details.showNew == true">
+                            <div class="row" ng-show="selected.details.showNew">
                                 <div class="col-md-12">
                                     <div class="alert alert-default alert-mt">
                                         <table class="table table-hover table-bordered table-text-center little-collectoin">
@@ -233,18 +241,18 @@
                                             <tbody>
                                             <tr ng-repeat="(code, detail) in selected.details.new">
                                                 <td class="cell-patterns">
-                                                    <div ng-repeat="(key, base64) in detail.base64" class="image-collection">
+                                                    <div ng-repeat="(key, file) in detail.files" class="image-collection">
                                                         <div class="image-preview">
                                                             <div class="image-mask"></div>
                                                             <button type="button" class="btn btn-danger btn-no-transform btn-rm-col-item"
                                                                 ng-click="selected.new.remove(code, key)"><i class="fa fa-times"></i>
                                                             </button>
-                                                            <img ng-src="{{base64}}">
+                                                            <img ng-src="{{file.url}}">
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="ng-binding"><input type="text" class="form-control" ng-model="detail.code"></td>
-                                                <td class="ng-binding"><input type="text" class="form-control" ng-model="detail.name"></td>
+                                                <td><input type="text" class="form-control" ng-model="detail.code"></td>
+                                                <td><input type="text" class="form-control" ng-model="detail.name"></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -256,5 +264,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-click="selected.save()">Сохранить</button>
+        <button type="button" class="btn btn-danger" ng-click="$dismiss()">Отмена</button>
     </div>
 </div>

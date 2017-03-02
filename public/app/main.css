@@ -1537,6 +1537,7 @@ a.see-all-icons {
       color: #6b6b6b;
       background-color: transparent;
       border: 1px solid #e7e7e7; }
+      .modal .modal-dialog .has-error .form-control { border: 1px solid #ed7878 !important; }
       .modal .modal-dialog .form-control::-webkit-input-placeholder {
         color: #7d7d7d;
         opacity: 0.9; }
@@ -6410,7 +6411,8 @@ ul.typeahead.dropdown-menu {
   position: absolute;
   left: 0;
   right: 0;
-  top: 65px; }
+  top: 65px;
+  margin-bottom: 65px !important; }
 /* pattern-modal */
 #pattern-loading {
   position: absolute;
@@ -6516,3 +6518,5 @@ a.change-user {
   -webkit-filter: blur(0);
   filter: blur(0); }
 .table tr:hover>td> .form-control { background-color: #fff; }
+.table.orders-import input { height: 30px; margin: 3px 0; }
+.order-save-btn { margin-top: 15px; }

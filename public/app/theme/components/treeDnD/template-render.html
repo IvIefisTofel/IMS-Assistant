@@ -5,7 +5,7 @@
         <th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle" compile="expandingProperty.titleTemplate">
             {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}
         </th>
-        <th ng-repeat="col in colDefinitions" ng-class="col.titleClass" ng-style="col.titleStyle" compile="col.titleTemplate">
+        <th ng-repeat="col in colDefinitions" ng-class="col.titleClass" ng-style="col.titleStyle" ng-hide="col.hidden" compile="col.titleTemplate">
             {{col.displayName || col.field}}
         </th>
     </tr>
@@ -24,16 +24,17 @@
         <td ng-if="!expandingProperty.template" tree-dnd-node-handle
             ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(node.__level__)}"
             ng-class="expandingProperty.cellClass"
+            colspan="{{!expandingProperty.colspan ? 1 : $eval(expandingProperty.colspan)}}"
             compile="expandingProperty.cellTemplate">
             <a data-nodrag>
                 <i ng-class="$icon_class" ng-click="toggleExpand(node)"
                    class="tree-icon"></i>
             </a>
-            {{node[expandingProperty.field] || node[expandingProperty]}}
+            {{node[expandingProperty.field] || node.name}}
         </td>
         <td ng-if="expandingProperty.template" compile="expandingProperty.template"></td>
         <td ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
-            ng-if="!(col.colspan && $eval(col.colspan) === 0)"
+            ng-if="!(col.colspan && $eval(col.colspan) === 0) && !col.hidden"
             colspan="{{!col.colspan ? 1 : $eval(col.colspan)}}"
             compile="col.cellTemplate">
             {{node[col.field]}}
