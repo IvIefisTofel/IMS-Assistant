@@ -23,7 +23,6 @@
         ],
         "post-update-cmd": [
             "\n", "@clearCache", "\n",
-            "@bower-update",
             "@compile-mo",
             "mv public/.htaccess public/update.htaccess",
             "mv public/default.htaccess public/.htaccess"

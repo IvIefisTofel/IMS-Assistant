@@ -15,7 +15,8 @@
     "tests"
   ],
   "resolutions": {
-    "angular": "~1.5.11"
+    "angular": "~1.5.11",
+    "jquery": "~2.1.4"
   },
   "dependencies": {
     "Chart.js": "~1.0.2",

@@ -289,7 +289,13 @@ class Users extends  MCmsEntity
      */
     public function setRegistrationDate($registrationDate)
     {
-        $this->registrationDate = $registrationDate;
+        if ($registrationDate instanceof \DateTime) {
+            $this->registrationDate = $registrationDate;
+        } elseif ($registrationDate != null) {
+            $this->registrationDate = new \DateTime($registrationDate);
+        } else {
+            $this->registrationDate = null;
+        }
 
         return $this;
     }
@@ -299,9 +305,27 @@ class Users extends  MCmsEntity
      *
      * @return \DateTime
      */
-    public function getRegistrationDate()
+    public function getRegistrationDate($formatted = true)
     {
-        return $this->registrationDate;
+        if ($formatted)
+            return $this->getRegistrationDateFormat();
+        else
+            return $this->registrationDate;
+    }
+
+    /**
+     * Get Formatted Registration Date
+     *
+     * @param string $format
+     *
+     * @return \DateTime
+     */
+    public function getRegistrationDateFormat($format = "d.m.Y")
+    {
+        if ($this->registrationDate != null)
+            return date_format($this->registrationDate, $format);
+        else
+            return null;
     }
 
     /**

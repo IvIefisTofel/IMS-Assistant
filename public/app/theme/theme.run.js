@@ -34,14 +34,16 @@
       }
       var result = null;
       $.ajax({
-          type: "POST",
-          url: '/api/users/get-identity',
-          async: async,
-          data: {data: null}
-      }).success(function(response) {
+        type: "POST",
+        url: '/api/users/get-identity',
+        async: async,
+        data: {data: null},
+        success: function (response) {
           result = response.data;
-      }).error(function(response) {
+        },
+        error: function (response) {
           console.log(response);
+        }
       });
 
       $rootScope.user = result;
