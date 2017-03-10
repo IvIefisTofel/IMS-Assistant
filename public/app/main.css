@@ -6532,3 +6532,24 @@ a.change-user {
   padding-left: 20px;
   text-align: left;
   width: 55px; }
+.client-addons .alert > ul > li {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 2px 0; }
+  .client-addons .alert > ul > li > i { color: #e85656; }
+.addons-modal-switchers {
+  float: right;
+  margin-right: 20px;
+  margin-top: -5px; }
+.input-group-textarea textarea { resize: vertical; }
+.input-group-textarea .input-group-addon {
+  position: relative;
+  width: 38px;
+  border-radius: 0 5px 5px 0; }
+.input-group-textarea .input-group-addon .btn {
+  position: absolute;
+  border-radius: 0 5px 5px 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; }

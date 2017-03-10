@@ -241,7 +241,7 @@
         pattern: function (event) {
         },
         model: function (event) {
-          var id = $(event).attr('data-id');
+          var id = $(event).data('id');
           if (event.files.length > 0) {
             $scope.new.update.models[id] = event.files[0];
           } else {
@@ -250,7 +250,7 @@
           $scope.$apply();
         },
         project: function (event) {
-          var id = $(event).attr('data-id');
+          var id = $(event).data('id');
           if (event.files.length > 0) {
             $scope.new.update.projects[id] = event.files[0];
           } else {

@@ -12,7 +12,7 @@ class ClientsPlugin extends MCmsPlugin
             $onlyNames = isset($options['onlyNames']) ? $options['onlyNames'] : false;
             $withOrders = isset($options['withOrders']) ? $options['withOrders'] : false;
             $withFiles = isset($options['withFiles']) ? $options['withFiles'] : true;
-            $allVersions = isset($options['allVersions']) ? $options['allVersions'] : false;
+            $allVersions = isset($options['allVersions']) ? $options['allVersions'] : true;
             $saveIds = isset($options['saveIds']) ? $options['saveIds'] : false;
             if ($onlyNames) {
                 $withOrders = false;

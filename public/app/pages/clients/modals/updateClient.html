@@ -1,0 +1,91 @@
+<div id="client-add" class="modal-content" ng-keyup="keyUp($event)" tabindex="0">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+            <em class="ion-ios-close-empty sn-link-close"></em>
+        </button>
+        <div class="addons-modal-switchers">
+            <button type="button" class="btn btn-default" ng-click="showInfo(current - 1)"><i class="fa fa-arrow-left"></i></button>
+            <button type="button" class="btn btn-default" ng-click="showInfo(current + 1)">
+                <i class="fa fa-arrow-right"></i>
+            </button>
+        </div>
+        <h4 class="modal-title" id="myModalLabel">{{modal.add ? 'Добавить клиента' : 'Редактировать клиента "' + modal.client.name + '"'}}</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="clientName">Имя клиента</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="text" id="clientName" placeholder="Имя клиента" class="form-control" ng-model="modal.client.editName">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-warning btn-no-transform" ng-click="modal.client.editName = modal.client.name"><i class="fa fa-undo"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="clientDescription">Описание клиента</label>
+                        <div class="col-sm-10">
+                            <div class="input-group input-group-textarea">
+                                <textarea id="clientDescription" placeholder="Описание клиента" class="form-control" ng-model="modal.client.editDescription"></textarea>
+                                <div class="input-group-addon">
+                                    <button type="button" class="btn btn-warning btn-no-transform" ng-click="modal.client.editDescription = modal.client.description"><i class="fa fa-undo"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group client-addons">
+                        <div class="row"><div class="col-sm-12">
+                            <label class="col-sm-2 control-label" for="file">Вложения</label>
+                            <div class="col-sm-10">
+                                <div class="btn btn-primary btn-xs btn-file pull-right">
+                                    <i class="fa fa-plus"></i> Добавить
+                                    <input type="file" id="file" multiple="multiple" onchange="angular.element(this).scope().files.add(this)">
+                                </div>
+                            </div>
+                        </div></div>
+                        <div class="row" ng-if="modal.client.newAddons.length > 0 || modal.client.additions.length > 0"><div class="col-sm-12">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <div id="new-models" class="alert alert-info" ng-show="modal.client.newAddons.length > 0 || !isNull(modal.client.updAddons)">
+                                    <ul>
+                                        <li ng-repeat="(key, file) in modal.client.newAddons">{{file.name}}
+                                            <i class="fa fa-times" ng-click="modal.client.newAddons.splice(key, 1);" style="cursor: pointer"></i>
+                                        </li>
+                                        <div class="separator" ng-show="modal.client.newAddons.length > 0 && !isNull(modal.client.updAddons)"></div>
+                                        <li ng-repeat="(key, file) in modal.client.updAddons">{{file.name}}
+                                            <i class="fa fa-times" ng-click="files.remove(key);" style="cursor: pointer"></i>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="alert alert-default files">
+                                    <h3 ng-hide="modal.client.additions.length > 0">Моделей нет.</h3>
+                                    <div class="btn-group" uib-dropdown ng-repeat="file in modal.client.additions">
+                                        <button class="btn btn-xs" ng-class="modal.client.updAddons[file.id] ? 'btn-info' : 'btn-primary'" uib-dropdown-toggle>
+                                            {{file.name}} <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" uib-dropdown-menu role="menu">
+                                            <li role="menuitem">
+                                                <div class="btn-file">
+                                                    {{modal.client.updAddons[file.id] ? modal.client.updAddons[file.id].name : 'Обновить файл'}}<input type="file" data-id="{{file.id}}" onchange="angular.element(this).scope().files.update(this)">
+                                                </div>
+                                            </li>
+                                            <li role="menuitem" ng-repeat="version in file.versions">
+                                                <a href="/files/{{version.id}}/{{file.name}}" download="{{file.name}}">{{version.date}}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success btn-no-transform">Добавить</button>
+    </div>
+</div>

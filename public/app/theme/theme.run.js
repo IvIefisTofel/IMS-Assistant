@@ -99,6 +99,26 @@
 
     $rootScope.isNull = function(v) {
       return isNull(v);
-    }
+    };
+
+    $rootScope.focusedTextEl = function(){
+      var $focusEl = $(document.activeElement),
+          res = false;
+
+      switch ($focusEl.prop("tagName")) {
+        case "INPUT":
+          switch ($focusEl.attr('type').toLowerCase()) {
+            case "text": case "password":
+              res = true;
+              break;
+          }
+          break;
+        case "TEXTAREA":
+          res = true;
+          break;
+      }
+
+      return res;
+    };
   }
 })();
