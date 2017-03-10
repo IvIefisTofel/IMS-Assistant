@@ -12,7 +12,6 @@ class NqFilesByCollections
 {
     /**
      * @var integer
-     *
      * @ORM\Column(name="id", type="integer", precision=0, scale=0, nullable=false, unique=false)
      */
     private $id;
@@ -26,21 +25,18 @@ class NqFilesByCollections
 
     /**
      * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     private $name;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="path", type="string", length=255, nullable=false)
      */
     private $path;
 
     /**
      * @var \DateTime
-     *
      * @ORM\Column(name="date", type="date", nullable=false)
      */
     private $date;

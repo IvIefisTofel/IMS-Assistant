@@ -57,6 +57,16 @@
       return matches ? decodeURIComponent(matches[1]) === 'true' : false;
     };
 
+    $rootScope.previousState = null;
+    $rootScope.$on('$stateChangeSuccess', function(event, to, toParams, from, fromParams) {
+      if (from.abstract == undefined || from.abstract == false) {
+        $rootScope.previousState = {
+          state: from,
+          params: fromParams
+        };
+      }
+    });
+
     $rootScope.$on('IdleStart', function () {
       var form = new FormData();
       form.append('assistant_name', $rootScope.$user()['name']);

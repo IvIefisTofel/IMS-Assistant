@@ -1,0 +1,19 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+            <em class="ion-ios-close-empty sn-link-close"></em>
+        </button>
+        <h4 class="modal-title" id="pattern-modal-label">{{errors[current].title}}</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12" ng-bind-html="errors[current].message"></div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <span class="pull-left">{{(errors[current].date | date:"dd MMMM yyyy, EEEE")}}</span>
+        <button type="button" class="btn btn-success" ng-click="updateError('read', current)">Прочитано</button>
+        <button type="button" class="btn btn-warning" ng-click="updateError('unread', current)">Не прочитано</button>
+        <button type="button" class="btn btn-danger" ng-click="updateError('drop', current)">Удалить</button>
+    </div>
+</div>

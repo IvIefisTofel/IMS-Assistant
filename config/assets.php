@@ -6,6 +6,10 @@
 function angularAppJs()
 {
     return [
+        "/app/pages/errors/errorsList/ErrorsListCtrl.js",
+        "/app/pages/errors/errorsList/errorsList.directive.js",
+        "/app/pages/errors/errors.module.js",
+
         "/app/pages/users/usersList/UsersListCtrl.js",
         "/app/pages/users/usersList/usersList.directive.js",
         "/app/pages/users/users.module.js",

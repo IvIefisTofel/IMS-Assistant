@@ -15,7 +15,6 @@ class Groups extends MCmsEntity
 {
     /**
      * @var integer
-     *
      * @ORM\Column(name="group", type="string", length=255, nullable=true)
      * @ORM\Id
      */
@@ -23,7 +22,6 @@ class Groups extends MCmsEntity
 
     /**
      * Get group
-     *
      * @return string
      */
     public function getGroup()

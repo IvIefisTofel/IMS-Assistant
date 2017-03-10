@@ -21,14 +21,14 @@
         $scope.actionVariants = {
             openGallery: {
                 text: "Все чертежи",
-                class: "btn-success",
+                class: "btn-primary",
                 iconClass: "fa fa-picture-o",
                 action: 'orderGallery'
             },
             default: [
                 {
                     text: "Добавить",
-                    class: "btn-primary",
+                    class: "btn-success",
                     iconClass: "fa fa-plus",
                     action: 'addDetail'
                 },

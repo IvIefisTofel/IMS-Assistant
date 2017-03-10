@@ -2,9 +2,9 @@
 
 namespace Clients\Controller\Plugin;
 
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use MCms\Controller\Plugin\MCmsPlugin;
 
-class ClientsPlugin extends AbstractPlugin
+class ClientsPlugin extends MCmsPlugin
 {
     public function toArray($clients = null, $options = [])
     {
@@ -21,10 +21,7 @@ class ClientsPlugin extends AbstractPlugin
                 $saveIds = true;
             }
 
-            /* @var $em \Doctrine\ORM\EntityManager */
-            $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $result = [];
-
             if (!is_array($clients)) {
                 $clients = [$clients];
             }
@@ -52,7 +49,7 @@ class ClientsPlugin extends AbstractPlugin
             }
 
             if ($withOrders) {
-                $orders = $em->getRepository('Orders\Entity\Orders')->findByClientId(array_keys($result), ['dateCreation' => 'DESC']);
+                $orders = $this->entityManager->getRepository('Orders\Entity\Orders')->findByClientId(array_keys($result), ['dateCreation' => 'DESC']);
                 foreach ($orders as $order) {
                     /* @var $val \Orders\Entity\Orders */
                     $result[$order->getClientId()]['orders'][$order->getId()] = $order->toArray();

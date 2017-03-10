@@ -25,9 +25,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set clientId
-     *
      * @param integer $clientId
-     *
      * @return Orders
      */
     public function setClientId($clientId)
@@ -39,9 +37,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set Code
-     *
      * @param string $code
-     *
      * @return Orders
      */
     public function setCode($code)
@@ -53,9 +49,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set Status
-     *
      * @param integer $status
-     *
      * @return Orders
      * @throws \Exception
      */
@@ -71,9 +65,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set Date Creation
-     *
      * @param \DateTime $date
-     *
      * @return Orders
      */
     public function setDateCreation($date)
@@ -89,9 +81,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set Date Start
-     *
      * @param \DateTime $date
-     *
      * @return Orders
      */
     public function setDateStart($date)
@@ -109,9 +99,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set Date End
-     *
      * @param \DateTime $date
-     *
      * @return Orders
      */
     public function setDateEnd($date)
@@ -129,9 +117,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set Deadline
-     *
      * @param \DateTime $date
-     *
      * @return Orders
      */
     public function setDateDeadline($date)

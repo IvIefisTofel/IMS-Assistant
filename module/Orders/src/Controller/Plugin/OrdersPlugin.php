@@ -13,10 +13,7 @@ class OrdersPlugin extends AbstractPlugin
             $allVersions = isset($options['allVersions']) ? $options['allVersions'] : false;
             $saveIds = isset($options['clearIds']) ? $options['clearIds'] : false;
 
-            /* @var $em \Doctrine\ORM\EntityManager */
-            $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $result = [];
-
             if (!is_array($orders)) {
                 $orders = [$orders];
             }
@@ -41,7 +38,7 @@ class OrdersPlugin extends AbstractPlugin
 
             if ($withDetails) {
                 $details = $this->getController()->plugin('DetailsPlugin')
-                    ->toArray($em->getRepository('Nomenclature\Entity\DetailsView')->findByOrderId($orderKeys, ['dateCreation' => 'DESC']), $allVersions);
+                    ->toArray($this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findByOrderId($orderKeys, ['dateCreation' => 'DESC']), $allVersions);
                 foreach ($details as $detail) {
                     $result[$detail['orderId']]['details'][] = $detail;
                 }

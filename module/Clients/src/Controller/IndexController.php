@@ -38,7 +38,7 @@ class IndexController extends MCmsController
         switch ($task) {
             case "get":
                 if ($id === null) {
-                    $error = "Error: id is not valid!";
+                    $error = self::INVALID_ID;
                 } else {
                     $data = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->find($id), ['onlyNames' => $onlyNames]);
                 }

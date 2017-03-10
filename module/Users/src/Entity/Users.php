@@ -45,7 +45,6 @@ class Users extends  MCmsEntity
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="userId", type="integer", precision=0, scale=0, nullable=false, unique=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -54,56 +53,48 @@ class Users extends  MCmsEntity
 
     /**
      * @var string
-     *
      * @ORM\Column(name="userName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
     protected $name;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="userFullName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
     protected $fullName;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="userEmail", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
     protected $email;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="userPassword", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
     protected $password;
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="userRoleId", type="integer", precision=0, scale=0, nullable=false, unique=false)
      */
     protected $role;
 
     /**
      * @var boolean
-     *
      * @ORM\Column(name="userActive", type="boolean", precision=0, scale=0, nullable=false, unique=false)
      */
     protected $active;
 
     /**
      * @var \DateTime
-     *
      * @ORM\Column(name="userRegistrationDate", type="datetime", precision=0, scale=0, nullable=false, unique=false)
      */
     protected $registrationDate;
 
     /**
      * @var boolean
-     *
      * @ORM\Column(name="userEmailConfirmed", type="boolean", precision=0, scale=0, nullable=false, unique=false)
      */
     protected $emailConfirmed = false;
@@ -115,7 +106,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get user Id
-     *
      * @return integer
      */
     public function getId()
@@ -125,7 +115,6 @@ class Users extends  MCmsEntity
 
     /**
      * Set user Name
-     *
      * @param string $name
      * @return Users
      */
@@ -138,7 +127,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get user Name
-     *
      * @return string
      */
     public function getName()
@@ -148,7 +136,6 @@ class Users extends  MCmsEntity
 
     /**
      * Set user FullName
-     *
      * @param string $fullName
      * @return Users
      */
@@ -161,7 +148,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get user FullName
-     *
      * @return string
      */
     public function getFullName()
@@ -171,7 +157,6 @@ class Users extends  MCmsEntity
 
     /**
      * Set user Email
-     *
      * @param string $email
      * @return Users
      */
@@ -184,7 +169,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get user Email
-     *
      * @return string 
      */
     public function getEmail()
@@ -194,7 +178,6 @@ class Users extends  MCmsEntity
 
     /**
      * Set user Password
-     *
      * @param string $password
      * @return Users
      */
@@ -207,7 +190,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get user Password
-     *
      * @return string
      */
     public function getPassword()
@@ -217,7 +199,6 @@ class Users extends  MCmsEntity
 
     /**
      * Set user Role
-     *
      * @param integer $role
      * @return Users
      */
@@ -230,7 +211,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get user Role
-     *
      * @return integer
      */
     public function getRoleID()
@@ -240,7 +220,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get user Role Name
-     *
      * @return string
      */
     public function getRoleName()
@@ -250,7 +229,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get user Role Label
-     *
      * @return string
      */
     public function getRoleLabel()
@@ -260,7 +238,6 @@ class Users extends  MCmsEntity
 
     /**
      * Set user Active
-     *
      * @param boolean $active
      * @return Users
      */
@@ -273,7 +250,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get user Active
-     *
      * @return boolean 
      */
     public function getActive()
@@ -283,7 +259,6 @@ class Users extends  MCmsEntity
 
     /**
      * Set user Registration Date
-     *
      * @param \DateTime $registrationDate
      * @return Users
      */
@@ -302,8 +277,8 @@ class Users extends  MCmsEntity
 
     /**
      * Get user Registration Date
-     *
-     * @return \DateTime
+     * @param bool $formatted
+     * @return string | \DateTime
      */
     public function getRegistrationDate($formatted = true)
     {
@@ -315,10 +290,8 @@ class Users extends  MCmsEntity
 
     /**
      * Get Formatted Registration Date
-     *
      * @param string $format
-     *
-     * @return \DateTime
+     * @return string
      */
     public function getRegistrationDateFormat($format = "d.m.Y")
     {
@@ -330,7 +303,6 @@ class Users extends  MCmsEntity
 
     /**
      * Set user Email Confirmed
-     *
      * @param boolean $emailConfirmed
      * @return Users
      */
@@ -343,7 +315,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get userEmailConfirmed
-     *
      * @return boolean
      */
     public function getEmailConfirmed()
@@ -353,7 +324,6 @@ class Users extends  MCmsEntity
 
     /**
      * Get either a Gravatar URL or complete image tag for a specified email address.
-     *
      * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
      * @param string $d Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
      * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]

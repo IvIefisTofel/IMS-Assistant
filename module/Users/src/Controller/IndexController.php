@@ -3,7 +3,6 @@
 namespace Users\Controller;
 
 use MCms\Controller\MCmsController;
-use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 
 class IndexController extends MCmsController
@@ -26,6 +25,7 @@ class IndexController extends MCmsController
         $task   = $this->params()->fromRoute('task', null);
         $id     = $this->params()->fromRoute('id', null);
 
+        $data = [];
         /* @var $user \Users\Entity\Users */
         switch ($task) {
             case "get-identity": case "getidentity": case "getIdentity":
@@ -39,7 +39,7 @@ class IndexController extends MCmsController
                 break;
             case "get":
                 if ($id === null)
-                    $error = "Error: id is not valid!";
+                    $error = self::INVALID_ID;
                 else {
                     $data = $this->entityManager->getRepository('Users\Entity\Users')->find($id);
                 }

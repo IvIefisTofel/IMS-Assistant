@@ -62,7 +62,7 @@ class IndexController extends MCmsController
                 $id = true;
             case "update":
                 if ($id === null)
-                    $error = "Error: id is not valid!";
+                    $error = self::INVALID_ID;
                 else {
                     $form = new Form('detailUpload');
                     $data = array_merge($request->getPost()->toArray(), $request->getFiles()->toArray());
@@ -386,7 +386,7 @@ class IndexController extends MCmsController
             break;
             case "get-with-parents": case "getwithparents": case "getWithParents":
                 if ($id === null)
-                    $error = "Error: id is not valid!";
+                    $error = self::INVALID_ID;
                 else {
                     $tree = false;
                     $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->find($id);
@@ -396,14 +396,14 @@ class IndexController extends MCmsController
                 break;
             case "get":
                 if ($id === null)
-                    $error = "Error: id is not valid!";
+                    $error = self::INVALID_ID;
                 else {
                     $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->find($id);
                 }
                 break;
             case "get-by-order": case "getbyorder": case "getByOrder":
                 if ($id === null)
-                    $error = "Error: id is not valid!";
+                    $error = self::INVALID_ID;
                 else {
                     $result['order'] = $this->entityManager->getRepository('Orders\Entity\Orders')->find($id)->toArray();
                     $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findByOrderId($id, ['dateCreation' => 'DESC']);

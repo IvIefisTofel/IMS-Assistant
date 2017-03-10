@@ -19,7 +19,7 @@
                 <div ng-show="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
-                <div ng-show="!loading && ((list | filter:filterBy) | filter:search) == 0" class="no-data">
+                <div ng-show="!loading && !(((list | filter:filterBy) | filter:search).length > 0)" class="no-data">
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
@@ -28,9 +28,9 @@
                     <switch color="warning" ng-model="filter[2]">В работе</switch>
                     <switch color="success" ng-model="filter[3]">Исполнено</switch>
                 </div>
-                <table ng-show="!loading" class="table table-bordered table-hover table-text-center table-with-labels">
+                <table ng-show="!loading && list.length > 0" class="table table-bordered table-hover table-text-center table-with-labels">
                     <thead>
-                    <tr ng-if="((list | filter:filterBy) | filter:search) != 0" class="black-muted-bg">
+                    <tr class="black-muted-bg">
                         <td class="first-fixed"></td>
                         <td>
                             <button class="btn btn-link" ng-click="sortBy('code')">Шифр</button>
@@ -60,7 +60,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-if="list.length != 0" ng-repeat="(key, item) in list | filter:filterBy | filter:search | orderBy:propertyName:reverse" class="no-top-border" ng-class="{active: item.id == current}">
+                    <tr ng-repeat="(key, item) in list | filter:filterBy | filter:search | orderBy:propertyName:reverse" class="no-top-border" ng-class="{active: item.id == current}">
                         <td>
                             <span class="label" ng-class="(item.statusCode == 1) ? 'label-primary' : (item.statusCode == 2) ? 'label-warning' : 'label-success'">{{item.status}}</span>
                         </td>

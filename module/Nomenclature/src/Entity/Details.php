@@ -15,9 +15,7 @@ class Details extends DetailsEntity
 {
     /**
      * Set order id
-     *
      * @param integer $orderId
-     *
      * @return Details
      */
     public function setOrderId($orderId)
@@ -29,9 +27,7 @@ class Details extends DetailsEntity
 
     /**
      * Set group
-     *
      * @param string $group
-     *
      * @return Details
      */
     public function setGroup($group)
@@ -43,9 +39,7 @@ class Details extends DetailsEntity
 
     /**
      * Set code
-     *
      * @param string $code
-     *
      * @return Details
      */
     public function setCode($code)
@@ -57,9 +51,7 @@ class Details extends DetailsEntity
 
     /**
      * Set name
-     *
      * @param string $name
-     *
      * @return Details
      */
     public function setName($name)
@@ -71,9 +63,7 @@ class Details extends DetailsEntity
 
     /**
      * Set pattern
-     *
      * @param integer $pattern
-     *
      * @return Details
      */
     public function setPattern($pattern = null)
@@ -85,9 +75,7 @@ class Details extends DetailsEntity
 
     /**
      * Set model
-     *
      * @param integer $model
-     *
      * @return Details
      */
     public function setModel($model = null)
@@ -99,9 +87,7 @@ class Details extends DetailsEntity
 
     /**
      * Set project
-     *
      * @param integer $project
-     *
      * @return Details
      */
     public function setProject($project = null)
@@ -113,9 +99,7 @@ class Details extends DetailsEntity
 
     /**
      * Set dateCreation
-     *
      * @param \DateTime $date
-     *
      * @return Details
      */
     public function setDateCreation($date)
@@ -131,9 +115,7 @@ class Details extends DetailsEntity
 
     /**
      * Set dateEnd
-     *
      * @param \DateTime $date
-     *
      * @return Details
      */
     public function setDateEnd($date)

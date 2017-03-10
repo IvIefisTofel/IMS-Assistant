@@ -9,6 +9,9 @@ use Zend\Console\Adapter\AdapterInterface as Console;
 
 class Module implements ConsoleUsageProviderInterface
 {
+    /**
+     * @var \AssetsGenerator
+     */
     private $assets;
 
     public function getConfig()
@@ -17,7 +20,7 @@ class Module implements ConsoleUsageProviderInterface
         $this->assets = new \AssetsGenerator();
         return array_merge(include __DIR__ . '/config/module.config.php', $this->assets->getAssets());
     }
-	
+
     public function getAutoloaderConfig()
     {
         return [
@@ -95,10 +98,16 @@ class Module implements ConsoleUsageProviderInterface
 
     function exceptionHandler(MvcEvent $e)
     {
+        if (getenv('APP_ENV') == 'development')
+            return;
+
         if ($e->isError()) {
             $reason = $e->getError();
-        } elseif (is_array($reason = $e->getResult()->getVariables()) && count($reason)) {
-            $reason = $reason['reason'];
+        } else {
+            $vars = $e->getResult()->getVariables();
+            if (is_array($vars) && count($vars) && isset($vars['reason'])) {
+                $reason = $vars['reason'];
+            }
         }
 
         if (isset($reason) && $reason != null) {
@@ -125,13 +134,14 @@ class Module implements ConsoleUsageProviderInterface
                 $oldErr = $em->getRepository('MCms\Entity\Errors')->findByHash(md5($msg));
                 foreach ($oldErr as $err) {
                     /* @var $err \MCms\Entity\Errors */
-                    if ($err->getDate()->format('d.m.Y') == $date->format('d.m.Y')) {
+                    if ($err->getDate() == $date->format('d.m.Y')) {
                         $writeErr = false;
                     }
                 }
 
                 if ($writeErr) {
                     $error = new \MCms\Entity\Errors();
+                    $error->setTitle($reason);
                     $error->setMessage($msg);
                     $em->persist($error);
                     $em->flush();
@@ -141,10 +151,10 @@ class Module implements ConsoleUsageProviderInterface
     }
 
     /**
-     * This method is defined in ConsoleUsageProviderInterface
+     * @param Console $console
+     * @return array
      */
-    public function getConsoleUsage(Console $console)
-    {
+    public function getConsoleUsage(Console $console) {
         return [
             'compile-mo' => 'Generate binary language *.mo files from *.po files',
         ];

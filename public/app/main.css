@@ -1033,7 +1033,6 @@ textarea.form-control {
   margin-left: -12px;
   margin-bottom: -12px; }
   .switches .switch-container {
-    float: left;
     margin-left: 12px;
     margin-bottom: 12px; }
 
@@ -2199,6 +2198,7 @@ a.learn-more {
   width: 100%;
   margin-bottom: 19px;
   margin-top: 16px; }
+  .msg-list .separator { margin: 5px 0; }
 
 .section {
   padding: 0 20px 50px 20px; }
@@ -3186,7 +3186,7 @@ input.search-input {
 .table-bordered > thead > tr > td,
 .table-bordered > tbody > tr > td,
 .table-bordered > tfoot > tr > td {
-  border: 1px solid gainsboro; }
+  border: 1px solid gainsboro !important; }
 
 .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.1); }
@@ -4275,6 +4275,14 @@ h1.al-title {
           border-radius: 18px;
           border: 2px solid #e85656;
           padding: 2px 9px 0; }
+          .top-dropdown-menu .msg-list > a .img-area.danger i {
+            background-color: #e85656;
+            color: #fff; }
+          .top-dropdown-menu .msg-list > a .img-area.bug i {
+            background-color: #e85656;
+            color: #fff;
+            font-size: 22px;
+            padding: 3px 4px; }
         .top-dropdown-menu .msg-list > a .img-area img {
           width: 36px;
           height: 36px; }
@@ -6520,3 +6528,7 @@ a.change-user {
 .table tr:hover>td> .form-control { background-color: #fff; }
 .table.orders-import input { height: 30px; margin: 3px 0; }
 .order-save-btn { margin-top: 15px; }
+.table.table-first-checkbox tr > th:first-child {
+  padding-left: 20px;
+  text-align: left;
+  width: 55px; }

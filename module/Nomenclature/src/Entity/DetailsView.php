@@ -15,14 +15,12 @@ class DetailsView extends DetailsEntity
 {
     /**
      * @var string
-     *
      * @ORM\Column(name="orderCode", type="string", length=255, nullable=false)
      */
     protected $orderCode;
 
     /**
      * Get orderCode
-     *
      * @return string
      */
     public function getOrderCode()

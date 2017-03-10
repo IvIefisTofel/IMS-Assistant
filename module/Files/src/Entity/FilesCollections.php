@@ -14,7 +14,6 @@ class FilesCollections
 {
     /**
      * @var integer
-     *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
@@ -23,7 +22,6 @@ class FilesCollections
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="fileId", type="integer", nullable=false)
      * @ORM\Id
      */
@@ -31,7 +29,6 @@ class FilesCollections
 
     /**
      * @var string
-     *
      * @ORM\Column(name="fileName", type="string", length=255, nullable=false)
      */
     private $name;
@@ -39,7 +36,6 @@ class FilesCollections
 
     /**
      * Get id
-     *
      * @return int
      */
     public function getId()
@@ -49,7 +45,6 @@ class FilesCollections
 
     /**
      * Set Id
-     *
      * @param int $id
      */
     public function setId($id)
@@ -59,7 +54,6 @@ class FilesCollections
 
     /**
      * Get File Id
-     *
      * @return int
      */
     public function getFileId()
@@ -69,7 +63,6 @@ class FilesCollections
 
     /**
      * Set File Id
-     *
      * @param int $fileId
      */
     public function setFileId(int $fileId)
@@ -79,7 +72,6 @@ class FilesCollections
 
     /**
      * Get File Name
-     *
      * @return string
      */
     public function getName()

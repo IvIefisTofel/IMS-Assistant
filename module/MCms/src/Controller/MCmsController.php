@@ -7,6 +7,8 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 abstract class MCmsController extends AbstractActionController
 {
+    const INVALID_ID = "Error: id is invalid";
+
     /* @var $serviceLocator \Zend\ServiceManager\ServiceManager */
     protected $serviceLocator;
     /* @var $entityManager \Doctrine\ORM\EntityManager */

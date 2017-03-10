@@ -1,0 +1,54 @@
+<content-actions></content-actions>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-primary with-search animated fadeInUp">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-6 hidden-sm hidden-xs">
+                        <h3>
+                            Лог ошибок <a href="javascript:window.history.back(-1)" class="pull-right">Назад</a>
+                        </h3>
+                    </div>
+                    <div class="col-md-6 col-sm-12 col-xs-12">
+                        <input ng-model="search" type="text" name="criteria" class="form-control" placeholder="Поиск..."/>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div ng-show="loading" class="no-data">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+                <div ng-show="!loading && !(filtred.length > 0)" class="no-data">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    Нет данных
+                </div>
+                <div class="switches">
+                    <button type="button" ng-show="select.checked > 0" class="btn btn-success btn-no-transform btn-sm" ng-click="updateError('read')">Отметить как прочитанные</button>
+                    <button type="button" ng-show="select.checked > 0" class="btn btn-warning btn-no-transform btn-sm" ng-click="updateError('unread')">Отметить как непрочитанные</button>
+                    <button type="button" ng-show="select.checked > 0" class="btn btn-danger btn-no-transform btn-sm" ng-click="updateError('drop')">Удалить</button>
+                    <switch color="success" ng-model="isRead">Прочитано</switch>
+                </div>
+                <table ng-show="!loading && filtred.length > 0" class="table table-bordered table-hover table-text-center table-with-labels table-first-checkbox">
+                    <thead>
+                        <tr class="black-muted-bg">
+                            <th><label class="checkbox-inline custom-checkbox"><input type="checkbox" ng-model="select.checkedAll" ng-change="select.checkAll(filtred)"><span></span></label></th>
+                            <th>Заголовок</th>
+                            <th>Сообщение</th>
+                            <th>Дата</th>
+                            <th>Прочитано</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in filtred | orderBy:'date':true" class="no-top-border" ng-class="!(item.read)?'danger':''">
+                            <td><label class="checkbox-inline custom-checkbox"><input type="checkbox" ng-model="item.checked" ng-change="select.check(filtred)"><span></span></label></td>
+                            <td ng-click="showError(item.id)" style="cursor: pointer;">{{item.title}}</td>
+                            <td ng-click="showError(item.id)" style="cursor: pointer;">{{item.shortMessage}}</td>
+                            <td>{{(item.date | date:"dd MMMM yyyy, EEEE")}}</td>
+                            <td><i class="fa" ng-class="item.read ? 'fa-check-square-o' : 'fa-square-o'" aria-hidden="true"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

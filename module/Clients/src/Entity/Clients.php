@@ -15,7 +15,6 @@ class Clients extends MCmsEntity
 {
     /**
      * @var integer
-     *
      * @ORM\Column(name="clientId", type="integer", precision=0, scale=0, nullable=false, unique=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -24,21 +23,18 @@ class Clients extends MCmsEntity
 
     /**
      * @var string
-     *
      * @ORM\Column(name="clientName", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
     protected $name;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="clientDescription", type="text", length=65535, precision=0, scale=0, nullable=true, unique=false)
      */
     protected $description;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="clientFilesGroup", type="integer", nullable=true)
      */
     protected $filesGroup;
@@ -54,7 +50,6 @@ class Clients extends MCmsEntity
 
     /**
      * Get client Id
-     *
      * @return integer
      */
     public function getId()
@@ -64,9 +59,7 @@ class Clients extends MCmsEntity
 
     /**
      * Set client Name
-     *
      * @param string $name
-     *
      * @return Clients
      */
     public function setName($name)
@@ -78,7 +71,6 @@ class Clients extends MCmsEntity
 
     /**
      * Get client Name
-     *
      * @return string
      */
     public function getName()
@@ -88,9 +80,7 @@ class Clients extends MCmsEntity
 
     /**
      * Set client Description
-     *
      * @param string $description
-     *
      * @return Clients
      */
     public function setDescription($description)
@@ -102,7 +92,6 @@ class Clients extends MCmsEntity
 
     /**
      * Get client Description
-     *
      * @return string
      */
     public function getDescription()
@@ -112,9 +101,7 @@ class Clients extends MCmsEntity
 
     /**
      * Set client Files Group
-     *
      * @param integer $filesGroup
-     *
      * @return Clients
      */
     public function setFilesGroup($filesGroup)
@@ -126,7 +113,6 @@ class Clients extends MCmsEntity
 
     /**
      * Get client Files Group
-     *
      * @return integer
      */
     public function getAdditions()

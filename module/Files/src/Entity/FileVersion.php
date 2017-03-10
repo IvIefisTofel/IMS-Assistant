@@ -17,7 +17,6 @@ class FileVersion extends MCmsEntity
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="versionId", type="integer", precision=0, scale=0, nullable=false, unique=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -26,21 +25,18 @@ class FileVersion extends MCmsEntity
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="versionFileId", type="integer", nullable=false)
      */
     protected $fileId;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="versionPath", type="string", length=255, nullable=false)
      */
     protected $path;
 
     /**
      * @var \DateTime
-     *
      * @ORM\Column(name="versionDate", type="date", nullable=false)
      */
     protected $date;
@@ -56,7 +52,6 @@ class FileVersion extends MCmsEntity
 
     /**
      * Get id
-     *
      * @return integer
      */
     public function getId()
@@ -66,7 +61,6 @@ class FileVersion extends MCmsEntity
 
     /**
      * Get file id
-     *
      * @return int
      */
     public function getFileId(): int
@@ -76,7 +70,6 @@ class FileVersion extends MCmsEntity
 
     /**
      * Get file id
-     *
      * @param int $fileId
      */
     public function setFileId(int $fileId)
@@ -86,9 +79,7 @@ class FileVersion extends MCmsEntity
 
     /**
      * Set path
-     *
      * @param string $path
-     *
      * @return FileVersion
      */
     public function setPath($path)
@@ -100,7 +91,6 @@ class FileVersion extends MCmsEntity
 
     /**
      * Get path
-     *
      * @return string
      */
     public function getPath()
@@ -110,9 +100,7 @@ class FileVersion extends MCmsEntity
 
     /**
      * Set Date
-     *
      * @param \DateTime $date
-     *
      * @return FileVersion
      */
     public function setDate($date)
@@ -128,10 +116,8 @@ class FileVersion extends MCmsEntity
 
     /**
      * Get date
-     *
      * @param bool $formatted
-     *
-     * @return \DateTime
+     * @return string | \DateTime
      */
     public function getDate($formatted = true)
     {
@@ -143,10 +129,8 @@ class FileVersion extends MCmsEntity
 
     /**
      * Get Formatted End Date
-     *
      * @param string $format
-     *
-     * @return \DateTime
+     * @return string
      */
     public function getDateFormat($format = "d.m.Y")
     {

@@ -12,7 +12,7 @@ class NotificationsController extends MCmsController
         $q = $this->entityManager->createQueryBuilder();
         $q->select('o')
             ->from('Orders\Entity\OrdersView', 'o')
-            ->where('o.dateEnd is NULL AND o.dateDeadline > ' . date_format(new \DateTime("-10 days"), 'Y-m-d'));
+            ->where('o.dateEnd is NULL AND (o.dateDeadline > ' . date_format(new \DateTime("-10 days"), 'Y-m-d') . ' OR o.dateDeadline < ' . date('Y-m-d') . ')');
 
         return $q->getQuery()->getResult();
     }
@@ -32,10 +32,14 @@ class NotificationsController extends MCmsController
             return;
         }
 
-        $data = [
-            'hotOrders' => $this->plugin('OrdersPlugin')->toArray(self::getHotOrders()),
-        ];
-
+        try {
+            $data = [
+                'hotOrders' => $this->plugin('OrdersPlugin')->toArray(self::getHotOrders()),
+                'errors' => $this->plugin('ErrorsPlugin')->toArray($this->entityManager->getRepository('MCms\Entity\Errors')->findByRead(false, ['date' => 'DESC'])),
+            ];
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+        }
 
         if ($error) {
             $result = ["error" => $error];

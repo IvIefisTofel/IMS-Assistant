@@ -14,7 +14,6 @@ class Errors extends MCmsEntity
 {
     /**
      * @var integer
-     *
      * @ORM\Column(name="errId", type="integer", precision=0, scale=0, nullable=false, unique=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -23,31 +22,33 @@ class Errors extends MCmsEntity
 
     /**
      * @var string
-     *
      * @ORM\Column(name="errHash", type="string", length=50, precision=0, scale=0, nullable=false, unique=false)
      */
     protected $hash;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="dateCreation", type="datetime", precision=0, scale=0, nullable=false, unique=false)
+     * @var string
+     * @ORM\Column(name="errTitle", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $date;
+    protected $title;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="message", type="text", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="errMessage", type="text", precision=0, scale=0, nullable=false, unique=false)
      */
     protected $message;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="readed", type="boolean", precision=0, scale=0, nullable=false, unique=false)
+     * @var \DateTime
+     * @ORM\Column(name="errDateCreation", type="datetime", precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $readed = false;
+    protected $date;
+
+    /**
+     * @var bool
+     * @ORM\Column(name="errRead", type="boolean", precision=0, scale=0, nullable=false, unique=false)
+     */
+    protected $read = false;
 
     public function __construct()
     {
@@ -71,19 +72,19 @@ class Errors extends MCmsEntity
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
-    public function getDate(): \DateTime
+    public function getTitle(): string
     {
-        return $this->date;
+        return $this->title;
     }
 
     /**
-     * @param \DateTime $date
+     * @param string $title
      */
-    public function setDate(\DateTime $date)
+    public function setTitle(string $title)
     {
-        $this->date = $date;
+        $this->title = $title;
     }
 
     /**
@@ -92,6 +93,24 @@ class Errors extends MCmsEntity
     public function getMessage(): string
     {
         return $this->message;
+    }
+
+    /**
+     * @param integer $limit
+     * @return string
+     */
+    public function getShortMessage($limit = 150): string
+    {
+        $result = str_replace("  ", " ", str_replace("\n", " ", html_entity_decode(strip_tags($this->message))));
+        if (strlen($result) > $limit) {
+            if (($pos = strpos($result, "Развертывание стека")) !== false && $pos < $limit) {
+                $result = substr($result, 0, $pos - 2) . "...";
+            } else {
+                $result = substr($result, 0, strpos($result, " ", $limit)) . "...";
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -104,18 +123,44 @@ class Errors extends MCmsEntity
     }
 
     /**
-     * @return string
+     * Get user Creation Date
+     * @param bool $formatted
+     * @return string | \DateTime
      */
-    public function getReaded(): string
+    public function getDate($formatted = true)
     {
-        return $this->readed;
+        if ($formatted)
+            return $this->getDateFormat();
+        else
+            return $this->date;
     }
 
     /**
-     * @param string $readed
+     * Get Formatted Creation Date
+     * @param string $format
+     * @return string
      */
-    public function setReaded(string $readed)
+    public function getDateFormat($format = "d.m.Y")
     {
-        $this->readed = $readed;
+        if ($this->date != null)
+            return date_format($this->date, $format);
+        else
+            return null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getRead(): bool
+    {
+        return $this->read;
+    }
+
+    /**
+     * @param bool $read
+     */
+    public function setRead(bool $read)
+    {
+        $this->read = $read;
     }
 }

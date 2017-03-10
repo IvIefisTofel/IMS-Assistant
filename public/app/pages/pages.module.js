@@ -5,7 +5,8 @@
     'BlurAdmin.pages.clients',
     'BlurAdmin.pages.orders',
     'BlurAdmin.pages.nomenclature',
-    'BlurAdmin.pages.users'
+    'BlurAdmin.pages.users',
+    'BlurAdmin.pages.errors'
   ]).config(routeConfig);
 
   /** @ngInject */

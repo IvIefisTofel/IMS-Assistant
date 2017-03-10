@@ -2,17 +2,13 @@
 
 namespace Files\Controller\Plugin;
 
-use Files\Entity\Files;
-use Files\Entity\FileVersions;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use MCms\Controller\Plugin\MCmsPlugin;
 
-class FilesPlugin extends AbstractPlugin
+class FilesPlugin extends MCmsPlugin
 {
     public function getFiles($collections = null, $allVersions = false)
     {
         if ($collections !== null) {
-            /* @var $em \Doctrine\ORM\EntityManager */
-            $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $result = [];
 
             if (!is_array($collections)) {
@@ -20,7 +16,7 @@ class FilesPlugin extends AbstractPlugin
             }
 
             $arrFiles = [];
-            foreach ($em->getRepository('Files\Entity\FilesCollections')->findById($collections) as $key => $file) {
+            foreach ($this->entityManager->getRepository('Files\Entity\FilesCollections')->findById($collections) as $key => $file) {
                 /* @var $file \Files\Entity\FilesCollections */
                 $result[$file->getId()][$file->getFileId()] = [
                     'id' => $file->getFileId(),
@@ -30,7 +26,7 @@ class FilesPlugin extends AbstractPlugin
             }
 
             $fileVersions = [];
-            foreach ($em->getRepository('Files\Entity\FileVersion')->findByFileId($arrFiles, ['date' => 'DESC']) as $version) {
+            foreach ($this->entityManager->getRepository('Files\Entity\FileVersion')->findByFileId($arrFiles, ['date' => 'DESC']) as $version) {
                 /* @var $version \Files\Entity\FileVersion */
                 $fileVersions[$version->getFileId()][$version->getId()] = [
                     'id' => $version->getId(),
@@ -61,11 +57,10 @@ class FilesPlugin extends AbstractPlugin
 
     public function getLastCollectionId()
     {
-        $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $sql = "SELECT DISTINCT id FROM `ims_files_collections` ORDER BY id DESC LIMIT 1";
 
         /* @var $stmt \Doctrine\DBAL\Statement */
-        $stmt = $em->getConnection()->prepare($sql);
+        $stmt = $this->entityManager->getConnection()->prepare($sql);
         $stmt->execute();
         $result = count($res = $stmt->fetchAll()) ? (int)$res[0]['id'] : 0;
 
@@ -74,8 +69,7 @@ class FilesPlugin extends AbstractPlugin
 
     public function dropVersions($versionIds = [])
     {
-        $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $versions = $em->getRepository('Files\Entity\FileVersion')->findById($versionIds);
+        $versions = $this->entityManager->getRepository('Files\Entity\FileVersion')->findById($versionIds);
         /* @var $version \Files\Entity\FileVersion */
         foreach ($versions as $version) {
             if (file_exists($version->getPath())) {
@@ -87,8 +81,8 @@ class FilesPlugin extends AbstractPlugin
             if (file_exists($version->getPath() . '.h950')) {
                 unlink($version->getPath() . '.h950');
             }
-            $em->remove($version);
+            $this->entityManager->remove($version);
         }
-        $em->flush();
+        $this->entityManager->flush();
     }
 }

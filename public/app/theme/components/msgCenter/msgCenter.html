@@ -1,7 +1,7 @@
 <ul class="al-msg-center clearfix">
-  <li uib-dropdown ng-show="notifications.length > 0">
+  <li uib-dropdown ng-show="hotOrders.length > 0 || ($getPermissions() && (errors | filter: {read: false}) > 0)">
     <a href uib-dropdown-toggle>
-      <i class="fa fa-bell-o"></i><span>{{notifications.length}}</span>
+      <i class="fa fa-bell-o"></i><span>{{hotOrders.length + ($getPermissions() ? (errors | filter: {read: false}).length : 0)}}</span>
       <div class="notification-ring"></div>
     </a>
 
@@ -12,11 +12,19 @@
         <strong>Уведомления</strong>
       </div>
       <div class="msg-list">
-        <a href ui-sref="nomenclature-custom({id: msg.id})" class="clearfix" ng-repeat="msg in notifications">
-          <div class="img-area"><i class="fa fa-exclamation"></i></div>
+        <a href class="clearfix" ng-repeat="err in errors | filter: {read: false} | orderBy:'date':true " ng-click="showError(err.id)" ng-show="$getPermissions()">
+          <div class="img-area bug"><i class="fa fa-bug"></i></div>
           <div class="msg-area">
-            <div>Истекает срок заказа <strong>{{msg.code}}</strong></div>
-            <span>{{ msg.dateDeadline }}</span>
+            <div>{{ err.title }}</div>
+            <span>{{ (err.date | date:"dd MMMM yyyy, EEEE") }}</span>
+          </div>
+        </a>
+        <div class="separator" ng-show="$getPermissions() && (errors | filter: {read: false}).length > 0"></div>
+        <a href class="clearfix" ng-repeat="order in hotOrders" ui-sref="nomenclature-custom({id: order.id})">
+          <div class="img-area" ng-class="order.expired ? 'danger' : ''"><i class="fa fa-exclamation"></i></div>
+          <div class="msg-area">
+            <div>{{ order.expired ? 'Истек' : 'Истекает' }} срок заказа <strong>{{order.code}}</strong></div>
+            <span>{{ (order.dateDeadline | date:"dd MMMM yyyy, EEEE") }}</span>
           </div>
         </a>
       </div>

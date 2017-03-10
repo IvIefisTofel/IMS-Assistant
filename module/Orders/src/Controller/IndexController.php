@@ -318,14 +318,14 @@ class IndexController extends MCmsController
                 break;
             case "get":
                 if ($id === null)
-                    $error = "Error: id is not valid!";
+                    $error = self::INVALID_ID;
                 else {
                     $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('\Orders\Entity\Orders')->find($id));
                 }
                 break;
             case "get-by-client": case "getbyclient": case "getByClient":
                 if ($id === null)
-                    $error = "Error: id is not valid!";
+                    $error = self::INVALID_ID;
                 else {
                     $clientName = $this->entityManager->getRepository('\Clients\Entity\Clients')->findOneById($id)->getName();
                     $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('Orders\Entity\OrdersView')->findByClientId($id));
@@ -333,7 +333,7 @@ class IndexController extends MCmsController
                 break;
             case "get-with-client": case "getwithclient": case "getWithClient":
                 if ($id === null)
-                    $error = "Error: id is not valid!";
+                    $error = self::INVALID_ID;
                 else {
                     $clientName = $this->entityManager->getRepository('\Clients\Entity\Clients')->findOneById($id)->getName();
                 }

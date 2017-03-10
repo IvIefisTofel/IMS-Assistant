@@ -19,7 +19,7 @@
       {
         text: "Добавить",
         class: "btn-success",
-        iconClass: "fa fa-user-plus",
+        iconClass: "fa fa-plus",
         action: 'addOrder'
       },
       {

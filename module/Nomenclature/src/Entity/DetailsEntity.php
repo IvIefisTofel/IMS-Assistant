@@ -9,7 +9,6 @@ class DetailsEntity extends MCmsEntity
 {
     /**
      * @var integer
-     *
      * @ORM\Column(name="detailId", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -18,63 +17,54 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="detailOrderId", type="integer", nullable=false)
      */
     protected $orderId;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="detailGroup", type="string", length=255, nullable=true)
      */
     protected $group;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="detailCode", type="string", length=255, nullable=false)
      */
     protected $code;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="detailName", type="string", length=255, nullable=false)
      */
     protected $name;
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="detailPattern", type="integer", nullable=true)
      */
     protected $pattern;
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="detailModel", type="integer", nullable=true)
      */
     protected $model;
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="detailProject", type="integer", nullable=true)
      */
     protected $project;
 
     /**
      * @var \DateTime
-     *
      * @ORM\Column(name="detailCreationDate", type="date", nullable=false)
      */
     protected $dateCreation;
 
     /**
      * @var \DateTime
-     *
      * @ORM\Column(name="detailEndDate", type="date", nullable=true)
      */
     protected $dateEnd = null;
@@ -87,7 +77,6 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get id
-     *
      * @return integer
      */
     public function getId()
@@ -97,7 +86,6 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get order id
-     *
      * @return integer
      */
     public function getOrderId()
@@ -107,7 +95,6 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get group
-     *
      * @return string
      */
     public function getGroup()
@@ -117,7 +104,6 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get code
-     *
      * @return string
      */
     public function getCode()
@@ -127,7 +113,6 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get name
-     *
      * @return string
      */
     public function getName()
@@ -137,7 +122,6 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get pattern
-     *
      * @return integer
      */
     public function getPattern()
@@ -147,7 +131,6 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get model
-     *
      * @return integer
      */
     public function getModel()
@@ -157,7 +140,6 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get project
-     *
      * @return integer
      */
     public function getProject()
@@ -167,10 +149,8 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get dateCreation
-     *
      * @param bool $formatted
-     *
-     * @return \DateTime
+     * @return string | \DateTime
      */
     public function getDateCreation($formatted = true)
     {
@@ -182,10 +162,8 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get Formatted End Date
-     *
      * @param string $format
-     *
-     * @return \DateTime
+     * @return string
      */
     public function getDateCreationFormat($format = "d.m.Y")
     {
@@ -197,10 +175,8 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get dateEnd
-     *
      * @param bool $formatted
-     *
-     * @return \DateTime
+     * @return string | \DateTime
      */
     public function getDateEnd($formatted = true)
     {
@@ -212,10 +188,8 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get Formatted End Date
-     *
      * @param string $format
-     *
-     * @return \DateTime
+     * @return string
      */
     public function getDateEndFormat($format = "d.m.Y")
     {

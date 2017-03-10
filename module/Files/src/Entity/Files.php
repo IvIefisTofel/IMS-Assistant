@@ -17,7 +17,6 @@ class Files extends MCmsEntity
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="fileId", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -26,14 +25,12 @@ class Files extends MCmsEntity
 
     /**
      * @var string
-     *
      * @ORM\Column(name="fileName", type="string", length=255, nullable=false)
      */
     protected $name;
 
     /**
      * Get id
-     *
      * @return integer
      */
     public function getId()
@@ -43,9 +40,7 @@ class Files extends MCmsEntity
 
     /**
      * Set name
-     *
      * @param string $name
-     *
      * @return Files
      */
     public function setName($name)
@@ -57,7 +52,6 @@ class Files extends MCmsEntity
 
     /**
      * Get name
-     *
      * @return string
      */
     public function getName()

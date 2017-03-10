@@ -2,9 +2,9 @@
 
 namespace Nomenclature\Controller\Plugin;
 
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use MCms\Controller\Plugin\MCmsPlugin;
 
-class DetailsPlugin extends AbstractPlugin
+class DetailsPlugin extends MCmsPlugin
 {
     public function toArray($details = null, $options = [])
     {
@@ -13,10 +13,7 @@ class DetailsPlugin extends AbstractPlugin
             $allVersions = isset($options['allVersions']) ? $options['allVersions'] : false;
             $saveIds = isset($options['saveIds']) ? $options['saveIds'] : false;
 
-            /* @var $em \Doctrine\ORM\EntityManager */
-            $em = $this->getController()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             $result = [];
-
             if (!is_array($details)) {
                 $details = [$details];
             }

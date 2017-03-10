@@ -15,14 +15,12 @@ class OrdersView extends OrdersEntity
 {
     /**
      * @var string
-     *
      * @ORM\Column(name="clientName", type="string", length=255, nullable=false, unique=true)
      */
     protected $clientName;
 
     /**
      * Get clientName
-     *
      * @return string
      */
     public function getClientName()

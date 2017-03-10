@@ -14,7 +14,6 @@ class Collections
 {
     /**
      * @var integer
-     *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
@@ -23,7 +22,6 @@ class Collections
 
     /**
      * @var integer
-     *
      * @ORM\Column(name="fileId", type="integer", nullable=false)
      * @ORM\Id
      */
@@ -32,7 +30,6 @@ class Collections
 
     /**
      * Get id
-     *
      * @return int
      */
     public function getId()
@@ -42,7 +39,6 @@ class Collections
 
     /**
      * Set Id
-     *
      * @param int $id
      */
     public function setId($id)
@@ -52,7 +48,6 @@ class Collections
 
     /**
      * Get File Id
-     *
      * @return int
      */
     public function getFileId()
@@ -62,7 +57,6 @@ class Collections
 
     /**
      * Set File Id
-     *
      * @param int $fileId
      */
     public function setFileId(int $fileId)
