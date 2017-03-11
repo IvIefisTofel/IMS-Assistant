@@ -153,6 +153,7 @@ return [
         "/bower/bootstrap-switch/dist/js/bootstrap-switch.min.js",
         "/bower/bootstrap-select/dist/js/bootstrap-select.min.js",
         "/bower/bootstrap/js/dropdown.js",
+        "/bower/bootstrap/js/modal.js",
         "/bower/angular-ui-sortable/sortable.min.js",
         "/bower/jquery-ui/jquery-ui.min.js",
         "/bower/angular-touch/angular-touch.min.js",

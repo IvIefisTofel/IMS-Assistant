@@ -89,12 +89,23 @@
     });
 
     if ($rootScope.$getPermissions()) {
-        Idle.watch();
+      Idle.watch();
     }
 
     $rootScope.gallery = {
-        images: null,
-        methods: {}
+      images: null,
+      methods: {},
+      isOpened: false,
+      opened: function(){
+        $rootScope.gallery.isOpened = true;
+      },
+      closed: function(){
+        var modal = $('.modal');
+        if (modal.length == 1 && $rootScope.gallery.isOpened) {
+          modal.focus();
+        }
+        $rootScope.gallery.isOpened = false;
+      }
     };
 
     $rootScope.isNull = function(v) {

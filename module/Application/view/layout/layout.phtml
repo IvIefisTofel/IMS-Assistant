@@ -51,6 +51,8 @@ echo $this->doctype();
     methods="gallery.methods"
     thumbnails="false"
     bg-close="true"
+    on-open="gallery.opened()"
+    on-close="gallery.closed()"
 ></ng-image-gallery>
 <?=$this->inlineScript() ?>
 
