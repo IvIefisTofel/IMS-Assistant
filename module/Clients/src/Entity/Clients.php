@@ -104,7 +104,7 @@ class Clients extends MCmsEntity
      * @param integer $filesGroup
      * @return Clients
      */
-    public function setFilesGroup($filesGroup)
+    public function setAdditions($filesGroup)
     {
         $this->filesGroup = $filesGroup;
 

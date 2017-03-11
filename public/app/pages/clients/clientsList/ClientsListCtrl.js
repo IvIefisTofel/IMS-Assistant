@@ -6,8 +6,10 @@
   /** @ngInject */
   function ClientsListCtrl($scope, $rootScope, $uibModal, $http, $filter) {
     $scope.clients = [];
+    $scope.showErrors = false;
     $scope.loading = true;
     $scope.current = null;
+    $scope.search = '';
     $scope.newClient = {
       name: '',
       description: ''
@@ -35,25 +37,69 @@
       }
     ];
 
-    $scope.$watch('current', function(newVal, oldVal){
-      if (newVal != oldVal) {
-        if (newVal == null) {
-          $scope.actions = [$scope.actionVariants[0], $scope.actionVariants[2]];
-        } else {
-          $scope.actions = $scope.actionVariants;
-        }
-      }
-    });
-
     var modalInstance = null;
     $scope.modal = {
       add: null,
-      client: null
+      client: null,
+      save: function(){
+        if (isNull($scope.modal.client.editName)) {
+          $scope.showErrors = true;
+        } else {
+          var send = new FormData(), i;
+          send.append('clientName', $scope.modal.client.editName);
+          if (!isNull($scope.modal.client.editDescription)) {
+            send.append('clientDescription', $scope.modal.client.editDescription);
+          }
+          if (!isNull($scope.modal.client.updAddons)) {
+            angular.forEach($scope.modal.client.updAddons, function(file, key){
+              send.append('clientAddons[' + key + ']', file);
+            });
+          }
+          if (!isNull($scope.modal.client.newAddons)) {
+            for (i = 0; i < $scope.modal.client.newAddons.length; i++) {
+              send.append('clientNewAddons[]', $scope.modal.client.newAddons[i]);
+            }
+          }
+
+          var $url = ($scope.modal.add ? "/api/clients/add" : "/api/clients/update/" + $scope.modal.client.id);
+          $http.post($url, send, {
+            transformRequest: angular.identity,
+            headers: {'Content-Type': undefined}
+          }).then(function successCallback(response) {
+            if (response.data.error) {
+              console.log(response.data.error);
+            } else {
+              var data = response.data[0];
+              data.editName = data.name;
+              data.editDescription = data.description;
+              if (!$scope.modal.add) {
+                $scope.filtred[$scope.current] = $scope.modal.client = data;
+              } else {
+                var id = data.id;
+                $scope.clients.push(data);
+                $scope.filtred = $filter('orderBy')($filter('filter')($scope.clients, { name: $scope.search }), 'name');
+                for (var i = 0; i < $scope.filtred.length; i++) {
+                  if (id == $scope.filtred[i].id) {
+                    $scope.current = i;
+                    break;
+                  }
+                }
+                $scope.newClient = {
+                  name: '',
+                  description: ''
+                };
+              }
+              modalInstance.dismiss();
+            }
+          }, function errorCallback(response) {
+            console.log(response.statusText);
+          });
+        }
+      }
     };
     function modalClose(){
       modalInstance = null;
       $scope.modal.add = null;
-      $scope.modal.client = $filter('filter')($scope.clients, $scope.search)[$scope.current];
     }
     function modalRendered(){
       $('#client-add').focus();
@@ -112,22 +158,21 @@
     };
 
     $scope.showInfo = function(key) {
-      var filtred = $filter('filter')($scope.clients, $scope.search);
       if ($scope.modal.client == $scope.newClient) {
         if (key > $scope.current) {
           $scope.current = 0;
         } else {
-          $scope.current = filtred.length - 1;
+          $scope.current = $scope.filtred.length - 1;
         }
         $scope.modal.add = false;
-        $scope.modal.client = $filter('filter')($scope.clients, $scope.search)[$scope.current];
+        $scope.modal.client = $scope.filtred[$scope.current];
       } else {
-        if (key < 0 || key >= filtred.length) {
+        if (key < 0 || key >= $scope.filtred.length) {
           $scope.modal.client = $scope.newClient;
           $scope.modal.add = true;
         } else {
           $scope.current = key;
-          $scope.modal.client = $filter('filter')($scope.clients, $scope.search)[$scope.current];
+          $scope.modal.client = $scope.filtred[$scope.current];
         }
       }
     };
@@ -141,6 +186,25 @@
       }
     };
 
+    $scope.filtred = [];
+    $scope.$watch("search", function(){
+      $scope.filtred = $filter('orderBy')($filter('filter')($scope.clients, { name: $scope.search }), 'name');
+      if (isNull($scope.filtred) || $scope.current == null) {
+        $scope.actions = [$scope.actionVariants[0], $scope.actionVariants[2]];
+      } else {
+        $scope.actions = $scope.actionVariants;
+      }
+    });
+    $scope.$watch('current', function(newVal, oldVal){
+      if (newVal != oldVal) {
+        if (newVal == null) {
+          $scope.actions = [$scope.actionVariants[0], $scope.actionVariants[2]];
+        } else {
+          $scope.actions = $scope.actionVariants;
+        }
+      }
+    });
+
     $scope.refreshData = function () {
       $scope.loading = true;
 
@@ -150,17 +214,21 @@
           console.log(data);
         } else {
           $scope.clients = data;
+          $scope.filtred = $filter('orderBy')($filter('filter')($scope.clients, { name: $scope.search }), 'name');
           angular.forEach($scope.clients, function(client, key){
             client.editName = client.name;
             client.editDescription = client.description;
           });
-          $scope.loading = false;
-          if ($scope.clients.length > 0) {
-            if (isNull($scope.current)) {
+          if ($scope.filtred.length > 0) {
+            if (isNull($scope.current) || $scope.current >= $scope.filtred.length) {
               $scope.current = 0;
             }
             $scope.showInfo($scope.current);
+          } else {
+            $scope.current = null;
           }
+
+          $scope.loading = false;
         }
       }, function errorCallback(response) {
         console.log(response.statusText);

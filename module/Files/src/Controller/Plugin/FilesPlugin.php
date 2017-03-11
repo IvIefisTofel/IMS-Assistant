@@ -83,6 +83,6 @@ class FilesPlugin extends MCmsPlugin
             }
             $this->entityManager->remove($version);
         }
-        $this->entityManager->flush();
+        //$this->entityManager->flush();
     }
 }

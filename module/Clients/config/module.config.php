@@ -42,7 +42,6 @@ return [
     'controllers' => [
         'invokables' => [
             'Clients\Controller\Index' => Controller\IndexController::class,
-            'Clients\Controller\Forms' => Controller\FormsController::class,
         ],
     ],
     'controller_plugins' => [

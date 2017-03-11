@@ -15,9 +15,9 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label" for="clientName">Имя клиента</label>
-                        <div class="col-sm-10">
+                    <div class="form-group" ng-class="{ 'has-error': showErrors && isNull(modal.client.editName) }">
+                        <label class="col-md-2 control-label" for="clientName">Имя клиента</label>
+                        <div class="col-md-10">
                             <div class="input-group">
                                 <input type="text" id="clientName" placeholder="Имя клиента" class="form-control" ng-model="modal.client.editName">
                                 <span class="input-group-btn">
@@ -25,10 +25,13 @@
                                 </span>
                             </div>
                         </div>
+                        <div class="help-block col-md-offset-2 col-md-10" ng-show="showErrors && isNull(modal.client.editName)">
+                            <p>Поле обязательно к заполнению.</p>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label" for="clientDescription">Описание клиента</label>
-                        <div class="col-sm-10">
+                        <label class="col-md-2 control-label" for="clientDescription">Описание клиента</label>
+                        <div class="col-md-10">
                             <div class="input-group input-group-textarea">
                                 <textarea id="clientDescription" placeholder="Описание клиента" class="form-control" ng-model="modal.client.editDescription"></textarea>
                                 <div class="input-group-addon">
@@ -38,17 +41,17 @@
                         </div>
                     </div>
                     <div class="form-group client-addons">
-                        <div class="row"><div class="col-sm-12">
-                            <label class="col-sm-2 control-label" for="file">Вложения</label>
-                            <div class="col-sm-10">
+                        <div class="row"><div class="col-md-12">
+                            <label class="col-md-2 control-label" for="file">Вложения</label>
+                            <div class="col-md-10">
                                 <div class="btn btn-primary btn-xs btn-file pull-right">
                                     <i class="fa fa-plus"></i> Добавить
                                     <input type="file" id="file" multiple="multiple" onchange="angular.element(this).scope().files.add(this)">
                                 </div>
                             </div>
                         </div></div>
-                        <div class="row" ng-if="modal.client.newAddons.length > 0 || modal.client.additions.length > 0"><div class="col-sm-12">
-                            <div class="col-sm-offset-2 col-sm-10">
+                        <div class="row"><div class="col-md-12">
+                            <div class="col-md-offset-2 col-md-10">
                                 <div id="new-models" class="alert alert-info" ng-show="modal.client.newAddons.length > 0 || !isNull(modal.client.updAddons)">
                                     <ul>
                                         <li ng-repeat="(key, file) in modal.client.newAddons">{{file.name}}
@@ -60,8 +63,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="alert alert-default files">
-                                    <h3 ng-hide="modal.client.additions.length > 0">Моделей нет.</h3>
+                                <div class="alert alert-default files" ng-if="modal.client.additions.length">
                                     <div class="btn-group" uib-dropdown ng-repeat="file in modal.client.additions">
                                         <button class="btn btn-xs" ng-class="modal.client.updAddons[file.id] ? 'btn-info' : 'btn-primary'" uib-dropdown-toggle>
                                             {{file.name}} <span class="caret"></span>
@@ -86,6 +88,6 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-success btn-no-transform">Добавить</button>
+        <button type="button" class="btn btn-success btn-no-transform" ng-click="modal.save()">Сохранить</button>
     </div>
 </div>

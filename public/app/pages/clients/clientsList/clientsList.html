@@ -8,20 +8,20 @@
                         <h3>Список клиентов</h3>
                     </div>
                     <div class="col-md-6 col-sm-12 col-xs-12">
-                        <input ng-model="search.name" type="text" name="criteria" class="form-control" placeholder="Поиск..."/>
+                        <input ng-model="search" type="text" name="criteria" class="form-control" placeholder="Поиск..."/>
                     </div>
                 </div>
             </div>
             <div class="panel-body">
-                <div ng-if="loading" class="no-data">
+                <div ng-show="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
-                <div ng-if="!loading && clients.length == 0" class="no-data">
+                <div ng-show="!loading && filtred.length == 0" class="no-data">
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
                 <table ng-if="!loading" class="table table-hover">
-                    <tr ng-if="clients.length != 0" ng-repeat="(key, item) in clients | filter:search" ng-click="showInfo(key)" ng-class="{active: key == current}" class="no-top-border">
+                    <tr ng-repeat="(key, item) in filtred" ng-click="showInfo(key)" ng-class="{active: key == current}" class="no-top-border">
                         <td ng-class="nowrap">{{item.name}}</td>
                         <td class="align-right">
                             <a ui-sref="orders-custom({id: item.id})" class="btn btn-xs btn-primary">Заказы</a>
@@ -44,19 +44,19 @@
                 <div ng-show="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
-                <div ng-show="!loading && clients.length == 0" class="no-data">
+                <div ng-show="!loading && filtred.length == 0" class="no-data">
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
-                <div ng-show="!loading && clients.length > 0">
+                <div ng-if="!loading && filtred.length">
                     <div class="row">
                         <div class="col-md-12">
-                            <pre class="text">{{(current == null) ? 'Клиент не выбран.' : isNull((clients | filter:search)[current].description) ? 'Нет информации.' : (clients | filter:search)[current].description}}</pre>
+                            <pre class="text">{{(current == null) ? 'Клиент не выбран.' : isNull(filtred[current].description) ? 'Нет информации.' : filtred[current].description}}</pre>
                         </div>
                     </div>
-                    <div class="row" ng-repeat="(key, client) in clients | filter:search" ng-show="key == current">
+                    <div class="row" ng-repeat="(key, client) in filtred" ng-show="key == current">
                         <div ng-show="(client.additions != null && client.additions.length > 0)" class="col-md-12 adds">
-                            <a ng-repeat="file in client.additions" class="btn btn-primary btn-xs" href="/files/{{file.versions[0].id}}/{{file.name}}" download="download">{{file.name}}</a>
+                            <a ng-repeat="file in client.additions" class="btn btn-primary btn-xs" href="/files/{{file.versions[0].id}}/{{file.name}}" download="{{file.name}}">{{file.name}}</a>
                         </div>
                     </div>
                 </div>
