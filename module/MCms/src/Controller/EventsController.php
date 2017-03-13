@@ -48,7 +48,7 @@ class EventsController extends MCmsController
                         $client = $this->entityManager->getRepository($entityClass)->find($event->getEntityId());
                         /* @var $client \Clients\Entity\Clients */
                         $msg = str_replace('{user}', "<b>" . $user->getFullName() . "</b>", Events::E_TEXTS[$event->getType()]);
-                        $events[$key]['message'] = str_replace('{client}', "<a href ui-sref=\"clients\">" . $client->getName() . "</a>", $msg);
+                        $events[$key]['message'] = str_replace('{client}', "<a href='/#'>" . $client->getName() . "</a>", $msg);
                         break;
                     case \Orders\Entity\Orders::class:
                         $order = $this->entityManager->getRepository($entityClass)->find($event->getEntityId());
@@ -58,51 +58,14 @@ class EventsController extends MCmsController
                         } else {
                             $msg = Events::E_TEXTS[$event->getType()];
                         }
-                        $events[$key]['message'] = str_replace('{order}', "<a href ui-sref=\"orders-custom({id: " . $order->getId() . "})\">" . $order->getCode() . "</a>", $msg);
+                        $events[$key]['message'] = str_replace('{order}', "<a href=\"/#/orders/nomenclature/" . $order->getId() . "\">" . $order->getCode() . "</a>", $msg);
                         break;
                     case \Nomenclature\Entity\Details::class:
-                        if (in_array($event->getType(), [
-                            Events::E_DEADLINE_MISSED,
-                            Events::E_DETAIL_CREATE,
-                            Events::E_DETAIL_UPDATE,
-                            Events::E_DETAIL_END,
-                        ])) {
-                            $detail = $this->entityManager->getRepository($entityClass)->find($event->getEntityId());
-                            /* @var $detail \Nomenclature\Entity\Details */
-                            $msg = str_replace('{user}', "<b>" . $user->getFullName() . "</b>", Events::E_TEXTS[$event->getType()]);
-                            $events[$key]['message'] = str_replace('{detail}', "<a href ui-sref=\"nomenclature-custom({id: " . $detail->getId() . "})\">" . $detail->getCode() . ' (' . $detail->getName() . ')' . "</a>", $msg);
-                            break;
-                        }
-                        if (in_array($event->getType(), [
-                            Events::E_PATTERN_CREATE,
-                            Events::E_PATTERN_UPDATE,
-                            Events::E_MODEL_CREATE,
-                            Events::E_MODEL_UPDATE,
-                            Events::E_PROJECT_CREATE,
-                            Events::E_PROJECT_UPDATE,
-                        ])) {
-                            $file = $this->entityManager->getRepository(\Files\Entity\Files::class)->find($event->getEntityId());
-                            /* @var $file \Files\Entity\Files */
-                            $msg = str_replace('{user}', "<b>" . $user->getFullName() . "</b>", Events::E_TEXTS[$event->getType()]);
-                            $collection = $this->entityManager->getRepository(\Files\Entity\Collections::class)->findOneByFileId($file->getId());
-                            /* @var $collection \Files\Entity\Collections */
-                            switch ($event->getType()) {
-                                case Events::E_PATTERN_CREATE: case Events::E_PATTERN_UPDATE:
-                                    $detail = $this->entityManager->getRepository(\Nomenclature\Entity\Details::class)->findOneBy(['pattern'=>$collection->getId()]);
-                                    $msg = str_replace('{detail}', "<a href ui-sref=\"nomenclature-custom({id: " . $detail->getId() . "})\">" . $detail->getCode() . ' (' . $detail->getName() . ')' . "</a>", $msg);
-                                    break;
-                                case Events::E_MODEL_CREATE: case Events::E_MODEL_UPDATE:
-                                    $detail = $this->entityManager->getRepository(\Nomenclature\Entity\Details::class)->findOneBy(['model'=>$collection->getId()]);
-                                    $msg = str_replace('{detail}', "<a href ui-sref=\"nomenclature-custom({id: " . $detail->getId() . "})\">" . $detail->getCode() . ' (' . $detail->getName() . ')' . "</a>", $msg);
-                                    break;
-                                case Events::E_PROJECT_CREATE: case Events::E_PROJECT_UPDATE:
-                                    $detail = $this->entityManager->getRepository(\Nomenclature\Entity\Details::class)->findOneBy(['project'=>$collection->getId()]);
-                                    $msg = str_replace('{detail}', "<a href ui-sref=\"nomenclature-custom({id: " . $detail->getId() . "})\">" . $detail->getCode() . ' (' . $detail->getName() . ')' . "</a>", $msg);
-                                    break;
-                            }
-                            $events[$key]['message'] = str_replace('{file}', "<b>" . $file->getName().+ "</b>", $msg);
-                            break;
-                        }
+                        $detail = $this->entityManager->getRepository($entityClass)->find($event->getEntityId());
+                        /* @var $detail \Nomenclature\Entity\Details */
+                        $msg = str_replace('{user}', "<b>" . $user->getFullName() . "</b>", Events::E_TEXTS[$event->getType()]);
+                        $events[$key]['message'] = str_replace('{detail}', "<a href=\"/#/orders/nomenclature/detail/" . $detail->getId() . "\">" . $detail->getCode() . ' (' . $detail->getName() . ')' . "</a>", $msg);
+                        break;
                 }
                 $result = $events;
             }

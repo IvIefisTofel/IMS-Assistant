@@ -71,12 +71,12 @@ class Events extends EventsView
         self::E_DETAIL_CREATE   => 'Пользователь {user} создал деталь {detail}.',
         self::E_DETAIL_UPDATE   => 'Пользователь {user} обновил информацию о детали {detail}.',
         self::E_DETAIL_END      => 'Пользователь {user} закрыл деталь {detail}.',
-        self::E_PATTERN_CREATE  => 'Пользователь {user} добавил {file} в деталь {detail}.',
-        self::E_PATTERN_UPDATE  => 'Пользователь {user} обновил {file} в детали {detail}.',
-        self::E_MODEL_CREATE    => 'Пользователь {user} добавил {file} в деталь {detail}.',
-        self::E_MODEL_UPDATE    => 'Пользователь {user} обновил {file} в детали {detail}.',
-        self::E_PROJECT_CREATE  => 'Пользователь {user} добавил {file} в деталь {detail}.',
-        self::E_PROJECT_UPDATE  => 'Пользователь {user} обновил {file} в детали {detail}.',
+        self::E_PATTERN_CREATE  => 'Пользователь {user} добавил чертеж в деталь {detail}.',
+        self::E_PATTERN_UPDATE  => 'Пользователь {user} обновил чертеж в детали {detail}.',
+        self::E_MODEL_CREATE    => 'Пользователь {user} добавил модель в деталь {detail}.',
+        self::E_MODEL_UPDATE    => 'Пользователь {user} обновил модель в детали {detail}.',
+        self::E_PROJECT_CREATE  => 'Пользователь {user} добавил проект в деталь {detail}.',
+        self::E_PROJECT_UPDATE  => 'Пользователь {user} обновил проект в детали {detail}.',
     ];
 
     const E_CLASS_PRIMARY   = 'primary';
