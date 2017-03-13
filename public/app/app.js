@@ -12,6 +12,7 @@ angular.module('BlurAdmin', [
   'bootstrap3-typeahead',
   'thatisuday.ng-image-gallery',
   'ngIdle',
+  'angular-inview',
   // 'ui.sortable',
   // 'ngTouch',
   // 'toastr',

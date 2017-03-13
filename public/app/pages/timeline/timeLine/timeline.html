@@ -1,0 +1,16 @@
+<section id="cd-timeline" class="cd-container cssanimations">
+    <div class="cd-timeline-block" ng-repeat="item in list">
+        <div class="cd-timeline-img">
+            <div class="timeline-icon" ng-class="isNull(item.css.class) ? 'default' : item.css.class">
+                <i class="fa" ng-class="item.css.icon"></i>
+            </div>
+        </div>
+        <div class="cd-timeline-content" ng-class="isNull(item.css.class) ? '' : 'timeline-content-' + item.css.class">
+            <img ng-src="{{item.avatar}}">
+            <p ng-bind-html="item.message"></p>
+            <span class="cd-date">{{ (item.date | date: "dd MMMM yyyy, EEEE") }}</span>
+        </div>
+    </div>
+</section>
+<div class="timeline-loading"><i class="fa fa-spinner fa-spin" ng-show="loading"></i></div>
+<div in-view="endPage($inview)"></div>

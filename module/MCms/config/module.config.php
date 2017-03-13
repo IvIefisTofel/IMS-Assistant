@@ -10,12 +10,27 @@ return [
                 'options' => [
                     'route'    => '/api/errors[/][/:task[/][/:id[/]]]',
                     'constraints' => [
-                        'task'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'id'         => '[0-9]+',
+                        'task'          => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id'            => '[0-9]+',
                     ],
                     'defaults' => [
                         '__NAMESPACE__' => 'MCms\Controller',
-                        'controller'    => 'Error',
+                        'controller'    => 'Errors',
+                        'action'        => 'index',
+                    ],
+                ],
+                'may_terminate' => true,
+            ],
+            'events' => [
+                'type'    => 'Segment',
+                'options' => [
+                    'route'    => '/api/events[/][/:offset[/]]',
+                    'constraints' => [
+                        'offset'        => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        '__NAMESPACE__' => 'MCms\Controller',
+                        'controller'    => 'Events',
                         'action'        => 'index',
                     ],
                 ],
@@ -27,7 +42,8 @@ return [
     'controllers' => [
         'invokables' => [
             'MCms\Controller\Console' => Controller\ConsoleController::class,
-            'MCms\Controller\Error' => Controller\ErrorController::class,
+            'MCms\Controller\Error'   => Controller\ErrorController::class,
+            'MCms\Controller\Events'  => Controller\EventsController::class,
         ],
     ],
     'controller_plugins' => [
@@ -46,6 +62,9 @@ return [
                 'MCms\Controller\Error' => [
                     GUEST_ROLE,
                 ],
+                'MCms\Controller\Events' => [
+                    GUEST_ROLE,
+                ]
             ],
         ],
     ],

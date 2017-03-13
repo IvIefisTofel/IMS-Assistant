@@ -10,6 +10,10 @@ function angularAppJs()
         "/app/pages/errors/errorsList/errorsList.directive.js",
         "/app/pages/errors/errors.module.js",
 
+        "/app/pages/timeline/timeLine/TimelineCtrl.js",
+        "/app/pages/timeline/timeLine/timeline.directive.js",
+        "/app/pages/timeline/timeLine.module.js",
+
         "/app/pages/users/usersList/UsersListCtrl.js",
         "/app/pages/users/usersList/usersList.directive.js",
         "/app/pages/users/users.module.js",
@@ -114,6 +118,7 @@ return [
 
 //        "http://maps.google.com/maps/api/js?sensor=false",
 
+        "/bower/angular-inview/angular-inview.js",
         "/bower/ng-idle/angular-idle.min.js",
         "/js/plugins/ng-image-gallery/ng-image-gallery.js",
         "/bower/tiff/tiff.min.js",

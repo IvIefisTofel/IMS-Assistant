@@ -63,7 +63,8 @@
     "angular-bootstrap3-typeahead": "*",
     "cropper": "^2.3.4",
     "ng-idle": "^1.3.2",
-    "tiff": "https://github.com/seikichi/tiff.js.git"
+    "tiff": "https://github.com/seikichi/tiff.js.git",
+    "angular-inview": "^2.2.0"
   },
   "overrides": {
     "amcharts": {

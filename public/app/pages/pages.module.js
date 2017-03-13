@@ -6,6 +6,7 @@
     'BlurAdmin.pages.orders',
     'BlurAdmin.pages.nomenclature',
     'BlurAdmin.pages.users',
+    'BlurAdmin.pages.timeline',
     'BlurAdmin.pages.errors'
   ]).config(routeConfig);
 
