@@ -70,7 +70,7 @@ class EventsView extends MCmsEntity
     /**
      * @return int
      */
-    public function getType(): int
+    public function getType()
     {
         return $this->type;
     }
@@ -78,7 +78,7 @@ class EventsView extends MCmsEntity
     /**
      * @return int
      */
-    public function getEntityId(): int
+    public function getEntityId()
     {
         return $this->entityId;
     }
@@ -101,7 +101,7 @@ class EventsView extends MCmsEntity
      * @param string $format
      * @return string
      */
-    public function getDateFormat($format = "d.m.Y"): string
+    public function getDateFormat($format = "d.m.Y")
     {
         if ($this->date != null)
             return date_format($this->date, $format);

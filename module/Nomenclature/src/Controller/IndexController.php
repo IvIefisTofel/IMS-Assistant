@@ -3,9 +3,13 @@
 namespace Nomenclature\Controller;
 
 use MCms\Controller\MCmsController;
-use Nomenclature\Entity\Details;
-use Nomenclature\Entity\DetailsArchive;
+use MCms\Entity\Events;
 use Zend\View\Model\JsonModel;
+use Orders\Entity\Orders;
+use MCms\Entity\Events as Event;
+use Nomenclature\Entity\Details;
+use Nomenclature\Entity\DetailsView;
+use Nomenclature\Entity\DetailsArchive;
 use Nomenclature\Form\DetailsUpload as Form;
 use Files\Entity\Files as File;
 use Files\Entity\FileVersion as Version;
@@ -58,19 +62,20 @@ class IndexController extends MCmsController
             }
         }
 
+        $events = [];
+        $flush = [];
         switch ($task) {
             case "add":
                 $data = $request->getPost()->toArray();
-                /* @var $detail \Nomenclature\Entity\Details */
-                $detail = new \Nomenclature\Entity\Details();
-                $detail->setOrderId($data['orderId']);
-                $detail->setGroup((isset($data['group']) && $data['group'] != null) ? $data['group'] : null);
-                $detail->setCode($data['code']);
-                $detail->setName($data['name']);
-                $detail->setDateCreation(new \DateTime($data['dateCreation']));
-                $detail->setDateEnd((isset($data['dateEnd']) && $data['dateEnd'] != null) ? new \DateTime($data['dateEnd']) : null);
+                $detail = new Details();
+                
                 $id = true;
+                goto detail;
             case "update":
+                /* @var $detail Details */
+                $detail = $this->entityManager->getRepository(Details::class)->find($id);
+                $update = true;
+                detail:
                 if ($id === null)
                     $error = self::INVALID_ID;
                 else {
@@ -104,17 +109,79 @@ class IndexController extends MCmsController
                     }
                     unset($data['new']);
 
-                    if (!isset($detail)) {
-                        $detail = $this->entityManager->getRepository('Nomenclature\Entity\Details')->find($id);
+                    $edited = false;
+                    if ($detail->getOrderId() != $data['orderId']) {
                         $detail->setOrderId($data['orderId']);
-                        $detail->setGroup((isset($data['group']) && $data['group'] != null) ? $data['group'] : null);
+                        $edited = true;
+                    }
+                    if (($group = (isset($data['group']) && $data['group'] != null) ? $data['group'] : null) != $detail->getGroup()) {
+                        $detail->setGroup($group);
+                        $edited = true;
+                    }
+                    if ($detail->getCode() != $data['code']) {
                         $detail->setCode($data['code']);
+                        $edited = true;
+                    }
+                    if ($detail->getName() != $data['name']) {
                         $detail->setName($data['name']);
-                        $detail->setDateCreation(new \DateTime($data['dateCreation']));
-                        $detail->setDateEnd((isset($data['dateEnd']) && $data['dateEnd'] != null) ? new \DateTime($data['dateEnd']) : null);
+                        $edited = true;
+                    }
+                    if (($dateCreation = new \DateTime($data['dateCreation'])) != $detail->getDateCreation(false)) {
+                        $detail->setDateCreation($dateCreation);
+                        $edited = true;
+                    }
+                    if (($dateEnd = (isset($data['dateEnd']) && $data['dateEnd'] != null) ? new \DateTime($data['dateEnd']) : null) != $detail->getDateEnd(false)) {
+                        $event = new Event();
+                        $event->setUserId($this->identity()->getId());
+                        if ($detail->getDateEnd(false) == null && $dateEnd != null) {
+                            $event->setType(Event::E_DETAIL_END);
+                        } elseif ($detail->getDateEnd(false) != null && $dateEnd == null) {
+                            $event->setType(EVENT::E_DETAIL_RETURN);
+                        } else {
+                            $edited = true;
+                        }
+                        if ($event->getType() != null) {
+                            if (isset($update)) {
+                                $event->setEntityId($detail->getId());
+                                $flush[] = $event;
+                                if ($event->getType() == Events::E_DETAIL_RETURN) {
+                                    $order = $this->entityManager->getRepository(Orders::class)->find($detail->getOrderId());
+                                    /* @var $order Orders */
+                                    if ($order != null && $order->getDateEnd(false) != null) {
+                                        $order->setDateEnd(null);
+                                        $orderStatus = 1;
+                                        if ($order->getDateStart() != null) {
+                                            $orderStatus = 2;
+                                        }
+                                        $order->setStatus($orderStatus);
+                                        $flush[] = $order;
+
+                                        $event = new Event();
+                                        $event->setUserId($this->identity()->getId());
+                                        $event->setType(EVENT::E_ORDER_RETURN);
+                                        $event->setEntityId($order->getId());
+                                        $flush[] = $event;
+                                    }
+                                }
+                            } else {
+                                $events[] = $event;
+                            }
+                        }
+                        $detail->setDateEnd($dateEnd);
+                    }
+                    if (!isset($update) || $edited) {
+                        $event = new Event();
+                        $event->setUserId($this->identity()->getId());
+                        if (isset($update)) {
+                            $event->setType(Event::E_DETAIL_UPDATE);
+                            $event->setEntityId($detail->getId());
+                            $flush[] = $event;
+                        } else {
+                            $event->setType(Event::E_DETAIL_CREATE);
+                            $events[] = $event;
+                        }
                     }
 
-                    $flush = [];
                     $newCollectionId = $this->plugin('FilesPlugin')->getLastCollectionId() + 1;
 
                     try {
@@ -143,6 +210,16 @@ class IndexController extends MCmsController
                                             $version->setFileId($file->getId());
                                             $version->setPath($fName);
                                             $flush[] = $version;
+
+                                            $event = new Events();
+                                            $event->setUserId($this->identity()->getId());
+                                            $event->setType(Event::E_MODEL_UPDATE);
+                                            if (isset($update)) {
+                                                $event->setEntityId($detail->getId());
+                                                $flush[] = $event;
+                                            } else {
+                                                $events[] = $event;
+                                            }
                                         } else {
                                             $file = new File();
                                             $file->setName($detail->getCode() . '.' . pathinfo($fileData['name'])['extension']);
@@ -158,6 +235,16 @@ class IndexController extends MCmsController
                                             $collection->setId($detail->getModel());
                                             $collection->setFileId($file->getId());
                                             $flush[] = $collection;
+
+                                            $event = new Events();
+                                            $event->setUserId($this->identity()->getId());
+                                            $event->setType(Event::E_MODEL_CREATE);
+                                            if (isset($update)) {
+                                                $event->setEntityId($detail->getId());
+                                                $flush[] = $event;
+                                            } else {
+                                                $events[] = $event;
+                                            }
                                         }
                                     }
                                 } else {
@@ -178,6 +265,16 @@ class IndexController extends MCmsController
                                         $collection->setId($newCollectionId);
                                         $collection->setFileId($file->getId());
                                         $flush[] = $collection;
+
+                                        $event = new Events();
+                                        $event->setUserId($this->identity()->getId());
+                                        $event->setType(Event::E_MODEL_CREATE);
+                                        if (isset($update)) {
+                                            $event->setEntityId($detail->getId());
+                                            $flush[] = $event;
+                                        } else {
+                                            $events[] = $event;
+                                        }
                                     }
                                     $detail->setModel($newCollectionId);
                                     $newCollectionId++;
@@ -204,6 +301,16 @@ class IndexController extends MCmsController
                                             $version->setFileId($file->getId());
                                             $version->setPath($fName);
                                             $flush[] = $version;
+
+                                            $event = new Events();
+                                            $event->setUserId($this->identity()->getId());
+                                            $event->setType(Event::E_PROJECT_UPDATE);
+                                            if (isset($update)) {
+                                                $event->setEntityId($detail->getId());
+                                                $flush[] = $event;
+                                            } else {
+                                                $events[] = $event;
+                                            }
                                         } else {
                                             $file = new File();
                                             $file->setName($detail->getCode() . '.' . pathinfo($fileData['name'])['extension']);
@@ -219,6 +326,16 @@ class IndexController extends MCmsController
                                             $collection->setId($detail->getProject());
                                             $collection->setFileId($file->getId());
                                             $flush[] = $collection;
+
+                                            $event = new Events();
+                                            $event->setUserId($this->identity()->getId());
+                                            $event->setType(Event::E_PROJECT_CREATE);
+                                            if (isset($update)) {
+                                                $event->setEntityId($detail->getId());
+                                                $flush[] = $event;
+                                            } else {
+                                                $events[] = $event;
+                                            }
                                         }
                                     }
                                 } else {
@@ -239,6 +356,16 @@ class IndexController extends MCmsController
                                         $collection->setId($newCollectionId);
                                         $collection->setFileId($file->getId());
                                         $flush[] = $collection;
+
+                                        $event = new Events();
+                                        $event->setUserId($this->identity()->getId());
+                                        $event->setType(Event::E_PROJECT_CREATE);
+                                        if (isset($update)) {
+                                            $event->setEntityId($detail->getId());
+                                            $flush[] = $event;
+                                        } else {
+                                            $events[] = $event;
+                                        }
                                     }
                                     $detail->setProject($newCollectionId);
                                     $newCollectionId++;
@@ -284,6 +411,16 @@ class IndexController extends MCmsController
                                         $collection->setId($detail->getPattern());
                                         $collection->setFileId($file->getId());
                                         $flush[] = $collection;
+
+                                        $event = new Events();
+                                        $event->setUserId($this->identity()->getId());
+                                        $event->setType(Event::E_PATTERN_CREATE);
+                                        if (isset($update)) {
+                                            $event->setEntityId($detail->getId());
+                                            $flush[] = $event;
+                                        } else {
+                                            $events[] = $event;
+                                        }
                                     }
                                 }
                                 unset($data['patterns']['new']);
@@ -318,6 +455,16 @@ class IndexController extends MCmsController
                                     $version->setFileId($file->getId());
                                     $version->setPath($fName);
                                     $flush[] = $version;
+
+                                    $event = new Events();
+                                    $event->setUserId($this->identity()->getId());
+                                    $event->setType(Event::E_PATTERN_UPDATE);
+                                    if (isset($update)) {
+                                        $event->setEntityId($detail->getId());
+                                        $flush[] = $event;
+                                    } else {
+                                        $events[] = $event;
+                                    }
                                 }
                             }
                         } else {
@@ -358,6 +505,16 @@ class IndexController extends MCmsController
                                     $collection->setId($newCollectionId);
                                     $collection->setFileId($file->getId());
                                     $flush[] = $collection;
+
+                                    $event = new Events();
+                                    $event->setUserId($this->identity()->getId());
+                                    $event->setType(Event::E_PATTERN_CREATE);
+                                    if (isset($update)) {
+                                        $event->setEntityId($detail->getId());
+                                        $flush[] = $event;
+                                    } else {
+                                        $events[] = $event;
+                                    }
                                 }
                                 $detail->setPattern($newCollectionId);
                                 $newCollectionId++;
@@ -370,15 +527,28 @@ class IndexController extends MCmsController
                         $this->entityManager->persist($detail);
                         $this->entityManager->flush();
 
-                        $notDoneDetail = $this->entityManager->getRepository('Nomenclature\Entity\Details')->findOneBy(['orderId' => $detail->getOrderId(), 'dateEnd' => null]);
+                        foreach ($events as $event) {
+                            /* @var $event Event */
+                            $event->setEntityId($detail->getId());
+                            $this->entityManager->persist($event);
+                        }
+
+                        $notDoneDetail = $this->entityManager->getRepository(Details::class)->findOneBy(['orderId' => $detail->getOrderId(), 'dateEnd' => null]);
                         if ($notDoneDetail == null) {
-                            /* @var $lastDoneDetail \Nomenclature\Entity\Details */
-                            $lastDoneDetail = $this->entityManager->getRepository('Nomenclature\Entity\Details')->findOneBy(['orderId' => $detail->getOrderId()], ['dateEnd' => 'DESC']);
-                            /* @var $order \Orders\Entity\Orders */
-                            $order = $this->entityManager->getRepository('Orders\Entity\Orders')->find($detail->getOrderId());
+                            /* @var $lastDoneDetail Details */
+                            $lastDoneDetail = $this->entityManager->getRepository(Details::class)->findOneBy(['orderId' => $detail->getOrderId()], ['dateEnd' => 'DESC']);
+                            /* @var $order Orders */
+                            $order = $this->entityManager->getRepository(Orders::class)->find($detail->getOrderId());
                             $order->setDateEnd($lastDoneDetail->getDateEnd());
-                            $order->setStatus(\Orders\Entity\Orders::STATUS_DONE);
+                            $order->setStatus(Orders::STATUS_DONE);
                             $this->entityManager->persist($order);
+
+                            $event = new Event();
+                            $event->setUserId($this->identity()->getId());
+                            $event->setType(Event::E_ORDER_END);
+                            $event->setEntityId($order->getId());
+                            $this->entityManager->persist($event);
+
                             $this->entityManager->flush();
                         }
 
@@ -399,7 +569,7 @@ class IndexController extends MCmsController
                     $error = self::INVALID_ID;
                 else {
                     $tree = false;
-                    $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->find($id);
+                    $data = $this->entityManager->getRepository(DetailsView::class)->find($id);
                     $opts = ['withOrders' => true, 'withFiles' => false];
                     $result['clients'] = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
                 }
@@ -418,12 +588,12 @@ class IndexController extends MCmsController
                 if ($id === null)
                     $error = self::INVALID_ID;
                 else {
-                    $result['order'] = $this->entityManager->getRepository('Orders\Entity\Orders')->find($id)->toArray();
-                    $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findByOrderId($id, ['dateCreation' => 'DESC']);
+                    $result['order'] = $this->entityManager->getRepository(Orders::class)->find($id)->toArray();
+                    $data = $this->entityManager->getRepository(DetailsView::class)->findByOrderId($id, ['dateCreation' => 'DESC']);
                 }
                 break;
             default:
-                $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findBy([], ['dateCreation' => 'DESC']);
+                $data = $this->entityManager->getRepository(DetailsView::class)->findBy([], ['dateCreation' => 'DESC']);
                 if ($allDetails) {
                     $data = array_merge($data, $this->entityManager->getRepository(DetailsArchive::class)->findAll());
                 }

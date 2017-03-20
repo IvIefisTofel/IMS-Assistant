@@ -23,7 +23,7 @@
         start: null,
         end: null
       },
-      tree: false
+      tree: 0
     };
 
     $scope.actions = [
@@ -186,7 +186,7 @@
         } else {
           data = data.data;
           for (var i = 0; i < data.length; i++) {
-            data.date = new Date(data.date);
+            data[i].date = Date.parse(data[i].date);
             $scope.list.push(data[i]);
           }
           $scope.loading = false;
@@ -240,7 +240,7 @@
     }, function errorCallback(response) {
       console.log(response.statusText);
     });
-    $http.post('/api/nomenclature/only-names').then(function successCallback(response) {
+    $http.post('/api/nomenclature/only-names-archive').then(function successCallback(response) {
       var data = response.data;
       if (data.error) {
         console.log(data);

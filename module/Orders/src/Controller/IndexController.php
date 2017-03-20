@@ -5,6 +5,7 @@ namespace Orders\Controller;
 use MCms\Controller\MCmsController;
 use Zend\View\Model\JsonModel;
 use Orders\Form\OrdersUpload as Form;
+use MCms\Entity\Events as Event;
 use Orders\Entity\Orders as Order;
 use Nomenclature\Entity\Details as Detail;
 use Files\Entity\Files as File;
@@ -42,7 +43,9 @@ class IndexController extends MCmsController
 
         $clientName = null;
         $data = [];
+        $flush = [];
         $postData = array_merge($request->getPost()->toArray(), $request->getFiles()->toArray());
+        $events = [];
         switch ($task) {
             case "update":
                 /* @var $order Order */
@@ -55,13 +58,63 @@ class IndexController extends MCmsController
                 $order = new Order();
                 $add = true;
                 order:
+                $events['order'] = [
+                    'order' => $order,
+                    'events' => [],
+                ];
                 if (isset($postData['order'])) {
-                    $order->setCode($postData['order']['code']);
-                    $order->setClientId($postData['order']['clientId']);
-                    $order->setDateCreation($postData['order']['dateCreation']);
-                    $order->setDateStart(isset($postData['order']['dateStart']) ? $postData['order']['dateStart'] : null);
-                    $order->setDateEnd(isset($postData['order']['dateEnd']) ? $postData['order']['dateEnd'] : null);
-                    $order->setDateDeadline(isset($postData['order']['dateDeadline']) ? $postData['order']['dateDeadline'] : null);
+                    $edited = false;
+                    if (($code = $postData['order']['code']) != $order->getCode()) {
+                        $order->setCode($code);
+                        $edited = true;
+                    }
+                    if (($clientId = $postData['order']['clientId']) != $order->getClientId()) {
+                        $order->setClientId($clientId);
+                        $edited = true;
+                    }
+                    if (($dateCreation = $postData['order']['dateCreation']) != $order->getDateCreation(false)) {
+                        $order->setDateCreation($dateCreation);
+                        $edited = true;
+                    }
+                    if (($dateStart = isset($postData['order']['dateStart']) ? $postData['order']['dateStart'] : null) != $order->getDateStart(false)) {
+                        $event = new Event();
+                        $event->setUserId($this->identity()->getId());
+                        if ($order->getDateStart() == null && $dateStart != null) {
+                            $event->setType(Event::E_ORDER_START);
+                            if (isset($add)) {
+                                $events['order']['events'][] = $event;
+                            } else {
+                                $event->setEntityId($order->getId());
+                                $flush[] = $event;
+                            }
+                        } else {
+                            $edited = true;
+                        }
+                        $order->setDateStart($dateStart);
+                    }
+                    if (($dateEnd = isset($postData['order']['dateEnd']) ? $postData['order']['dateEnd'] : null) != $order->getDateEnd(false)) {
+                        $event = new Event();
+                        $event->setUserId($this->identity()->getId());
+                        if ($order->getDateEnd(false) == null && $dateEnd != null) {
+                            $event->setType(Event::E_ORDER_END);
+                        } elseif ($order->getDateEnd(false) != null && $dateEnd == null) {
+                            $event->setType(EVENT::E_ORDER_RETURN);
+                        } else {
+                            $edited = true;
+                        }
+                        if ($event->getType() != null) {
+                            if (isset($add)) {
+                                $events['order']['events'][] = $event;
+                            } else {
+                                $event->setEntityId($order->getId());
+                                $flush[] = $event;
+                            }
+                        }
+                    }
+                    if (($dateDeadLine = isset($postData['order']['dateDeadline']) ? $postData['order']['dateDeadline'] : null) != $order->getDateDeadline(false)) {
+                        $order->setDateDeadline($dateDeadLine);
+                        $edited = true;
+                    }
 
                     $orderStatus = 1;
                     if ($order->getDateEnd() != null) {
@@ -69,11 +122,34 @@ class IndexController extends MCmsController
                     } elseif ($order->getDateStart() != null) {
                         $orderStatus = 2;
                     }
-                    $order->setStatus($orderStatus);
+                    if ($orderStatus != $order->getStatusCode()) {
+                        $order->setStatus($orderStatus);
+                        $edited = true;
+                    }
+                    if (isset($add) || $edited) {
+                        $event = new Event();
+                        $event->setUserId($this->identity()->getId());
+                        if (isset($add)) {
+                            $event->setType(Event::E_ORDER_CREATE);
+                            $events['order']['events'][] = $event;
+                        } else {
+                            $event->setType(Event::E_ORDER_UPDATE);
+                            $event->setEntityId($order->getId());
+                            $flush[] = $event;
+                        }
+                    }
 
                     $this->entityManager->persist($order);
                     $this->entityManager->flush();
+
+                    if (isset($events['order'])) {
+                        foreach ($events['order']['events'] as $event) {
+                            $event->setEntityId($order->getId());
+                            $flush[] = $event;
+                        }
+                    }
                 }
+                unset($events['order']);
 
                 $form = new Form('orderUpload');
                 try {
@@ -137,7 +213,6 @@ class IndexController extends MCmsController
                     }
 
                     //-------------------------------------------Import-------------------------------------------------
-                    $flush = [];
                     $newCollectionId = $this->plugin('FilesPlugin')->getLastCollectionId() + 1;
                     if (isset($postData['details']['import'])) {
                         $detailIDs = [];
@@ -175,9 +250,23 @@ class IndexController extends MCmsController
                                 }
 
                                 $flush[] = $tmp;
+
+                                $event = new Event();
+                                $event->setUserId($this->identity()->getId());
+                                $event->setType(Event::E_DETAIL_CREATE);
+                                $events[$detail->getId()]['detail'] = $tmp;
+                                $events[$detail->getId()]['events'][] = $event;
                             } else {
+                                $detail->setCode($postData['details']['import'][$detail->getId()]['code']);
+                                $detail->setName($postData['details']['import'][$detail->getId()]['name']);
                                 $detail->setOrderId($order->getId());
                                 $flush[] = $detail;
+
+                                $event = new Event();
+                                $event->setUserId($this->identity()->getId());
+                                $event->setType(Event::E_DETAIL_UPDATE);
+                                $event->setEntityId($detail->getId());
+                                $flush[] = $event;
                             }
                         }
 
@@ -283,6 +372,12 @@ class IndexController extends MCmsController
                             $newDetail->setName($detail['name']);
                             $newDetail->setOrderId($order->getId());
 
+                            $event = new Event();
+                            $event->setUserId($this->identity()->getId());
+                            $event->setType(Event::E_DETAIL_CREATE);
+                            $events[$code . $detail['name']]['detail'] = $newDetail;
+                            $events[$code . $detail['name']]['events'][] = $event;
+
                             $newDetail->setPattern($newCollectionId);
                             $flush[] = $newDetail;
 
@@ -335,6 +430,16 @@ class IndexController extends MCmsController
 
                     foreach ($flush as $item) {
                         $this->entityManager->persist($item);
+                    }
+                    $this->entityManager->flush();
+                    foreach ($events as $eventDetail) {
+                        /* @var $detail \Nomenclature\Entity\Details */
+                        $detail = $eventDetail['detail'];
+                        foreach ($eventDetail['events'] as $event) {
+                            /* @var $event \MCms\Entity\Events */
+                            $event->setEntityId($detail->getId());
+                            $this->entityManager->persist($event);
+                        }
                     }
                     $this->entityManager->flush();
                     if (isset($add)) {

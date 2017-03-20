@@ -229,10 +229,10 @@
                 console.log(response.data.message);
               } else {
                 var data = response.data.data;
-                data.dateCreation = !isNull(data.dateCreation) ? new Date(data.dateCreation) : null;
-                data.dateStart = !isNull(data.dateStart) ? new Date(datadata.dateStart) : null;
-                data.dateEnd = !isNull(data.dateEnd) ? new Date(data.dateEnd) : null;
-                data.dateDeadline = !isNull(data.dateDeadline) ? new Date(data.dateDeadline) : null;
+                data.dateCreation = !isNull(data.dateCreation) ? Date.parse(data.dateCreation) : null;
+                data.dateStart = !isNull(data.dateStart) ? Date.parse(datadata.dateStart) : null;
+                data.dateEnd = !isNull(data.dateEnd) ? Date.parse(data.dateEnd) : null;
+                data.dateDeadline = !isNull(data.dateDeadline) ? Date.parse(data.dateDeadline) : null;
                 data.clientName = $scope.clients[data.clientId].name;
                 $scope.list.push(data);
                 modalInstance.dismiss();
@@ -492,10 +492,10 @@
               clientId: order.clientId,
               code: order.code
             });
-            $scope.list[key]['dateCreation'] = (order.dateCreation) ? new Date(order.dateCreation) : null;
-            $scope.list[key]['dateStart'] = (order.dateStart) ? new Date(order.dateStart) : null;
-            $scope.list[key]['dateEnd'] = (order.dateEnd) ? new Date(order.dateEnd) : null;
-            $scope.list[key]['dateDeadline'] = (order.dateDeadline) ? new Date(order.dateDeadline) : null;
+            $scope.list[key]['dateCreation'] = (order.dateCreation) ? Date.parse(order.dateCreation) : null;
+            $scope.list[key]['dateStart'] = (order.dateStart) ? Date.parse(order.dateStart) : null;
+            $scope.list[key]['dateEnd'] = (order.dateEnd) ? Date.parse(order.dateEnd) : null;
+            $scope.list[key]['dateDeadline'] = (order.dateDeadline) ? Date.parse(order.dateDeadline) : null;
           });
           $scope.listEdit = {
             editable: {}
@@ -522,7 +522,7 @@
     };
 
     $scope.refreshAddData = function(){
-      $http.post('/api/nomenclature/only-names').then(function successCallback(response) {
+      $http.post('/api/nomenclature/only-names-archive').then(function successCallback(response) {
         var data = response.data;
         if (data.error) {
           console.log(data);

@@ -3,6 +3,7 @@
 namespace Nomenclature\Controller\Plugin;
 
 use MCms\Controller\Plugin\MCmsPlugin;
+use MCms\Entity\Events as Event;
 use Nomenclature\Entity\Details;
 use Nomenclature\Entity\DetailsArchive;
 use Nomenclature\Entity\DetailsView;
@@ -143,6 +144,13 @@ GROUP BY f.fileId
                         $canBeDeleted[$detail->getId()] = $detail;
                     } else {
                         $detail->setOrderId(null);
+                        $this->entityManager->persist($detail);
+
+                        $event = new Event();
+                        $event->setUserId($this->getController()->identity()->getId());
+                        $event->setType(Event::E_DETAIL_ARCHIVED);
+                        $event->setEntityId($detail->getId());
+                        $this->entityManager->persist($event);
                     }
                 }
             }

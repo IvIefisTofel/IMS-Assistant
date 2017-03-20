@@ -4,6 +4,7 @@ namespace Clients\Controller;
 
 use MCms\Controller\MCmsController;
 use Zend\View\Model\JsonModel;
+use MCms\Entity\Events as Event;
 use Clients\Form\ClientsUpload as Form;
 use Clients\Entity\Clients as Client;
 use Files\Entity\Collections as Collection;
@@ -40,10 +41,14 @@ class IndexController extends MCmsController
 
         try {
             $data = [];
+            $flush = [];
+            $event = new Event();
+            $event->setUserId($this->identity()->getId());
             switch ($task) {
                 case "add":
                     $client = new Client();
                     $id = true;
+                    $event->setType(Event::E_CLIENT_CREATE);
                 case "update":
                     if ($id === null)
                         $error = self::INVALID_ID;
@@ -59,6 +64,7 @@ class IndexController extends MCmsController
 
                         if (!isset($client)) {
                             $client = $this->entityManager->getRepository(Client::class)->find($id);
+                            $event->setType(Event::E_CLIENT_UPDATE);
                         }
                         $client->setDescription(isset($post['clientDescription']) ? $post['clientDescription'] : null);
 
@@ -72,7 +78,6 @@ class IndexController extends MCmsController
                                     $client->setAdditions($this->plugin('FilesPlugin')->getLastCollectionId() + 1);
                                 }
 
-                                $flush = [];
                                 if (isset($formData[Form::NEW_ADDONS])) {
                                     foreach ($formData[Form::NEW_ADDONS] as $key => $addon) {
                                         $file = new File();
@@ -133,6 +138,14 @@ class IndexController extends MCmsController
                                 }
                             }
                             $this->entityManager->persist($client);
+                            if ($id === true) {
+                                $this->entityManager->flush();
+                                $event->setEntityId($client->getId());
+                                $this->entityManager->persist($event);
+                            } else {
+                                $event->setEntityId($client->getId());
+                                $this->entityManager->persist($event);
+                            }
                             $this->entityManager->flush();
                             $data = $client;
                         }

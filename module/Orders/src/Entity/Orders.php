@@ -81,7 +81,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set Date Start
-     * @param \DateTime $date
+     * @param \DateTime | null $date
      * @return Orders
      */
     public function setDateStart($date)
@@ -99,7 +99,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set Date End
-     * @param \DateTime $date
+     * @param \DateTime | null $date
      * @return Orders
      */
     public function setDateEnd($date)
@@ -117,7 +117,7 @@ class Orders extends OrdersEntity
 
     /**
      * Set Deadline
-     * @param \DateTime $date
+     * @param \DateTime | null $date
      * @return Orders
      */
     public function setDateDeadline($date)

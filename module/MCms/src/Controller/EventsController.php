@@ -3,7 +3,6 @@
 namespace MCms\Controller;
 
 use Zend\View\Model\JsonModel;
-use MCms\Entity\EventsView;
 use MCms\Entity\Events;
 
 class EventsController extends MCmsController
@@ -38,13 +37,12 @@ class EventsController extends MCmsController
             if ($detail) { $opts['details'] = $detail; }
             $date = $this->params()->fromPost('date', null);
             if ($date) { $opts['date'] = $date; }
-            $tree = $this->params()->fromPost('tree', true);
+            $tree = (bool)$this->params()->fromPost('tree', true);
             if ($tree) { $opts['tree'] = $tree; }
 
             $eventsPlugin = $this->plugin('EventsPlugin');
             /* @var $eventsPlugin  \MCms\Controller\Plugin\EventsPlugin */
             $events = $eventsPlugin->findBy($opts, ['date' => 'DESC'], $limit, $offset);
-//            $events = $this->entityManager->getRepository(EventsView::class)->findBy([],['date' => 'DESC'], $limit, $offset);
             foreach ($events as $key => $event) {
                 /* @var $event \MCms\Entity\EventsView */
                 $events[$key] = $event->toArray();
@@ -54,12 +52,9 @@ class EventsController extends MCmsController
                     /* @var $user \Users\Entity\Users */
                     $events[$key]['avatar'] = $user->getGrAvatar(80, false);
                 }
-                $events[$key]['date'] = $event->getDateFormat('Y-m-d');
+                $events[$key]['date'] = $event->getDateFormat('Y-m-d H:i:s');
                 $events[$key]['css'] = Events::E_CLASSES[$event->getType()];
                 $entityClass = Events::getEntityClass($event->getType());
-                if ($entityClass === false) {
-                    var_dump('errEventType');exit;
-                }
                 switch ($entityClass) {
                     case \Clients\Entity\Clients::class:
                         $client = $this->entityManager->getRepository($entityClass)->find($event->getEntityId());
@@ -79,9 +74,19 @@ class EventsController extends MCmsController
                         break;
                     case \Nomenclature\Entity\Details::class:
                         $detail = $this->entityManager->getRepository($entityClass)->find($event->getEntityId());
-                        /* @var $detail \Nomenclature\Entity\Details */
-                        $msg = str_replace('{user}', "<b>" . $user->getFullName() . "</b>", Events::E_TEXTS[$event->getType()]);
-                        $events[$key]['message'] = str_replace('{detail}', "<a href=\"/#/orders/nomenclature/detail/" . $detail->getId() . "\">" . $detail->getCode() . ' (' . $detail->getName() . ')' . "</a>", $msg);
+                        if ($detail != null) {
+                            /* @var $detail \Nomenclature\Entity\Details */
+                            $msg = str_replace('{user}', "<b>" . $user->getFullName() . "</b>", Events::E_TEXTS[$event->getType()]);
+                            if ($event->getType() == Events::E_DETAIL_ARCHIVED) {
+                                $detailMsg = "<b>" . $detail->getCode() . ' (' . $detail->getName() . ")</b>";
+                            } else {
+                                $detailMsg = "<a href=\"/#/orders/nomenclature/detail/" . $detail->getId() . "\">" . $detail->getCode() . ' (' . $detail->getName() . ')' . "</a>";
+                            }
+                            $events[$key]['message'] = str_replace('{detail}', $detailMsg, $msg);
+                        } else {
+                            $msg = $msg = str_replace('{user}', "<b>" . $user->getFullName() . "</b>", Events::E_TEXTS[$event->getType()]);
+                            $events[$key]['message'] = str_replace('{detail}', "с идентификатором <b>" . $event->getEntityId(), $msg) . "</b><br>Деталь была удалена";
+                        }
                         break;
                 }
             }

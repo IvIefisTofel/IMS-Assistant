@@ -17,15 +17,18 @@ class Events extends EventsView
     const E_ORDER_UPDATE    = 5;
     const E_ORDER_START     = 6;
     const E_ORDER_END       = 7;
-    const E_DETAIL_CREATE   = 8;
-    const E_DETAIL_UPDATE   = 9;
-    const E_DETAIL_END      = 10;
-    const E_PATTERN_CREATE  = 11;
-    const E_PATTERN_UPDATE  = 12;
-    const E_MODEL_CREATE    = 13;
-    const E_MODEL_UPDATE    = 14;
-    const E_PROJECT_CREATE  = 15;
-    const E_PROJECT_UPDATE  = 16;
+    const E_ORDER_RETURN    = 8;
+    const E_DETAIL_CREATE   = 9;
+    const E_DETAIL_UPDATE   = 10;
+    const E_DETAIL_ARCHIVED = 11;
+    const E_DETAIL_END      = 12;
+    const E_DETAIL_RETURN   = 13;
+    const E_PATTERN_CREATE  = 14;
+    const E_PATTERN_UPDATE  = 15;
+    const E_MODEL_CREATE    = 16;
+    const E_MODEL_UPDATE    = 17;
+    const E_PROJECT_CREATE  = 18;
+    const E_PROJECT_UPDATE  = 19;
 
     const ARR_CLIENT_EVENTS = [
         self::E_CLIENT_CREATE,
@@ -37,11 +40,14 @@ class Events extends EventsView
         self::E_ORDER_UPDATE,
         self::E_ORDER_START,
         self::E_ORDER_END,
+        self::E_ORDER_RETURN,
     ];
     const ARR_DETAIL_EVENTS = [
         self::E_DETAIL_CREATE,
         self::E_DETAIL_UPDATE,
+        self::E_DETAIL_ARCHIVED,
         self::E_DETAIL_END,
+        self::E_DETAIL_RETURN,
         self::E_PATTERN_CREATE,
         self::E_PATTERN_UPDATE,
         self::E_MODEL_CREATE,
@@ -71,10 +77,13 @@ class Events extends EventsView
         self::E_ORDER_UPDATE    => 'Пользователь {user} обновил информацию о заказе {order}.',
         self::E_ORDER_START     => 'Пользователь {user} принял заказ {order} в работу.',
         self::E_ORDER_END       => 'Пользователь {user} закрыл заказ {order}.',
+        self::E_ORDER_RETURN    => 'Пользователь {user} переоткрыл заказ {order}.',
         self::E_DEADLINE_MISSED => 'У заказа {order} истек крайний срок.',
         self::E_DETAIL_CREATE   => 'Пользователь {user} создал деталь {detail}.',
         self::E_DETAIL_UPDATE   => 'Пользователь {user} обновил информацию о детали {detail}.',
+        self::E_DETAIL_ARCHIVED => 'Пользователь {user} переместил деталь {detail} в архив.',
         self::E_DETAIL_END      => 'Пользователь {user} закрыл деталь {detail}.',
+        self::E_DETAIL_RETURN   => 'Пользователь {user} переоткрыл деталь {detail}.',
         self::E_PATTERN_CREATE  => 'Пользователь {user} добавил чертеж в деталь {detail}.',
         self::E_PATTERN_UPDATE  => 'Пользователь {user} обновил чертеж в детали {detail}.',
         self::E_MODEL_CREATE    => 'Пользователь {user} добавил модель в деталь {detail}.',
@@ -96,10 +105,13 @@ class Events extends EventsView
         self::E_ORDER_UPDATE    => [ 'icon' => 'fa-pencil',                 'class' => self::E_CLASS_INFO ],
         self::E_ORDER_START     => [ 'icon' => 'fa-play',                   'class' => self::E_CLASS_PRIMARY ],
         self::E_ORDER_END       => [ 'icon' => 'fa-check',                  'class' => self::E_CLASS_SUCCESS ],
+        self::E_ORDER_RETURN    => [ 'icon' => 'fa-undo',                   'class' => self::E_CLASS_INFO ],
         self::E_DEADLINE_MISSED => [ 'icon' => 'fa-exclamation-triangle',   'class' => self::E_CLASS_DANGER ],
         self::E_DETAIL_CREATE   => [ 'icon' => 'fa-plus',                   'class' => null ],
         self::E_DETAIL_UPDATE   => [ 'icon' => 'fa-pencil',                 'class' => self::E_CLASS_INFO ],
+        self::E_DETAIL_ARCHIVED => [ 'icon' => 'fa-archive',                'class' => self::E_CLASS_DANGER ],
         self::E_DETAIL_END      => [ 'icon' => 'fa-check',                  'class' => self::E_CLASS_SUCCESS ],
+        self::E_DETAIL_RETURN   => [ 'icon' => 'fa-undo',                   'class' => self::E_CLASS_INFO ],
         self::E_PATTERN_CREATE  => [ 'icon' => 'fa-picture-o',              'class' => self::E_CLASS_WARNING ],
         self::E_PATTERN_UPDATE  => [ 'icon' => 'fa-picture-o',              'class' => self::E_CLASS_INFO ],
         self::E_MODEL_CREATE    => [ 'icon' => 'fa-cubes',                  'class' => self::E_CLASS_WARNING ],
@@ -130,18 +142,32 @@ class Events extends EventsView
 
     /**
      * @param int $userId
+     * @return Events
      */
     public function setUserId(int $userId)
     {
         $this->userId = $userId;
+        return $this;
     }
 
     /**
      * @param int $type
+     * @return Events
      */
     public function setType(int $type)
     {
         $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * @param int $entityId
+     * @return Events
+     */
+    public function setEntityId($entityId)
+    {
+        $this->entityId = $entityId;
+        return $this;
     }
 
     /**
@@ -156,7 +182,6 @@ class Events extends EventsView
         } else {
             $this->date = new \DateTime($date);
         }
-
         return $this;
     }
 }
