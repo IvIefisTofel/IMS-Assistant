@@ -19,7 +19,7 @@
                 <div ng-show="loading" class="no-data">
                     <i class="fa fa-spinner fa-spin"></i>
                 </div>
-                <div ng-show="!loading && !(((list | filter:filterBy) | filter:search).length > 0)" class="no-data">
+                <div ng-show="!loading && !((list | filter:filterBy | filter:search).length > 0)" class="no-data">
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
@@ -188,7 +188,14 @@
                         </td>
                         <td class="align-right">
                             <span ng-hide="listEdit[item.id]">
-                                <button type="button" class="btn btn-xs btn-no-transform btn-info" ng-click="editItem(item)"><i class="ng-scope fa fa-pencil"></i></button>
+                                <div class="dropdown table-dropdown">
+                                    <button class="btn btn-xs btn-no-transform btn-info dropdown-toggle" type="button" data-toggle="dropdown"><i class="ng-scope fa fa-pencil"></i></button>
+                                    <ul class="dropdown-menu">
+                                        <li class="dropdown-header">Редактировать</li>
+                                        <li><a href ng-click="editItem(item)">Заказ</a></li>
+                                        <li><a href ng-click="editOrder(item)">Номенклатуру</a></li>
+                                    </ul>
+                                </div>
                                 <a ui-sref="nomenclature-custom({id: item.id})" class="btn btn-xs btn-no-transform btn-primary">Номенклатура</a>
                             </span>
                             <span ng-show="listEdit[item.id]">

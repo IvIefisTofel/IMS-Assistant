@@ -27,9 +27,26 @@ class EventsController extends MCmsController
         $offset = $this->params()->fromRoute('offset', 0);
 
         try {
-            $events = $this->entityManager->getRepository(EventsView::class)->findBy([],['date' => 'DESC'], $limit, $offset);
+            $opts = [];
+            $user = $this->params()->fromPost('user', null);
+            if ($user) { $opts['users'] = $user; }
+            $client = $this->params()->fromPost('client', null);
+            if ($client) { $opts['clients'] = $client; }
+            $order = $this->params()->fromPost('order', null);
+            if ($order) { $opts['orders'] = $order; }
+            $detail = $this->params()->fromPost('detail', null);
+            if ($detail) { $opts['details'] = $detail; }
+            $date = $this->params()->fromPost('date', null);
+            if ($date) { $opts['date'] = $date; }
+            $tree = $this->params()->fromPost('tree', true);
+            if ($tree) { $opts['tree'] = $tree; }
+
+            $eventsPlugin = $this->plugin('EventsPlugin');
+            /* @var $eventsPlugin  \MCms\Controller\Plugin\EventsPlugin */
+            $events = $eventsPlugin->findBy($opts, ['date' => 'DESC'], $limit, $offset);
+//            $events = $this->entityManager->getRepository(EventsView::class)->findBy([],['date' => 'DESC'], $limit, $offset);
             foreach ($events as $key => $event) {
-                /* @var $event \MCms\Entity\Events */
+                /* @var $event \MCms\Entity\EventsView */
                 $events[$key] = $event->toArray();
                 $user = null;
                 if ($event->getUserId() != null) {
@@ -67,16 +84,19 @@ class EventsController extends MCmsController
                         $events[$key]['message'] = str_replace('{detail}', "<a href=\"/#/orders/nomenclature/detail/" . $detail->getId() . "\">" . $detail->getCode() . ' (' . $detail->getName() . ')' . "</a>", $msg);
                         break;
                 }
-                $result = $events;
             }
+            $result = ['data' => $events];
         } catch (\Exception $e) {
             $errMsg = $e->getMessage();
         }
 
         if ($errMsg) {
             $result = ["error" => $errMsg];
-        } elseif (!isset($result)) {
-            $result['status'] = true;
+        } else {
+            if (!isset($result)) {
+                $result['status'] = true;
+            }
+            $result['count'] = $limit;
         }
         if ($dev) {
             var_dump($result);

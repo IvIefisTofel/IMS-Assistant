@@ -31,6 +31,15 @@ class IndexController extends MCmsController
         $task   = $this->params()->fromRoute('task', null);
         $id     = $this->params()->fromRoute('id', null);
 
+        $onlyNames = false;
+        $task = str_replace(['only-names', 'onlynames'], '', strtolower($task), $countReplace);
+        if ($countReplace == 1) {
+            $onlyNames = true;
+            if (substr($task, -1) == '-') {
+                $task = substr($task, 0, -1);
+            }
+        }
+
         $clientName = null;
         $data = [];
         $postData = array_merge($request->getPost()->toArray(), $request->getFiles()->toArray());
@@ -38,25 +47,33 @@ class IndexController extends MCmsController
             case "update":
                 /* @var $order Order */
                 $order = $this->entityManager->getRepository('\Orders\Entity\Orders')->find($id);
+                if (isset($postData['dropDetails'])) {
+                    $this->plugin('DetailsPlugin')->drop($postData['dropDetails']);
+                }
                 goto order;
             case "add":
-                $order = new Order(); order:
-                $order->setCode($postData['order']['code']);
-                $order->setClientId($postData['order']['clientId']);
-                $order->setDateCreation($postData['order']['dateCreation']);
-                $order->setDateStart(isset($postData['order']['dateStart']) ? $postData['order']['dateStart'] : null);
-                $order->setDateEnd(isset($postData['order']['dateEnd']) ? $postData['order']['dateEnd'] : null);
-                $order->setDateDeadline(isset($postData['order']['dateDeadline']) ? $postData['order']['dateDeadline'] : null);
-                $status = 1;
-                if ($order->getDateEnd() != null) {
-                    $status = 3;
-                } elseif ($order->getDateStart() != null) {
-                    $status = 2;
-                }
-                $order->setStatus($status);
+                $order = new Order();
+                $add = true;
+                order:
+                if (isset($postData['order'])) {
+                    $order->setCode($postData['order']['code']);
+                    $order->setClientId($postData['order']['clientId']);
+                    $order->setDateCreation($postData['order']['dateCreation']);
+                    $order->setDateStart(isset($postData['order']['dateStart']) ? $postData['order']['dateStart'] : null);
+                    $order->setDateEnd(isset($postData['order']['dateEnd']) ? $postData['order']['dateEnd'] : null);
+                    $order->setDateDeadline(isset($postData['order']['dateDeadline']) ? $postData['order']['dateDeadline'] : null);
 
-                $this->entityManager->persist($order);
-                $this->entityManager->flush();
+                    $orderStatus = 1;
+                    if ($order->getDateEnd() != null) {
+                        $orderStatus = 3;
+                    } elseif ($order->getDateStart() != null) {
+                        $orderStatus = 2;
+                    }
+                    $order->setStatus($orderStatus);
+
+                    $this->entityManager->persist($order);
+                    $this->entityManager->flush();
+                }
 
                 $form = new Form('orderUpload');
                 try {
@@ -132,36 +149,42 @@ class IndexController extends MCmsController
                         $details = $this->entityManager->getRepository('Nomenclature\Entity\Details')->findById($detailIDs);
                         foreach ($details as $detail) {
                             /* @var $detail \Nomenclature\Entity\Details */
-                            $tmp = new Detail();
-                            $tmp->setCode($postData['details']['import'][$detail->getId()]['code']);
-                            $tmp->setName($postData['details']['import'][$detail->getId()]['name']);
-                            $tmp->setOrderId($order->getId());
-                            $tmp->setGroup($detail->getGroup());
+                            if ($detail->getOrderId() != null) {
+                                $tmp = new Detail();
+                                $tmp->setCode($postData['details']['import'][$detail->getId()]['code']);
+                                $tmp->setName($postData['details']['import'][$detail->getId()]['name']);
+                                $tmp->setOrderId($order->getId());
+                                $tmp->setGroup($detail->getGroup());
 
-                            if ($detail->getPattern() != null) {
-                                $tmp->setPattern($newCollectionId);
-                                $fileCollectionIDs[$newCollectionId] = $detail->getPattern();
-                                $newCollectionId++;
+                                if ($detail->getPattern() != null) {
+                                    $tmp->setPattern($newCollectionId);
+                                    $fileCollectionIDs[$newCollectionId] = $detail->getPattern();
+                                    $newCollectionId++;
+                                }
+
+                                if ($detail->getModel() != null) {
+                                    $tmp->setModel($newCollectionId);
+                                    $fileCollectionIDs[$newCollectionId] = $detail->getModel();
+                                    $newCollectionId++;
+                                }
+
+                                if ($detail->getProject() != null) {
+                                    $tmp->setProject($newCollectionId);
+                                    $fileCollectionIDs[$newCollectionId] = $detail->getProject();
+                                    $newCollectionId++;
+                                }
+
+                                $flush[] = $tmp;
+                            } else {
+                                $detail->setOrderId($order->getId());
+                                $flush[] = $detail;
                             }
-
-                            if ($detail->getModel() != null) {
-                                $tmp->setModel($newCollectionId);
-                                $fileCollectionIDs[$newCollectionId] = $detail->getModel();
-                                $newCollectionId++;
-                            }
-
-                            if ($detail->getProject() != null) {
-                                $tmp->setProject($newCollectionId);
-                                $fileCollectionIDs[$newCollectionId] = $detail->getProject();
-                                $newCollectionId++;
-                            }
-
-                            $flush[] = $tmp;
                         }
 
                         if (count($fileCollectionIDs)) {
+                            $prefix = $this->getServiceLocator()->get('Config')['doctrine']['table_prefix'];
                             $query = $this->entityManager->createNativeQuery(
-                                NqFilesByCollections::getSql($fileCollectionIDs),
+                                NqFilesByCollections::getSql($fileCollectionIDs, $prefix),
                                 NqFilesByCollections::getRsm()
                             );
                             $fileWithCollections = $query->getResult();
@@ -180,6 +203,7 @@ class IndexController extends MCmsController
                                     foreach ($fileByCollections[$fileCollectionIDs[$detail->getPattern()]] as $fileByCollection) {
                                         $file = new \Files\Entity\Files();
                                         $file->setName($fileByCollection->getName());
+                                        $file->setParentId($fileByCollection->getId());
 
                                         $collection = new \Files\Entity\Collections();
                                         $collection->setId($detail->getPattern());
@@ -200,6 +224,7 @@ class IndexController extends MCmsController
                                     foreach ($fileByCollections[$fileCollectionIDs[$detail->getModel()]] as $fileByCollection) {
                                         $file = new \Files\Entity\Files();
                                         $file->setName($fileByCollection->getName());
+                                        $file->setParentId($fileByCollection->getId());
 
                                         $collection = new \Files\Entity\Collections();
                                         $collection->setId($detail->getModel());
@@ -220,6 +245,7 @@ class IndexController extends MCmsController
                                     foreach ($fileByCollections[$fileCollectionIDs[$detail->getProject()]] as $fileByCollection) {
                                         $file = new \Files\Entity\Files();
                                         $file->setName($fileByCollection->getName());
+                                        $file->setParentId($fileByCollection->getId());
 
                                         $collection = new \Files\Entity\Collections();
                                         $collection->setId($detail->getProject());
@@ -311,7 +337,12 @@ class IndexController extends MCmsController
                         $this->entityManager->persist($item);
                     }
                     $this->entityManager->flush();
-                    $data = $this->plugin('OrdersPlugin')->toArray($order);
+                    if (isset($add)) {
+                        $data = $order;
+                    } else {
+                        unset($data);
+                        $status = true;
+                    }
                 } catch (\Exception $e) {
                     return new JsonModel(['error' => true, 'message' => $e->getMessage()]);
                 }
@@ -320,7 +351,7 @@ class IndexController extends MCmsController
                 if ($id === null)
                     $error = self::INVALID_ID;
                 else {
-                    $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('\Orders\Entity\Orders')->find($id));
+                    $data = $this->entityManager->getRepository('\Orders\Entity\Orders')->find($id);
                 }
                 break;
             case "get-by-client": case "getbyclient": case "getByClient":
@@ -328,7 +359,7 @@ class IndexController extends MCmsController
                     $error = self::INVALID_ID;
                 else {
                     $clientName = $this->entityManager->getRepository('\Clients\Entity\Clients')->findOneById($id)->getName();
-                    $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('Orders\Entity\OrdersView')->findByClientId($id));
+                    $data = $this->entityManager->getRepository('Orders\Entity\OrdersView')->findByClientId($id);
                 }
                 break;
             case "get-with-client": case "getwithclient": case "getWithClient":
@@ -338,12 +369,8 @@ class IndexController extends MCmsController
                     $clientName = $this->entityManager->getRepository('\Clients\Entity\Clients')->findOneById($id)->getName();
                 }
             default:
-                $data = $this->plugin('OrdersPlugin')->toArray($this->entityManager->getRepository('Orders\Entity\OrdersView')->findBy([], ['dateCreation' => 'DESC']));
+                $data = $this->entityManager->getRepository('Orders\Entity\OrdersView')->findBy([], ['dateCreation' => 'DESC']);
                 break;
-        }
-
-        if (count($data) == 1) {
-            $data = $data[0];
         }
 
         $result = [];
@@ -353,8 +380,15 @@ class IndexController extends MCmsController
             if (isset($clientName) && $clientName != null) {
                 $result['clientName'] = $clientName;
             }
-            if (isset($data) && count($data)) {
+            if (isset($data)) {
+                $data = $this->plugin('OrdersPlugin')->toArray($data, ['onlyNames' => $onlyNames]);
+                if (is_array($data) && count($data) == 1) {
+                    $data = array_shift($data);
+                }
                 $result['data'] = $data;
+            }
+            if (isset($status)) {
+                $result['status'] = $status;
             }
         }
         if ($dev) {

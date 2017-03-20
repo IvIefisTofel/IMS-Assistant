@@ -2,8 +2,13 @@
 
 class AssetsGenerator
 {
-    const cssCorePath = './public/css/core';
-    const jsCorePath = './public/js/core';
+    const cssCoreName = 'cssCore.css';
+    const cssLibsName = 'cssLibs.css';
+    const jsCoreName  = 'jsCore,js';
+    const jsLibsName  = 'jsLibs,js';
+
+    const cssCorePath = './public/core/css';
+    const jsCorePath  = './public/core/js';
 
     const cssMinFilter  = [['filter' => 'CssMinFilter']];
     const jsMinFilter   = [['filter' => 'JSMin']];
@@ -15,6 +20,13 @@ class AssetsGenerator
         'aliases' => [
             'bower/' => './bower_components/',
             'fonts/' => './bower_components/font-awesome/fonts',
+            // Bootsrap
+            'fonts/glyphicons-halflings-regular.eot' => './bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot',
+            'fonts/glyphicons-halflings-regular.svg' => './bower_components/bootstrap/fonts/glyphicons-halflings-regular.svg',
+            'fonts/glyphicons-halflings-regular.ttf' => './bower_components/bootstrap/fonts/glyphicons-halflings-regular.ttf',
+            'fonts/glyphicons-halflings-regular.woff' => './bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff',
+            'fonts/glyphicons-halflings-regular.woff2' => './bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2',
+            // IonIcons
             'fonts/ionicons.eot' => './bower_components/Ionicons/fonts/ionicons.eot',
             'fonts/ionicons.svg' => './bower_components/Ionicons/fonts/ionicons.svg',
             'fonts/ionicons.ttf' => './bower_components/Ionicons/fonts/ionicons.ttf',
@@ -23,8 +35,13 @@ class AssetsGenerator
     ];
 
     private static $staticProduction = [
-        'css/core.css' => ['cache' => 'FilesystemCache','options' => ['dir' => self::cssCorePath]],
-        'js/core.js' => ['cache' => 'FilesystemCache', 'options' => ['dir' => self::jsCorePath]],
+        self::cssCoreName => ['cache' => 'FilesystemCache','options' => ['dir' => self::cssCorePath]],
+        self::jsCoreName => ['cache' => 'FilesystemCache', 'options' => ['dir' => self::jsCorePath]],
+    ];
+
+    private static $staticLibs = [
+        self::cssLibsName => ['cache' => 'FilesystemCache','options' => ['dir' => self::cssCorePath]],
+        self::jsLibsName => ['cache' => 'FilesystemCache', 'options' => ['dir' => self::jsCorePath]],
     ];
 
     /**
@@ -40,7 +57,17 @@ class AssetsGenerator
     /**
      * @var array
      */
+    private $cssLibCollection = [];
+
+    /**
+     * @var array
+     */
     private $jsCollection = [];
+
+    /**
+     * @var array
+     */
+    private $jsLibCollection = [];
 
     /**
      * @var array
@@ -48,19 +75,9 @@ class AssetsGenerator
     private $cssMin = [];
 
     /**
-     * @var string
-     */
-    private $coreCss = null;
-
-    /**
      * @var array
      */
     private $jsMin = [];
-
-    /**
-     * @var string
-     */
-    private $coreJs = null;
 
     /**
      * @var bool
@@ -77,59 +94,82 @@ class AssetsGenerator
         $this->development = (getenv('APP_ENV') == 'development') ? true : false;
         $assets = include './config/assets.php';
 
-        $this->alwaysMinCss = $assets['alwaysMinCss'];
-        $this->alwaysMinJs = $assets['alwaysMinJs'];
+        $this->alwaysMinCss = isset($assets['alwaysMinCss']) ? $assets['alwaysMinCss'] : false;
+        $this->alwaysMinJs = isset($assets['alwaysMinJs']) ? $assets['alwaysMinJs'] : false;
 
-        $this->cssCollection = $assets['assetsCss'];
-        $this->jsCollection = $assets['assetsJs'];
-
-        foreach ($this->cssCollection as $css) {
-            if (strpos($css, "min.css") === false) {
-                $this->cssMin[$css] = self::cssMinFilter;
+        if (isset($assets['assetsCss']['libs'])) {
+            foreach ($assets['assetsCss']['libs'] as $css) {
+                $this->cssLibCollection[] = $css;
+                if (strpos($css, "min.css") === false) {
+                    $this->cssMin[$css] = self::cssMinFilter;
+                }
             }
         }
+        $this->cssCollection = isset($assets['assetsCss']['app']) ? $assets['assetsCss']['app'] : [];
 
-        foreach ($this->jsCollection as $js) {
-            if (strpos($js, "min.js") === false) {
-                $this->jsMin[$js] = self::jsMinFilter;
+        if (isset($assets['assetsJs']['libs'])) {
+            foreach ($assets['assetsJs']['libs'] as $js) {
+                $this->jsLibCollection[] = $js;
+                if (strpos($js, "min.js") === false) {
+                    $this->jsMin[$js] = self::jsMinFilter;
+                }
             }
         }
-
-        $this->coreCss = str_replace('./public/', '', self::cssCorePath) . '.css';
-        $this->coreJs = str_replace('./public/', '', self::jsCorePath) . '.js';
+        $this->jsCollection = isset($assets['assetsJs']['app']) ? $assets['assetsJs']['app'] : $assets['assetsJs']['app'];
     }
 
     public function getAssets()
     {
         $result = [];
-        if ($this->development) {
-            $result['asset_manager']['resolver_configs'] = self::$staticParams;
-            $result['asset_manager']['filters'] = [];
-            if ($this->alwaysMinCss) {
-                $result['asset_manager']['resolver_configs']['collections'][$this->coreCss] = $this->cssCollection;
-                $result['asset_manager']['filters'] = array_merge(
-                    $result['asset_manager']['filters'],
-                    $this->cssMin
-                );
-                $result['asset_manager']['caching'] = self::$staticProduction;
+        $result['asset_manager']['resolver_configs'] = self::$staticParams;
+        $result['asset_manager']['resolver_configs']["collections"] = [
+            self::cssLibsName => $this->cssLibCollection,
+            self::jsLibsName => array_reverse($this->jsLibCollection),
+        ];
+        $result['asset_manager']['filters'] = array_merge($this->jsMin, $this->cssMin);
+        $result['asset_manager']['caching'] = self::$staticLibs;
+
+        if (!$this->development || $this->alwaysMinCss) {
+            $cssAppMin = [];
+            foreach ($this->cssCollection as $css) {
+                if (strpos($css, "min.css") === false) {
+                    $cssAppMin[$css] = self::cssMinFilter;
+                }
             }
-            if ($this->alwaysMinJs) {
-                $result['asset_manager']['resolver_configs']['collections'][$this->coreJs] = array_reverse($this->jsCollection);
-                $result['asset_manager']['filters'] = array_merge(
-                    $result['asset_manager']['filters'],
-                    $this->jsMin
-                );
-                $result['asset_manager']['caching'] = self::$staticProduction;
-            }
-        } else {
-            $result['asset_manager']['resolver_configs'] = array_merge(self::$staticParams,
-                ["collections" => [
-                    $this->coreCss => $this->cssCollection,
-                    $this->coreJs => array_reverse($this->jsCollection),
-                ]]
+            $result['asset_manager']['resolver_configs']['collections'][self::cssCoreName] = array_merge(
+                $this->cssLibCollection,
+                $this->cssCollection
             );
-            $result['asset_manager']['filters'] = array_merge($this->jsMin, $this->cssMin);
-            $result['asset_manager']['caching'] = self::$staticProduction;
+            unset($result['asset_manager']['resolver_configs']["collections"][self::cssLibsName]);
+
+            $result['asset_manager']['filters'] = array_merge(
+                $result['asset_manager']['filters'],
+                $cssAppMin
+            );
+
+            $result['asset_manager']['caching'][self::cssCoreName] = self::$staticProduction[self::cssCoreName];
+            unset($result['asset_manager']['caching'][self::cssLibsName]);
+        }
+        if (!$this->development || $this->alwaysMinJs) {
+            $jsAppMin = [];
+            foreach ($this->jsCollection as $js) {
+                if (strpos($js, "min.js") === false) {
+                    $jsAppMin[$js] = self::jsMinFilter;
+                }
+            }
+            $result['asset_manager']['resolver_configs']['collections'][self::jsCoreName] = array_merge(
+                $result['asset_manager']['resolver_configs']["collections"][self::jsLibsName],
+                array_reverse($this->jsCollection)
+            );
+            unset($result['asset_manager']['resolver_configs']["collections"][self::jsLibsName]);
+
+            $result['asset_manager']['filters'] = array_merge(
+                $result['asset_manager']['filters'],
+                $jsAppMin
+            );
+
+            $result['asset_manager']['caching'][self::jsCoreName] = self::$staticProduction[self::jsCoreName];
+            unset($result['asset_manager']['caching'][self::jsLibsName]);
         }
         return $result;
     }
@@ -137,20 +177,20 @@ class AssetsGenerator
     public function getCssCollection()
     {
         if ($this->alwaysMinCss || !$this->development) {
-            return [$this->coreCss];
+            return [self::cssCoreName];
         }
         else {
-            return $this->cssCollection;
+            return array_merge([self::cssLibsName], $this->cssCollection);
         }
     }
 
     public function getJsCollection()
     {
         if ($this->alwaysMinJs || !$this->development) {
-            return [$this->coreJs];
+            return [self::jsCoreName];
         }
         else {
-            return $this->jsCollection;
+            return array_merge($this->jsCollection, [self::jsLibsName]);
         }
     }
 }

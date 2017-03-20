@@ -66,7 +66,7 @@
     $scope.expanding_property = {
       field: 'code',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'code\')">{{expandingProperty.displayName || expandingProperty.field}}</button>' +
-      '<span class="sortorder" ng-show="propertyName === \'code\'" ng-class="{reverse: reverse}"></span>',
+        '<span class="sortorder" ng-show="propertyName === \'code\'" ng-class="{reverse: reverse}"></span>',
       colspan: "node.__children__.length > 0 ? 2 : 1",
       firstStatus: true,
       displayName: 'Шифр детали'
@@ -75,40 +75,40 @@
     var filesTemplate = function () {
       return '<span ng-if="node.__children__.length == 0 && node[col.field].length == null"> --- </span>' +
           '<a ng-if="node[col.field].length == 1" class="btn btn-primary btn-xs" href="/files/{{node[col.field][0].id}}/{{node[col.field][0].name}}" download="">' +
-          '{{node[col.field][0].name}}' +
+            '{{node[col.field][0].name}}' +
           '</a>' +
           '<div ng-if="node[col.field].length > 1" class="dropdown">' +
-          '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>' +
-          '<ul class="dropdown-menu">' +
-          '<li ng-repeat="file in node[col.field]"><a href="/files/{{file.id}}/{{file.name}}" download="">{{file.name}}</a></li>' +
-          '</ul>' +
+            '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>' +
+            '<ul class="dropdown-menu">' +
+              '<li ng-repeat="file in node[col.field]"><a href="/files/{{file.id}}/{{file.name}}" download="{{file.name}}">{{file.name}}</a></li>' +
+            '</ul>' +
           '</div>';
     };
 
     var imagesTemplate = function () {
       return '<span ng-if="node.__children__.length == 0 && node[col.field].length == null"> --- </span>' +
           '<a ng-if="node[col.field].length == 1" class="btn btn-primary btn-xs" href ng-click="openGallery(node.id)">' +
-              '{{node[col.field][0].name}}' +
+            '{{node[col.field][0].name}}' +
           '</a>' +
           '<div ng-if="node[col.field].length > 1" class="dropdown">' +
-              '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>' +
-              '<ul class="dropdown-menu">' +
-                  '<li ng-repeat="(key, file) in node[col.field]"><a href ng-click="openGallery(node.id, key)">{{file.name}}</a></li>' +
-              '</ul>' +
+            '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>' +
+            '<ul class="dropdown-menu">' +
+              '<li ng-repeat="(key, file) in node[col.field]"><a href ng-click="openGallery(node.id, key)">{{file.name}}</a></li>' +
+            '</ul>' +
           '</div>';
     };
 
     $scope.defaults = [{
       field: 'name',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'name\')">{{col.displayName || col.field}}</button>' +
-          '<span class="sortorder" ng-show="propertyName === \'name\'" ng-class="{reverse: reverse}"></span>',
+        '<span class="sortorder" ng-show="propertyName === \'name\'" ng-class="{reverse: reverse}"></span>',
       colspan: "node.__children__.length > 0 ? 0 : 1",
       displayName: 'Наименование детали'
     }, {
       field: 'orderCode',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'orderCode\')">{{col.displayName || col.field}}</button>' +
-          '<span class="sortorder" ng-show="propertyName === \'orderCode\'" ng-class="{reverse: reverse}"></span>',
-      hidden: function(){ return $scope.order != null; },
+        '<span class="sortorder" ng-show="propertyName === \'orderCode\'" ng-class="{reverse: reverse}"></span>',
+      hidden: !$scope.showOrder,
       displayName: 'Шифр заказа'
     }, {
       field: 'pattern',
@@ -128,13 +128,13 @@
     }, {
       field: 'dateCreation',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'dateCreation\')">{{col.displayName || col.field}}</button>' +
-          '<span class="sortorder" ng-show="propertyName === \'dateCreation\'" ng-class="{reverse: reverse}"></span>',
+        '<span class="sortorder" ng-show="propertyName === \'dateCreation\'" ng-class="{reverse: reverse}"></span>',
       cellTemplate: '<div>{{node.dateCreation ? (node.dateCreation | date: "dd MMMM yyyy, EEEE") : "---"}}</div>',
       displayName: 'Дата создания'
     }, {
       field: 'dateEnd',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'dateEnd\')">{{col.displayName || col.field}}</button>' +
-          '<span class="sortorder" ng-show="propertyName === \'dateEnd\'" ng-class="{reverse: reverse}"></span>',
+        '<span class="sortorder" ng-show="propertyName === \'dateEnd\'" ng-class="{reverse: reverse}"></span>',
       cellTemplate: '<div>{{node.dateEnd ? (node.dateEnd | date: "dd MMMM yyyy, EEEE") : "---"}}</div>',
       displayName: 'Дата исполнения'
     }, {

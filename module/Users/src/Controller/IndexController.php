@@ -30,6 +30,8 @@ class IndexController extends MCmsController
         switch ($task) {
             case "get-identity": case "getidentity": case "getIdentity":
                 $data = $this->identity()->toArray();
+                $data['currentRole'] = $this->identity()->getCurrentRole();
+                $data['grAvatar'] = $this->identity()->getGrAvatar();
                 break;
             case "get-name-list": case "getnamelist": case "getNameList":
                 $data = $this->entityManager->getRepository('Users\Entity\Users')->findBy([], ['name' => 'ASC']);
@@ -37,6 +39,7 @@ class IndexController extends MCmsController
                     $data[$key] = $user->getName();
                 }
                 break;
+//                case 'get-only'
             case "get":
                 if ($id === null)
                     $error = self::INVALID_ID;
@@ -56,6 +59,7 @@ class IndexController extends MCmsController
         foreach ($data as $key => $user) {
             if ($user instanceof \Users\Entity\Users) {
                 $data[$key] = $user->toArray();
+                $data[$key]['grAvatar'] = $user->getGrAvatar();
             }
         }
 

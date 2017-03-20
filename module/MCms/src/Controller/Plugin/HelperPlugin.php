@@ -2,10 +2,21 @@
 
 namespace MCms\Controller\Plugin;
 
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Doctrine\ORM\Query\ResultSetMapping;
 
-class HelperPlugin extends AbstractPlugin
+class HelperPlugin extends MCmsPlugin
 {
+    public function getRsm($class)
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult($class, 'nq');
+        foreach ($this->entityManager->getClassMetadata($class)->getFieldNames() as $fieldName) {
+            $rsm->addFieldResult('nq', $this->entityManager->getClassMetadata($class)->getColumnName($fieldName), $fieldName);
+        }
+
+        return $rsm;
+    }
+
     /**
      * Не имее своего View. Функция для вызова через Forward
      * Возвращяет массив форм в виде [alias => formName]

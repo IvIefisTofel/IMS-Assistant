@@ -42,14 +42,15 @@ return [
     'controllers' => [
         'invokables' => [
             'MCms\Controller\Console' => Controller\ConsoleController::class,
-            'MCms\Controller\Error'   => Controller\ErrorController::class,
+            'MCms\Controller\Errors'   => Controller\ErrorsController::class,
             'MCms\Controller\Events'  => Controller\EventsController::class,
         ],
     ],
     'controller_plugins' => [
         'invokables' => [
-            'LitHelperPlugin' => Controller\Plugin\HelperPlugin::class,
+            'HelperPlugin' => Controller\Plugin\HelperPlugin::class,
             'ErrorsPlugin' => Controller\Plugin\ErrorsPlugin::class,
+            'EventsPlugin' => Controller\Plugin\EventsPlugin::class,
         ],
     ],
 
@@ -59,7 +60,7 @@ return [
                 'MCms\Controller\Console' => [
                     GUEST_ROLE,
                 ],
-                'MCms\Controller\Error' => [
+                'MCms\Controller\Errors' => [
                     GUEST_ROLE,
                 ],
                 'MCms\Controller\Events' => [

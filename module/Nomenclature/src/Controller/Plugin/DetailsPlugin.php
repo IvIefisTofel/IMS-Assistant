@@ -3,6 +3,9 @@
 namespace Nomenclature\Controller\Plugin;
 
 use MCms\Controller\Plugin\MCmsPlugin;
+use Nomenclature\Entity\Details;
+use Nomenclature\Entity\DetailsArchive;
+use Nomenclature\Entity\DetailsView;
 
 class DetailsPlugin extends MCmsPlugin
 {
@@ -20,8 +23,8 @@ class DetailsPlugin extends MCmsPlugin
 
             $collections = [];
             foreach ($details as $key => $detail) {
-                if (get_class($detail) == 'Nomenclature\Entity\Details' || get_class($detail) == 'Nomenclature\Entity\DetailsView') {
-                    /* @var $detail \Nomenclature\Entity\Details */
+                if (in_array(get_class($detail), [Details::class, DetailsView::class, DetailsArchive::class])) {
+                    /* @var $detail Details */
                     if ($onlyNames) {
                         $result[$detail->getId()] = [
                             'id' => $detail->getId(),
@@ -44,7 +47,7 @@ class DetailsPlugin extends MCmsPlugin
                         }
                     }
                 } else {
-                    throw new \Exception('Array elements must be Nomenclature\Entity\Details or Nomenclature\Entity\DetailsView class.');
+                    throw new \Exception('Array elements must be ' . Details::class . ' or ' . DetailsView::class . ' or ' . DetailsArchive::class . ' class.');
                 }
             }
 
@@ -78,5 +81,99 @@ class DetailsPlugin extends MCmsPlugin
         }
 
         return null;
+    }
+
+    public function drop($details = null)
+    {
+        if ($details !== null) {
+            reset($details);
+            if (key($details) === 0) {
+                $detailIds = [];
+                foreach ($details as $key => $value) {
+                    $detailIds[$value] = $key;
+                }
+            } else {
+                $detailIds = $details;
+            }
+
+            $details = $this->entityManager->getRepository('Nomenclature\Entity\Details')->findById(array_keys($detailIds));
+            $canBeDeleted = [];
+            foreach ($details as $detail) {
+                /* @var $detail \Nomenclature\Entity\Details */
+                if ($detail->getModel() == null && $detail->getProject() == null) {
+                    $canBeDeleted[$detail->getId()] = $detail;
+                } else {
+                    $collections = [];
+                    if ($detail->getModel() != null) {
+                        $collections[] = $detail->getModel();
+                    }
+                    if ($detail->getProject() != null) {
+                        $collections[] = $detail->getProject();
+                    }
+
+                    $collections = implode(',', $collections);
+                    $prefix = $this->getController()->getServiceLocator()->get('Config')['doctrine']['table_prefix'];
+                    $sql = "
+SELECT f.fileId as id, c.id as collection, f.parentId as parent, count(versionId) as versions
+FROM 
+  " . $prefix . "file_versions v,
+  " . $prefix . "files f,
+  " . $prefix . "files_collections c
+WHERE
+  versionFileId IN (SELECT fileId FROM " . $prefix . "files_collections WHERE id IN ($collections)) AND
+  f.fileId = v.versionFileId AND
+  f.fileId = c.fileId
+GROUP BY f.fileId
+";
+
+                    $stmt = $this->entityManager->getConnection()->prepare($sql);
+                    $stmt->execute();
+
+                    $delete = true;
+                    foreach ($stmt->fetchAll() as $item) {
+                        if (
+                            $item['parent'] == null ||
+                            ($item['parent'] != null && (int)$item['versions'] > 1)
+                        ) {
+                            $delete = false;
+                            break;
+                        }
+                    };
+                    if ($delete) {
+                        $canBeDeleted[$detail->getId()] = $detail;
+                    } else {
+                        $detail->setOrderId(null);
+                    }
+                }
+            }
+
+            $deleteCollections = [];
+            foreach ($canBeDeleted as $detail) {
+                if ($detail->getPattern() != null) {
+                    $deleteCollections[] = $detail->getPattern();
+                }
+                if ($detail->getModel() != null) {
+                    $deleteCollections[] = $detail->getModel();
+                }
+                if ($detail->getProject() != null) {
+                    $deleteCollections[] = $detail->getProject();
+                }
+                $this->entityManager->remove($detail);
+            }
+            $deleteCollections = $this->entityManager->getRepository(\Files\Entity\Collections::class)->findById($deleteCollections);
+            $deleteFiles = [];
+            foreach ($deleteCollections as $collectionFile) {
+                /* @var $collectionFile \Files\Entity\Collections */
+                $deleteFiles[] = $collectionFile->getFileId();
+                $this->entityManager->remove($collectionFile);
+            }
+            $deleteVersions = $this->entityManager->getRepository(\Files\Entity\FileVersion::class)->findByFileId($deleteFiles);
+            $deleteFiles = $this->entityManager->getRepository(\Files\Entity\Files::class)->findById($deleteFiles);
+
+            foreach ($deleteFiles as $file) {
+                $this->entityManager->remove($file);
+            }
+            $this->controller->plugin('FilesPlugin')->dropVersions($deleteVersions);
+        }
     }
 }

@@ -87,7 +87,7 @@ class NqFilesByCollections
     static public function getRsm()
     {
         $rsm = new ResultSetMapping();
-        $rsm->addEntityResult('Files\Entity\NqFilesByCollections', 'nq');
+        $rsm->addEntityResult(self::class, 'nq');
         $rsm->addFieldResult('nq', 'id',        'id');
         $rsm->addFieldResult('nq', 'fileId',    'fileId');
         $rsm->addFieldResult('nq', 'name',      'name');
@@ -99,9 +99,10 @@ class NqFilesByCollections
 
     /**
      * @param int|array $collectionIDs
+     * @param string $prefix
      * @return null|string
      */
-    static public function getSql($collectionIDs)
+    static public function getSql($collectionIDs, $prefix)
     {
         if (empty($collectionIDs))
             return null;
@@ -111,16 +112,16 @@ class NqFilesByCollections
         $sql = "
 SELECT * FROM (
   SELECT
-    ims_files_collections.id,
-    ims_files.fileId,
-    ims_files.fileName AS name,
-    ims_file_versions.versionPath AS path,
-    ims_file_versions.versionDate AS date
+    c.id,
+    f.fileId,
+    f.fileName AS name,
+    v.versionPath AS path,
+    v.versionDate AS date
     FROM
-      ims_files
-      JOIN ims_file_versions ON ims_file_versions.versionFileId = ims_files.fileId
-      LEFT JOIN ims_files_collections ON ims_files_collections.fileId = ims_files.fileId
-      ORDER BY versionDate DESC
+      " . $prefix . "files f
+      JOIN " . $prefix . "file_versions v ON v.versionFileId = f.fileId
+      LEFT JOIN " . $prefix . "files_collections c ON c.fileId = f.fileId
+      ORDER BY v.versionDate DESC
       LIMIT 18446744073709551615
   ) as sub
 WHERE id IN ($collectionIDs)

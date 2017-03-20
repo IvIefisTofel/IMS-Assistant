@@ -10,6 +10,7 @@
     $scope.defList = [];
     $scope.list = [];
     $scope.loading = true;
+    $scope.orderEdit = false;
 
     $scope.filter = {1:true, 2:true, 3:false};
     $scope.propertyName = 'code';
@@ -68,7 +69,7 @@
         import: []
       },
       new: {
-        add: function(event) {
+        add: function (event) {
           $scope.selected.details.showNew = false;
           for (var i = 0; i < event.files.length; i++) {
             var file = event.files[i], indStart, indEnd,
@@ -102,7 +103,7 @@
             }
           }
           angular.forEach($scope.selected.details.new, function (detail, code) {
-            angular.forEach(detail.files, function(file, index){
+            angular.forEach(detail.files, function (file, index) {
               var url, ext = (/[.]/.exec(file.data.name)) ? /[^.]+$/.exec(file.data.name)[0].toLowerCase() : undefined;
               if (!isNull(file.data) && !isNull(ext)) {
                 url = URL.createObjectURL(file.data);
@@ -111,7 +112,7 @@
                   xhr.open('GET', url);
                   xhr.responseType = 'arraybuffer';
                   xhr.onload = function (e) {
-                    $scope.$apply(function() {
+                    $scope.$apply(function () {
                       var buffer = xhr.response;
                       var tiff = new Tiff({buffer: buffer});
                       var canvas = tiff.toCanvas();
@@ -126,7 +127,7 @@
                   };
                   xhr.send();
                 } else {
-                  $scope.$apply(function(){
+                  $scope.$apply(function () {
                     var ind = $scope.selected.details.new[code].files.indexOf(file);
                     if (ind != -1 && isNull($scope.selected.details.new[code].files[ind].url)) {
                       $scope.selected.details.new[code].files[ind].url = url;
@@ -136,14 +137,14 @@
               }
             });
           });
-          $scope.$apply(function(){
+          $scope.$apply(function () {
             if (Object.keys($scope.selected.details.new).length) {
               $scope.selected.details.showNew = true;
             }
           });
           $('#fromFile').val(null);
         },
-        remove: function(code, key){
+        remove: function (code, key) {
           $scope.selected.details.new[code].files.splice(key, 1);
           if ($scope.selected.details.new[code].files.length == 0) {
             delete $scope.selected.details.new[code];
@@ -155,7 +156,7 @@
         }
       },
       import: {
-        add: function(){
+        add: function () {
           if (!isNull($scope.selected.change.detail)) {
             $scope.selected.change.detail.viewCode = $scope.selected.change.detail.code;
             $scope.selected.change.detail.viewName = $scope.selected.change.detail.name;
@@ -166,45 +167,102 @@
             $scope.details.splice(key, 1);
           }
         },
-        remove: function(key){
+        remove: function (key) {
           delete $scope.selected.details.import[key].viewCode;
           delete $scope.selected.details.import[key].viewName;
           $scope.details.push($scope.selected.details.import[key]);
           $scope.selected.details.import.splice(key, 1);
         }
       },
+      dropDetail: function (key) {
+        if (isNull($scope.listEdit.editable[key].drop)) {
+          $scope.listEdit.editable[key].drop = false;
+        }
+        $scope.listEdit.editable[key].drop = !$scope.listEdit.editable[key].drop;
+      },
       save: function() {
-        if (isNull($scope.listEdit.editable.code) || isNull($scope.selected.client)) {
-          $scope.showErrors = true;
-        } else {
-          var send = new FormData();
-          send.append('order[code]', $scope.listEdit.editable.code);
-          if ($scope.selected.client != null) {
-            send.append('order[clientId]', $scope.selected.client.id);
-          }
-          send.append('order[dateCreation]', $filter('date')($scope.listEdit.editable.dateCreation, "dd.MM.yyyy"));
-          if (!isNull($scope.listEdit.editable.dateStart)) {
-            send.append('order[dateStart]', $filter('date')($scope.listEdit.editable.dateStart, "dd.MM.yyyy"));
-          }
-          if (!isNull($scope.listEdit.editable.dateEnd)) {
-            send.append('order[dateEnd]', $filter('date')($scope.listEdit.editable.dateEnd, "dd.MM.yyyy"));
-          }
-          if (!isNull($scope.listEdit.editable.dateDeadline)) {
-            send.append('order[dateDeadline]', $filter('date')($scope.listEdit.editable.dateDeadline, "dd.MM.yyyy"));
-          }
+        var send = new FormData();
+        if (isNull($scope.orderEdit)) {
+          if (isNull($scope.listEdit.editable.code) || isNull($scope.selected.client)) {
+            $scope.showErrors = true;
+          } else {
+            send.append('order[code]', $scope.listEdit.editable.code);
+            if ($scope.selected.client != null) {
+              send.append('order[clientId]', $scope.selected.client.id);
+            }
+            send.append('order[dateCreation]', $filter('date')($scope.listEdit.editable.dateCreation, "dd.MM.yyyy"));
+            if (!isNull($scope.listEdit.editable.dateStart)) {
+              send.append('order[dateStart]', $filter('date')($scope.listEdit.editable.dateStart, "dd.MM.yyyy"));
+            }
+            if (!isNull($scope.listEdit.editable.dateEnd)) {
+              send.append('order[dateEnd]', $filter('date')($scope.listEdit.editable.dateEnd, "dd.MM.yyyy"));
+            }
+            if (!isNull($scope.listEdit.editable.dateDeadline)) {
+              send.append('order[dateDeadline]', $filter('date')($scope.listEdit.editable.dateDeadline, "dd.MM.yyyy"));
+            }
 
+            angular.forEach($scope.selected.details.import, function(detail, key){
+              send.append('details[import][' + detail.id + '][code]', detail.viewCode);
+              send.append('details[import][' + detail.id + '][name]', detail.viewName);
+            });
+            angular.forEach($scope.selected.details.new, function(detail, code){
+              send.append('details[new][' + code + '][name]', detail.name);
+              if (detail.files[0].url.substr(0,22) == 'data:image/jpeg;base64') {
+                send.append('details[new][' + code + '][base64][first]', detail.files[0].url);
+              } else {
+                send.append('files[' + code + '][first]', detail.files[0].data);
+              }
+              for (var i = 1; i < detail.files.length; i++) {
+                if (detail.files[i].url.substr(0,22) == 'data:image/jpeg;base64') {
+                  send.append('details[new][' + code + '][base64][' + i + ']', detail.files[i].url);
+                } else {
+                  send.append('files[' + code + '][' + i + ']', detail.files[i].data);
+                }
+              }
+            });
+
+            $http.post("/api/orders/add", send, {
+              transformRequest: angular.identity,
+              headers: {'Content-Type': undefined}
+            }).then(function successCallback(response) {
+              if (response.data.error) {
+                console.log(response.data.message);
+              } else {
+                var data = response.data.data;
+                data.dateCreation = !isNull(data.dateCreation) ? new Date(data.dateCreation) : null;
+                data.dateStart = !isNull(data.dateStart) ? new Date(datadata.dateStart) : null;
+                data.dateEnd = !isNull(data.dateEnd) ? new Date(data.dateEnd) : null;
+                data.dateDeadline = !isNull(data.dateDeadline) ? new Date(data.dateDeadline) : null;
+                data.clientName = $scope.clients[data.clientId].name;
+                $scope.list.push(data);
+                modalInstance.dismiss();
+                modalInstance = null;
+                $scope.refreshAddData();
+              }
+            });
+          }
+        } else {
+          var edited = false, i;
+          for (i = 0; i < $scope.listEdit.editable.length; i++) {
+            if (!isNull($scope.listEdit.editable[i].drop) && $scope.listEdit.editable[i].drop) {
+              edited = true;
+              send.append('dropDetails[' + $scope.listEdit.editable[i].id + ']', true);
+            }
+          }
           angular.forEach($scope.selected.details.import, function(detail, key){
+            edited = true;
             send.append('details[import][' + detail.id + '][code]', detail.viewCode);
             send.append('details[import][' + detail.id + '][name]', detail.viewName);
           });
           angular.forEach($scope.selected.details.new, function(detail, code){
+            edited = true;
             send.append('details[new][' + code + '][name]', detail.name);
             if (detail.files[0].url.substr(0,22) == 'data:image/jpeg;base64') {
               send.append('details[new][' + code + '][base64][first]', detail.files[0].url);
             } else {
               send.append('files[' + code + '][first]', detail.files[0].data);
             }
-            for (var i = 1; i < detail.files.length; i++) {
+            for (i = 1; i < detail.files.length; i++) {
               if (detail.files[i].url.substr(0,22) == 'data:image/jpeg;base64') {
                 send.append('details[new][' + code + '][base64][' + i + ']', detail.files[i].url);
               } else {
@@ -213,25 +271,22 @@
             }
           });
 
-          $http.post("/api/orders/add", send, {
-            transformRequest: angular.identity,
-            headers: {'Content-Type': undefined}
-          }).then(function successCallback(response) {
-            if (response.data.error) {
-              console.log(response.data.message);
-            } else {
-              var data = response.data.data;
-              data.dateCreation = !isNull(data.dateCreation) ? new Date(data.dateCreation) : null;
-              data.dateStart = !isNull(data.dateStart) ? new Date(datadata.dateStart) : null;
-              data.dateEnd = !isNull(data.dateEnd) ? new Date(data.dateEnd) : null;
-              data.dateDeadline = !isNull(data.dateDeadline) ? new Date(data.dateDeadline) : null;
-              data.clientName = $scope.clients[data.clientId].name;
-              $scope.list.push(data);
-              modalInstance.dismiss();
-              modalInstance = null;
-              $scope.refreshAddData();
-            }
-          });
+          if (edited) {
+            $http.post("/api/orders/update/" + $scope.orderEdit.id, send, {
+              transformRequest: angular.identity,
+              headers: {'Content-Type': undefined}
+            }).then(function successCallback(response) {
+              if (response.data.error) {
+                console.log(response.data.message);
+              } else {
+                if (response.data.status) {
+                  modalInstance.dismiss();
+                  modalInstance = null;
+                  $scope.refreshAddData();
+                }
+              }
+            });
+          }
         }
       }
     };
@@ -377,15 +432,9 @@
     var modalInstance = null;
     $scope.modal = {
       open: function () {
-        if (!isNull(lastEditId)) {
-          $scope.listEdit[lastEditId] = false;
-        }
-        $scope.listEdit.editable = {dateCreation: getCropDate(Date.now())};
-        $scope.calendar.init();
-        $scope.selected.client = null;
         modalInstance = $uibModal.open({
           animation: true,
-          templateUrl: 'app/pages/orders/modal/addOrder.html',
+          templateUrl: 'app/pages/orders/modal/editOrder.html',
           size: 'exlg',
           backdrop: 'static',
           scope: $scope
@@ -401,6 +450,18 @@
       }
     };
     $scope.addOrder = function(){
+      if (!isNull(lastEditId)) {
+        $scope.listEdit[lastEditId] = false;
+      }
+      $scope.listEdit.editable = {dateCreation: getCropDate(Date.now())};
+      $scope.calendar.init();
+      $scope.selected.client = isNull($stateParams.id) ? null : $scope.clients[$stateParams.id];
+      $scope.orderEdit = null;
+      $scope.modal.open();
+    };
+    $scope.editOrder = function(item) {
+      $scope.listEdit.editable = $filter('orderBy')($filter('filter')($scope.detailsOriginal, {orderId:item.id}), 'code');
+      $scope.orderEdit = item;
       $scope.modal.open();
     };
 
@@ -418,7 +479,19 @@
           console.log(data);
         } else {
           $scope.list = data.data;
+          $scope.orders = [
+            {
+              id: null,
+              clientId: null,
+              code: "Архив"
+            }
+          ];
           angular.forEach($scope.list, function (order, key) {
+            $scope.orders.push({
+              id: order.id,
+              clientId: order.clientId,
+              code: order.code
+            });
             $scope.list[key]['dateCreation'] = (order.dateCreation) ? new Date(order.dateCreation) : null;
             $scope.list[key]['dateStart'] = (order.dateStart) ? new Date(order.dateStart) : null;
             $scope.list[key]['dateEnd'] = (order.dateEnd) ? new Date(order.dateEnd) : null;
@@ -435,10 +508,6 @@
       }, function errorCallback(response) {
         console.log(response.statusText);
       });
-      $scope.refreshAddData();
-    };
-
-    $scope.refreshAddData = function(){
       $http.post('api/clients/only-names').then(function successCallback(response) {
         var data = response.data;
         if (data.error) {
@@ -449,6 +518,10 @@
       }, function errorCallback(response) {
         console.log(response.statusText);
       });
+      $scope.refreshAddData();
+    };
+
+    $scope.refreshAddData = function(){
       $http.post('/api/nomenclature/only-names').then(function successCallback(response) {
         var data = response.data;
         if (data.error) {

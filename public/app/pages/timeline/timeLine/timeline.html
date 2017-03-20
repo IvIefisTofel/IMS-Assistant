@@ -1,16 +1,166 @@
-<section id="cd-timeline" class="cd-container cssanimations">
-    <div class="cd-timeline-block" ng-repeat="item in list">
-        <div class="cd-timeline-img">
-            <div class="timeline-icon" ng-class="isNull(item.css.class) ? 'default' : item.css.class">
-                <i class="fa" ng-class="item.css.icon"></i>
+<content-actions></content-actions>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel animated fadeInUp">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <div class="col-md-2">
+                            <ui-select ng-model="selected.user">
+                                <ui-select-match allow-clear placeholder="Пользователь...">{{$select.selected}}</ui-select-match>
+                                <ui-select-choices repeat="user in entities.users | filter: $select.search | orderBy:'value'">
+                                    <span ng-bind-html="user | highlight: $select.search"></span>
+                                </ui-select-choices>
+                                <ui-select-no-choice>
+                                    <div class="no-found">
+                                        По этому запросу ничего не найдено.
+                                    </div>
+                                </ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                        <div class="col-md-2">
+                            <ui-select ng-model="selected.client" on-select="selected.change.client()">
+                                <ui-select-match allow-clear placeholder="Клиент...">{{$select.selected.value.name}}</ui-select-match>
+                                <ui-select-choices repeat="client.value as (key, client) in entities.clients | filter: {value:{name:$select.search}} | orderBy:'value.name'">
+                                    <span ng-bind-html="client.value.name | highlight: $select.search"></span>
+                                </ui-select-choices>
+                                <ui-select-no-choice>
+                                    <div class="no-found">
+                                        По этому запросу ничего не найдено.
+                                    </div>
+                                </ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                        <div class="col-md-2">
+                            <ui-select ng-model="selected.order" on-select="selected.change.order()">
+                                <ui-select-match allow-clear placeholder="Заказ...">{{$select.selected.code}}</ui-select-match>
+                                <ui-select-choices repeat="order in entities.orders | filter: {clientId:selected.client.id, code:$select.search} | orderBy:'dateCreation':true">
+                                    <div ng-bind-html="order.code | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>
+                                    <div class="no-found">
+                                        По этому запросу ничего не найдено.
+                                    </div>
+                                </ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                        <div class="col-md-2">
+                            <ui-select ng-model="selected.detail" on-select="selected.change.detail()">
+                                <ui-select-match allow-clear placeholder="Деталь...">{{$select.selected.code}} ({{$select.selected.name}})</ui-select-match>
+                                <ui-select-choices repeat="detail in entities.details | filter: {orderId:selected.order.id, code:$select.search} | orderBy:'code'">
+                                    <div ng-bind-html="(detail.code + ' (' + detail.name + ')') | highlight: $select.search"
+                                         tooltip-append-to-body="true" tooltip-placement="left"
+                                         uib-tooltip="{{(detail.code + ' (' + detail.name + ')')}}"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>
+                                    <div class="no-found">
+                                        По этому запросу ничего не найдено.
+                                    </div>
+                                </ui-select-no-choice>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="btn-group btn-block btn-no-transform">
+                                <button type="button" class="btn btn-default col-md-8" ng-click="selected.dateStart.opened = true"
+                                        uib-datepicker-popup="dd MMMM yyyy г." ng-model="selected.dateStart.date"
+                                        is-open="selected.dateStart.opened" datepicker-options="selected.dateStart.options"
+                                        show-button-bar="false" ng-change="selected.dateStart.check()">
+                                    {{!isNull(selected.dateStart.date) ? (selected.dateStart.date | date:"dd.MM.yyyy") : '---'}}
+                                </button>
+                                <button type="button" class="btn btn-info col-md-2" ng-click="selected.dateStart.check('now')"
+                                        ng-mouseenter="selected.dateStart.tooltips.today = true"
+                                        ng-mouseleave="selected.dateStart.tooltips.today = false"
+                                        ng-disabled="selected.dateStart.disabled()">
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
+                                       tooltip-animation="false" tooltip-is-open="selected.dateStart.tooltips.today" uib-tooltip="Сегодня"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger col-md-2" ng-click="selected.dateStart.check(true)"
+                                        ng-mouseenter="selected.dateStart.tooltips.clear = true"
+                                        ng-mouseleave="selected.dateStart.tooltips.clear = false">
+                                    <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom-right"
+                                       tooltip-animation="false" tooltip-is-open="selected.dateStart.tooltips.clear" uib-tooltip="Очистить"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="btn-group btn-block btn-no-transform">
+                                <button type="button" class="btn btn-default col-md-8" ng-click="selected.dateEnd.opened = true"
+                                        uib-datepicker-popup="dd MMMM yyyy г." ng-model="selected.dateEnd.date"
+                                        is-open="selected.dateEnd.opened" datepicker-options="selected.dateEnd.options"
+                                        show-button-bar="false" ng-change="selected.dateEnd.check()">
+                                    {{!isNull(selected.dateEnd.date) ? (selected.dateEnd.date | date:"dd.MM.yyyy") : '---'}}
+                                </button>
+                                <button type="button" class="btn btn-info col-md-2" ng-click="selected.dateEnd.check('now')"
+                                        ng-mouseenter="selected.dateEnd.tooltips.today = true"
+                                        ng-mouseleave="selected.dateEnd.tooltips.today = false">
+                                    <i class="fa fa-calendar-times-o" tooltip-trigger="none" tooltip-placement="bottom-left"
+                                       tooltip-animation="false" tooltip-is-open="selected.dateEnd.tooltips.today" uib-tooltip="Сегодня"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger col-md-2" ng-click="selected.dateEnd.check(true)"
+                                        ng-mouseenter="selected.dateEnd.tooltips.clear = true"
+                                        ng-mouseleave="selected.dateEnd.tooltips.clear = false">
+                                    <i class="fa fa-calendar-o" tooltip-trigger="none" tooltip-placement="bottom-right"
+                                       tooltip-animation="false" tooltip-is-open="selected.dateEnd.tooltips.clear" uib-tooltip="Очистить"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <div class="col-md-2">
+                            <label><h4>Фильтровать по полю:</h4></label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="radio-inline custom-radio nowrap">
+                                <input type="radio" name="inlineRadioOptions" ng-model="selected.filterBy" value="client">
+                                <span>Клиент</span>
+                            </label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="radio-inline custom-radio nowrap">
+                                <input type="radio" name="inlineRadioOptions" ng-model="selected.filterBy" value="order">
+                                <span>Заказ</span>
+                            </label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="radio-inline custom-radio nowrap">
+                                <input type="radio" name="inlineRadioOptions" ng-model="selected.filterBy" value="detail">
+                                <span>Деталь</span>
+                            </label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="checkbox-inline custom-checkbox">
+                                <input type="checkbox" ng-model="selected.tree">
+                                <span>Показать всю иерархию</span>
+                            </label>
+                        </div>
+                        <div class="col-md-1 col-md-offset-1">
+                            <button type="button" class="btn btn-primary btn-block btn-no-transform" ng-click="selected.change.filter()">Применить</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="cd-timeline-content" ng-class="isNull(item.css.class) ? '' : 'timeline-content-' + item.css.class">
-            <img ng-src="{{item.avatar}}">
-            <p ng-bind-html="item.message"></p>
-            <span class="cd-date">{{ (item.date | date: "dd MMMM yyyy, EEEE") }}</span>
+    </div>
+    </div>
+</div>
+<div class="row">
+    <div id="cd-timeline" class="cd-container cssanimations col-md-12">
+        <div class="cd-timeline-block" ng-repeat="item in list">
+            <div class="cd-timeline-img">
+                <div class="timeline-icon" ng-class="isNull(item.css.class) ? 'default' : item.css.class">
+                    <i class="fa" ng-class="item.css.icon"></i>
+                </div>
+            </div>
+            <div class="cd-timeline-content" ng-class="isNull(item.css.class) ? '' : 'timeline-content-' + item.css.class">
+                <img ng-if="item.avatar" ng-src="{{item.avatar}}">
+                <p ng-bind-html="item.message"></p>
+                <span class="cd-date">{{ (item.date | date: "dd MMMM yyyy, EEEE") }}</span>
+            </div>
         </div>
     </div>
-</section>
-<div class="timeline-loading"><i class="fa fa-spinner fa-spin" ng-show="loading"></i></div>
+    <div ng-show="!loading && list == 0" class="no-data">
+        <i class="fa fa-exclamation-triangle"></i>
+        Нет данных
+    </div>
+</div>
+<div class="timeline-loading" ng-class="loading ? 'loading' : ''" ng-if="!allData"><i class="fa fa-spinner fa-spin"></i></div>
 <div in-view="endPage($inview)"></div>

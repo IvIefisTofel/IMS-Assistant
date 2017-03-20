@@ -4,7 +4,7 @@ namespace MCms\Controller;
 
 use Zend\View\Model\JsonModel;
 
-class ErrorController extends MCmsController
+class ErrorsController extends MCmsController
 {
     public function indexAction()
     {
@@ -39,7 +39,7 @@ class ErrorController extends MCmsController
                     if ($id != null) {
                         $arrIds[] = $id;
                     } else {
-                        $arrIds = $request->getPost()->toArray()['ids'];
+                        $arrIds = $this->params()->fromPost('ids', []);
                     }
                     $errors = $this->entityManager->getRepository('MCms\Entity\Errors')->findById($arrIds);
                     if (!is_array($errors)) {

@@ -24,6 +24,12 @@ class Files extends MCmsEntity
     protected $id;
 
     /**
+     * @var integer
+     * @ORM\Column(name="parentId", type="integer", nullable=true)
+     */
+    protected $parentId;
+
+    /**
      * @var string
      * @ORM\Column(name="fileName", type="string", length=255, nullable=false)
      */
@@ -36,6 +42,25 @@ class Files extends MCmsEntity
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return int | null
+     */
+    public function getParentId()
+    {
+        return $this->parentId;
+    }
+
+    /**
+     * @param int $parentId
+     * @return Files
+     */
+    public function setParentId($parentId)
+    {
+        $this->parentId = $parentId;
+
+        return $this;
     }
 
     /**

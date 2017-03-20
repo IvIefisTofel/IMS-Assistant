@@ -6,11 +6,12 @@ class MCmsEntity
 {
     public function toArray()
     {
-        $methods = get_class_methods($this);
+        $vars = get_class_vars(get_class($this));
         $result = [];
-        foreach ($methods as $method) {
-            if (substr($method, 0, 3) == 'get' && strpos($method, 'Format') === false) {
-                $result[lcfirst(substr($method, 3))] = $this->$method();
+        foreach ($vars as $var => $val) {
+            $method = 'get' . ucfirst($var);
+            if (method_exists($this, $method)) {
+                $result[$var] = $this->$method();
             }
         }
         return $result;

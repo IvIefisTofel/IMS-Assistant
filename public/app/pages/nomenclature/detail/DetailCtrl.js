@@ -529,7 +529,7 @@
       if (!$scope.edited) {
         if (isNull($scope.detail.name) ||
             isNull($scope.detail.code) ||
-            isNull($scope.selected.order.id) || isNull($scope.selected.order) ||
+            isNull($scope.selected.order) || isNull($scope.selected.order.id) ||
             isNull($scope.calendar.dateCreation.date)) {
           $scope.showErrors = true;
         } else {

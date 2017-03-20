@@ -37,7 +37,7 @@ class Clients extends MCmsEntity
      * @var string
      * @ORM\Column(name="clientFilesGroup", type="integer", nullable=true)
      */
-    protected $filesGroup;
+    protected $additions;
 
 
     /**
@@ -106,7 +106,7 @@ class Clients extends MCmsEntity
      */
     public function setAdditions($filesGroup)
     {
-        $this->filesGroup = $filesGroup;
+        $this->additions = $filesGroup;
 
         return $this;
     }
@@ -117,6 +117,6 @@ class Clients extends MCmsEntity
      */
     public function getAdditions()
     {
-        return $this->filesGroup;
+        return $this->additions;
     }
 }

@@ -3,6 +3,8 @@
 namespace Nomenclature\Controller;
 
 use MCms\Controller\MCmsController;
+use Nomenclature\Entity\Details;
+use Nomenclature\Entity\DetailsArchive;
 use Zend\View\Model\JsonModel;
 use Nomenclature\Form\DetailsUpload as Form;
 use Files\Entity\Files as File;
@@ -34,7 +36,15 @@ class IndexController extends MCmsController
 
         $data = [];
         $onlyNames = false;
+        $allDetails = false;
         $tree = false;
+        $task = str_replace('archive', '', strtolower($task), $countReplace);
+        if ($countReplace == 1) {
+            $allDetails = true;
+            if (substr($task, -1) == '-') {
+                $task = substr($task, 0, -1);
+            }
+        }
         $task = str_replace(['only-names', 'onlynames'], '', strtolower($task), $countReplace);
         if ($countReplace == 1) {
             $onlyNames = true;
@@ -398,7 +408,10 @@ class IndexController extends MCmsController
                 if ($id === null)
                     $error = self::INVALID_ID;
                 else {
-                    $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->find($id);
+                    $data = $this->entityManager->getRepository(DetailsView::class)->find($id);
+                    if ($data == null && $allDetails) {
+                        $data = $this->entityManager->getRepository(DetailsArchive::class)->find($id);
+                    }
                 }
                 break;
             case "get-by-order": case "getbyorder": case "getByOrder":
@@ -411,6 +424,9 @@ class IndexController extends MCmsController
                 break;
             default:
                 $data = $this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findBy([], ['dateCreation' => 'DESC']);
+                if ($allDetails) {
+                    $data = array_merge($data, $this->entityManager->getRepository(DetailsArchive::class)->findAll());
+                }
                 break;
         }
 

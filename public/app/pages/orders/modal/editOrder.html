@@ -3,11 +3,11 @@
         <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
             <em class="ion-ios-close-empty sn-link-close"></em>
         </button>
-        <h4 class="modal-title" id="pattern-modal-label">Добавить заказ</h4>
+        <h4 class="modal-title" id="pattern-modal-label">{{isNull(orderEdit) ? 'Добавить заказ': 'Редактировать заказ "' + orderEdit.code + '"'}}</h4>
     </div>
     <div class="modal-body">
         <div class="row">
-            <div class="col-md-5">
+            <div ng-if="isNull(orderEdit)" class="col-md-5">
                 <div class="form-horizontal alert alert-default">
                     <div class="form-group" ng-class="{ 'has-error': showErrors && isNull(listEdit.editable.code) }">
                         <label for="code" class="col-md-4 control-label">Шифр заказа</label>
@@ -139,6 +139,29 @@
                     </div>
                 </div>
             </div>
+            <div ng-if="!isNull(orderEdit)" class="col-md-5">
+                <div class="alert alert-default">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Номенклатура</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div ng-show="listEdit.editable.length == 0" class="empty-nomenclature"><i class="fa fa-exclamation-triangle"></i> Номенклатура отсутствует</div>
+                            <table class="table table-hover table-outer-border">
+                                <tr ng-repeat="(key, detail) in listEdit.editable" ng-class="{'no-top-border': key==0, danger: detail.drop}">
+                                    <td>{{key+1}}</td>
+                                    <td style="width: 100%;">{{detail.code}} ({{detail.name}})</td>
+                                    <td class="align-right"><span>
+                                        <a class="btn btn-xs btn-no-transform" ng-class="detail.drop ? 'btn-info' : 'btn-default'" href="" ng-click="selected.dropDetail(key)"><i class="fa fa-times"></i></a>
+                                    </span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-7">
                 <div class="row">
                     <div class="col-md-12">
@@ -171,7 +194,7 @@
                                 <div class="col-md-4">
                                     <ui-select ng-model="selected.change.order">
                                         <ui-select-match allow-clear placeholder="Заказ...">{{$select.selected.code}}</ui-select-match>
-                                        <ui-select-choices repeat="order in list | filter: {clientId:selected.change.client.id, code:$select.search} | orderBy:'dateCreation':true">
+                                        <ui-select-choices repeat="order in orders | filter: {clientId:selected.change.client.id, code:$select.search} | orderBy:'dateCreation':true">
                                             <div ng-bind-html="order.code | highlight: $select.search"></div>
                                         </ui-select-choices>
                                         <ui-select-no-choice>
@@ -217,7 +240,7 @@
                                                 <td><input type="text" class="form-control" ng-model="detail.viewCode"></td>
                                                 <td><input type="text" class="form-control" ng-model="detail.viewName"></td>
                                                 <td class="browser-icons">
-                                                    <button type="button" class="btn btn-danger btn-no-transform btn-sm" ng-click="selected.import.remove(key)">
+                                                    <button type="button" class="btn btn-danger btn-no-transform btn-sm" ng-click="selected.import.remove(key)" tabindex="-1">
                                                         <i class="fa fa-trash"></i>
                                                     </button>
                                                 </td>
@@ -244,7 +267,7 @@
                                                     <div ng-repeat="(key, file) in detail.files" class="image-collection">
                                                         <div class="image-preview">
                                                             <div class="image-mask"></div>
-                                                            <button type="button" class="btn btn-danger btn-no-transform btn-rm-col-item"
+                                                            <button type="button" class="btn btn-danger btn-no-transform btn-rm-col-item" tabindex="-1"
                                                                 ng-click="selected.new.remove(code, key)"><i class="fa fa-times"></i>
                                                             </button>
                                                             <img ng-src="{{file.url}}">

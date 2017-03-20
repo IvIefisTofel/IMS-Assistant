@@ -27,33 +27,37 @@ class Events extends EventsView
     const E_PROJECT_CREATE  = 15;
     const E_PROJECT_UPDATE  = 16;
 
+    const ARR_CLIENT_EVENTS = [
+        self::E_CLIENT_CREATE,
+        self::E_CLIENT_UPDATE,
+    ];
+    const ARR_ORDER_EVENTS = [
+        self::E_DEADLINE_MISSED,
+        self::E_ORDER_CREATE,
+        self::E_ORDER_UPDATE,
+        self::E_ORDER_START,
+        self::E_ORDER_END,
+    ];
+    const ARR_DETAIL_EVENTS = [
+        self::E_DETAIL_CREATE,
+        self::E_DETAIL_UPDATE,
+        self::E_DETAIL_END,
+        self::E_PATTERN_CREATE,
+        self::E_PATTERN_UPDATE,
+        self::E_MODEL_CREATE,
+        self::E_MODEL_UPDATE,
+        self::E_PROJECT_CREATE,
+        self::E_PROJECT_UPDATE,
+    ];
+
     public static function getEntityClass($eventType) {
-        if (in_array($eventType, [
-            self::E_CLIENT_CREATE,
-            self::E_CLIENT_UPDATE,
-        ])) {
+        if (in_array($eventType, self::ARR_CLIENT_EVENTS)) {
             return \Clients\Entity\Clients::class;
         }
-        if (in_array($eventType, [
-            self::E_DEADLINE_MISSED,
-            self::E_ORDER_CREATE,
-            self::E_ORDER_UPDATE,
-            self::E_ORDER_START,
-            self::E_ORDER_END,
-        ])) {
+        if (in_array($eventType, self::ARR_ORDER_EVENTS)) {
             return \Orders\Entity\Orders::class;
         }
-        if (in_array($eventType, [
-            self::E_DETAIL_CREATE,
-            self::E_DETAIL_UPDATE,
-            self::E_DETAIL_END,
-            self::E_PATTERN_CREATE,
-            self::E_PATTERN_UPDATE,
-            self::E_MODEL_CREATE,
-            self::E_MODEL_UPDATE,
-            self::E_PROJECT_CREATE,
-            self::E_PROJECT_UPDATE,
-        ])) {
+        if (in_array($eventType, self::ARR_DETAIL_EVENTS)) {
             return \Nomenclature\Entity\Details::class;
         }
 

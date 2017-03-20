@@ -3736,6 +3736,7 @@ th {
   height: calc(100vh - 283px); }
 
 .panel {
+  z-index: 1;
   color: #666666;
   background-color: #ffffff;
   border: none;
@@ -6592,3 +6593,7 @@ a.change-user {
   margin: 20px auto 0 auto;
   font-size: 60px;
   height: 60px; }
+  .timeline-loading i { display: none; }
+    .timeline-loading.loading i { display: block; }
+.table-dropdown { display: inline-table; }
+.empty-nomenclature { text-align: center; margin: 9px 0; }

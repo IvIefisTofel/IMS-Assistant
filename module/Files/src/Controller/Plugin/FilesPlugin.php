@@ -2,6 +2,8 @@
 
 namespace Files\Controller\Plugin;
 
+use Files\Entity\Files;
+use Files\Entity\FileVersion;
 use MCms\Controller\Plugin\MCmsPlugin;
 
 class FilesPlugin extends MCmsPlugin
@@ -57,7 +59,8 @@ class FilesPlugin extends MCmsPlugin
 
     public function getLastCollectionId()
     {
-        $sql = "SELECT DISTINCT id FROM `ims_files_collections` ORDER BY id DESC LIMIT 1";
+        $prefix = $this->getController()->getServiceLocator()->get('Config')['doctrine']['table_prefix'];
+        $sql = "SELECT DISTINCT id FROM " . $prefix . "files_collections ORDER BY id DESC LIMIT 1";
 
         /* @var $stmt \Doctrine\DBAL\Statement */
         $stmt = $this->entityManager->getConnection()->prepare($sql);
@@ -67,22 +70,27 @@ class FilesPlugin extends MCmsPlugin
         return $result;
     }
 
-    public function dropVersions($versionIds = [])
+    public function dropVersions($versions)
     {
-        $versions = $this->entityManager->getRepository('Files\Entity\FileVersion')->findById($versionIds);
-        /* @var $version \Files\Entity\FileVersion */
-        foreach ($versions as $version) {
-            if (file_exists($version->getPath())) {
-                unlink($version->getPath());
+        if (count($versions) && $versions != null) {
+            reset($versions);
+            if (!($versions[key($versions)] instanceof FileVersion)) {
+                $versions = $this->entityManager->getRepository('Files\Entity\FileVersion')->findById($versions);
             }
-            if (file_exists($version->getPath() . '.h180')) {
-                unlink($version->getPath() . '.h180');
+            foreach ($versions as $version) {
+                /* @var $version \Files\Entity\FileVersion */
+                if (file_exists(Files::UPLOAD_DIR . $version->getPath())) {
+                    unlink(Files::UPLOAD_DIR . $version->getPath());
+                }
+                if (file_exists(Files::UPLOAD_DIR . $version->getPath() . '.h180')) {
+                    unlink(Files::UPLOAD_DIR . $version->getPath() . '.h180');
+                }
+                if (file_exists(Files::UPLOAD_DIR . $version->getPath() . '.h950')) {
+                    unlink(Files::UPLOAD_DIR . $version->getPath() . '.h950');
+                }
+                $this->entityManager->remove($version);
             }
-            if (file_exists($version->getPath() . '.h950')) {
-                unlink($version->getPath() . '.h950');
-            }
-            $this->entityManager->remove($version);
+            //$this->entityManager->flush();
         }
-        //$this->entityManager->flush();
     }
 }

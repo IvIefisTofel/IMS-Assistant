@@ -100,11 +100,19 @@ return [
                 'object_manager' => 'Doctrine\ORM\EntityManager',
                 'identity_class' => 'Users\Entity\Users',
                 'identity_property' => 'name',
+                'rules_property' => 'currentRole',
                 'credential_property' => 'password',
                 'credential_callable' => function(Users $user, $passwordGiven) {
+                    if ($user->getPassword() == md5($passwordGiven) && $user->getActive()) {
+                        $user->setCurrentRole($user->getRoleID());
+                    }
                     return $user->getActive();
                 },
             ],
         ],
     ],
+    'doctrine_factories' => array(
+        'authenticationadapter' => 'AuthDoctrine\Authentication\Service\AdapterService',
+        'authenticationstorage' => 'AuthDoctrine\Authentication\Service\StorageService',
+    ),
 ];

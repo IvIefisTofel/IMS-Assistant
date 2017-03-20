@@ -73,13 +73,13 @@ class Users extends  MCmsEntity
      * @var string
      * @ORM\Column(name="userPassword", type="string", length=255, precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $password;
+    private $password;
 
     /**
      * @var integer
      * @ORM\Column(name="userRoleId", type="integer", precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $role;
+    private $role;
 
     /**
      * @var boolean
@@ -97,7 +97,12 @@ class Users extends  MCmsEntity
      * @var boolean
      * @ORM\Column(name="userEmailConfirmed", type="boolean", precision=0, scale=0, nullable=false, unique=false)
      */
-    protected $emailConfirmed = false;
+    private $emailConfirmed = false;
+
+    /**
+     * @var int
+     */
+    private $currentRole = self::GUEST_ROLE;
 
     public function __construct()
     {
@@ -320,6 +325,25 @@ class Users extends  MCmsEntity
     public function getEmailConfirmed()
     {
         return $this->emailConfirmed;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentRole()
+    {
+        return $this->currentRole;
+    }
+
+    /**
+     * @param int $currentRole
+     * @return Users
+     */
+    public function setCurrentRole($currentRole)
+    {
+        $this->currentRole = $currentRole;
+
+        return $this;
     }
 
     /**

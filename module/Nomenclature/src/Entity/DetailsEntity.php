@@ -17,7 +17,7 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * @var integer
-     * @ORM\Column(name="detailOrderId", type="integer", nullable=false)
+     * @ORM\Column(name="detailOrderId", type="integer", nullable=true)
      */
     protected $orderId;
 
@@ -86,7 +86,7 @@ class DetailsEntity extends MCmsEntity
 
     /**
      * Get order id
-     * @return integer
+     * @return integer | null
      */
     public function getOrderId()
     {

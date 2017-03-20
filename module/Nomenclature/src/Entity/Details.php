@@ -15,7 +15,7 @@ class Details extends DetailsEntity
 {
     /**
      * Set order id
-     * @param integer $orderId
+     * @param integer | null $orderId
      * @return Details
      */
     public function setOrderId($orderId)

@@ -9,6 +9,7 @@ class OrdersPlugin extends AbstractPlugin
     public function toArray($orders = null, $options = [])
     {
         if ($orders !== null) {
+            $onlyNames = isset($options['onlyNames']) ? $options['onlyNames'] : false;
             $withDetails = isset($options['withDetails']) ? $options['withDetails'] : false;
             $allVersions = isset($options['allVersions']) ? $options['allVersions'] : false;
             $saveIds = isset($options['clearIds']) ? $options['clearIds'] : false;
@@ -22,21 +23,30 @@ class OrdersPlugin extends AbstractPlugin
             foreach ($orders as $key => $order) {
                 if (in_array(get_class($order), ['Orders\Entity\Orders', 'Orders\Entity\OrdersView'])) {
                     /* @var $order \Orders\Entity\Orders */
-                    $result[$order->getId()] = $order->toArray();
-                    $result[$order->getId()]['dateCreation'] = $order->getDateCreationFormat('Y-m-d');
-                    $result[$order->getId()]['dateStart'] = $order->getDateStartFormat('Y-m-d');
-                    $result[$order->getId()]['dateEnd'] = $order->getDateEndFormat('Y-m-d');
-                    $result[$order->getId()]['dateDeadline'] = $order->getDateDeadlineFormat('Y-m-d');
-                    if ($withDetails) {
-                        $result[$order->getId()]['details'] = null;
+                    if ($onlyNames) {
+                        $result[$order->getId()] = [
+                            'id' => $order->getId(),
+                            'clientId' => $order->getClientId(),
+                            'code' => $order->getCode(),
+                        ];
+                    } else {
+                        $result[$order->getId()] = $order->toArray();
+                        $result[$order->getId()]['statusCode'] = $order->getStatusCode();
+                        $result[$order->getId()]['dateCreation'] = $order->getDateCreationFormat('Y-m-d');
+                        $result[$order->getId()]['dateStart'] = $order->getDateStartFormat('Y-m-d');
+                        $result[$order->getId()]['dateEnd'] = $order->getDateEndFormat('Y-m-d');
+                        $result[$order->getId()]['dateDeadline'] = $order->getDateDeadlineFormat('Y-m-d');
+                        if ($withDetails) {
+                            $result[$order->getId()]['details'] = null;
+                        }
+                        $orderKeys[] = $order->getId();
                     }
-                    $orderKeys[] = $order->getId();
                 } else {
                     throw new \Exception('Array elements must be Order class.');
                 }
             }
 
-            if ($withDetails) {
+            if ($withDetails && !$onlyNames) {
                 $details = $this->getController()->plugin('DetailsPlugin')
                     ->toArray($this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findByOrderId($orderKeys, ['dateCreation' => 'DESC']), $allVersions);
                 foreach ($details as $detail) {
