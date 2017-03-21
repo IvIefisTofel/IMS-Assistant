@@ -1,20 +1,20 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme')
       .directive('zoomIn', zoomIn);
 
   /** @ngInject */
-  function zoomIn($timeout, $rootScope) {
+  function zoomIn($timeout, $rootScope){
     return {
       restrict: 'A',
-      link: function ($scope, elem) {
+      link:     function($scope, elem){
         var delay = 1000;
 
-        if ($rootScope.$pageFinishedLoading) {
+        if ($rootScope.$pageFinishedLoading){
           delay = 100;
         }
 
-        $timeout(function () {
+        $timeout(function(){
           elem.removeClass('full-invisible');
           elem.addClass('animated zoomIn');
         }, delay);

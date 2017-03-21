@@ -1,13 +1,13 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme.components')
       .directive('pageTop', pageTop);
 
   /** @ngInject */
-  function pageTop() {
+  function pageTop(){
     return {
-      restrict: 'E',
-      controller: 'PageTopCtrl',
+      restrict:    'E',
+      controller:  'PageTopCtrl',
       templateUrl: 'app/theme/components/pageTop/pageTop.html'
     };
   }

@@ -1,17 +1,17 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme.components')
       .directive('widgets', widgets);
 
   /** @ngInject */
-  function widgets() {
+  function widgets(){
     return {
-      restrict: 'EA',
-      scope: {
+      restrict:    'EA',
+      scope:       {
         ngModel: '='
       },
       templateUrl: 'app/theme/components/widgets/widgets.html',
-      replace: true
+      replace:     true
     };
   }
 })();

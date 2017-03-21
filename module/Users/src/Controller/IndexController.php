@@ -59,6 +59,7 @@ class IndexController extends MCmsController
         foreach ($data as $key => $user) {
             if ($user instanceof \Users\Entity\Users) {
                 $data[$key] = $user->toArray();
+                $data[$key]['registrationDate'] = $user->getRegistrationDateFormat('Y-m-d');
                 $data[$key]['grAvatar'] = $user->getGrAvatar();
             }
         }

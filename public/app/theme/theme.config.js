@@ -1,10 +1,10 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme')
-    .config(config);
+      .config(config);
 
   /** @ngInject */
-  function config(baConfigProvider, $locationProvider, $httpProvider, uiSelectConfig, IdleProvider) {
+  function config(baConfigProvider, $locationProvider, $httpProvider, uiSelectConfig, IdleProvider){
     $locationProvider.html5Mode(false);
     $locationProvider.hashPrefix('');
 
@@ -12,7 +12,7 @@
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
     uiSelectConfig.theme = 'bootstrap';
 
-    IdleProvider.idle(60*15);
+    IdleProvider.idle(60 * 15); // 15 minutes
     IdleProvider.timeout(0);
 
     //baConfigProvider.changeTheme({blur: true});

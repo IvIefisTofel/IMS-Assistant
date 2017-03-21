@@ -1,20 +1,20 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme')
       .directive('scrollPosition', scrollPosition);
 
   /** @ngInject */
-  function scrollPosition() {
+  function scrollPosition(){
     return {
       scope: {
         scrollPosition: '=',
-        maxHeight: '='
+        maxHeight:      '='
       },
-      link: function (scope) {
-        $(window).on('scroll', function() {
+      link:  function(scope){
+        $(window).on('scroll', function(){
           var scrollTop = $(window).scrollTop() > scope.maxHeight;
-          if (scrollTop !== scope.prevScrollTop) {
-            scope.$apply(function() {
+          if (scrollTop !== scope.prevScrollTop){
+            scope.$apply(function(){
               scope.scrollPosition = scrollTop;
             });
           }

@@ -1,17 +1,17 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme.components')
       .directive('backTop', backTop);
 
   /** @ngInject */
-  function backTop() {
+  function backTop(){
     return {
-      restrict: 'E',
+      restrict:    'E',
       templateUrl: 'app/theme/components/backTop/backTop.html',
-      controller: function () {
+      controller:  function(){
         $('#backTop').backTop({
           'position': 200,
-          'speed': 100
+          'speed':    100
         });
       }
     };

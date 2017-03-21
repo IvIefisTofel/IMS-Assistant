@@ -1,15 +1,15 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme.components')
       .directive('contentTop', contentTop);
 
   /** @ngInject */
-  function contentTop($state) {
+  function contentTop($state){
     return {
-      restrict: 'E',
+      restrict:    'E',
       templateUrl: 'app/theme/components/contentTop/contentTop.html',
-      link: function($scope) {
-        $scope.$watch(function () {
+      link:        function($scope){
+        $scope.$watch(function(){
           $scope.activePageTitle = $state.current.title;
         });
       }

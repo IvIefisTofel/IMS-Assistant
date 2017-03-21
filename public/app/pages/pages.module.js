@@ -1,4 +1,4 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.pages', [
     'ui.router',
@@ -11,7 +11,7 @@
   ]).config(routeConfig);
 
   /** @ngInject */
-  function routeConfig($urlRouterProvider) {
+  function routeConfig($urlRouterProvider){
     $urlRouterProvider.otherwise('/');
   }
 })();

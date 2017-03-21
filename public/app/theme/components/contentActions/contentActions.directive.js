@@ -1,13 +1,13 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme.components')
       .directive('contentActions', contentActions);
 
   /** @ngInject */
-  function contentActions() {
+  function contentActions(){
     return {
-      restrict: 'E',
-      controller: 'ContentActionsCtrl',
+      restrict:    'E',
+      controller:  'ContentActionsCtrl',
       templateUrl: 'app/theme/components/contentActions/contentActions.html'
     };
   }

@@ -1,10 +1,10 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.pages.nomenclature')
       .controller('DetailsListCtrl', DetailsListCtrl);
 
   /** @ngInject */
-  function DetailsListCtrl($scope, $rootScope, $state, $stateParams, $http, $filter, $uibModal) {
+  function DetailsListCtrl($scope, $rootScope, $state, $stateParams, $http, $filter, $uibModal){
     $scope.showOrder = ($stateParams.id == null);
     $scope.order = null;
     $scope.list = [];
@@ -20,30 +20,30 @@
 
     $scope.actionVariants = {
       openGallery: {
-        text: "Все чертежи",
-        class: "btn-primary",
+        text:      "Все чертежи",
+        class:     "btn-primary",
         iconClass: "fa fa-picture-o",
-        action: 'orderGallery'
+        action:    'orderGallery'
       },
-      default: [
+      default:     [
         {
-          text: "Добавить",
-          class: "btn-success",
+          text:      "Добавить",
+          class:     "btn-success",
           iconClass: "fa fa-plus",
-          action: 'addDetail'
+          action:    'addDetail'
         },
         {
-          text: "Обновить",
-          class: "btn-info",
+          text:      "Обновить",
+          class:     "btn-info",
           iconClass: "fa fa-refresh",
-          action: 'refreshData'
+          action:    'refreshData'
         }
       ]
     };
     $scope.actions = $scope.actionVariants.default;
 
-    $scope.sortBy = function (propertyName) {
-      if (propertyName.indexOf('date') != -1) {
+    $scope.sortBy = function(propertyName){
+      if (propertyName.indexOf('date') != -1){
         $scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : true;
       }
       else {
@@ -53,136 +53,136 @@
       $scope.list = $filter('orderBy')($scope.list, $scope.propertyName, $scope.reverse);
     };
 
-    function noFilter(filterObj) {
-      return Object.keys(filterObj).every(function (key) {
+    function noFilter(filterObj){
+      return Object.keys(filterObj).every(function(key){
         return !filterObj[key];
       });
     }
 
-    $scope.filterBy = function (item) {
+    $scope.filterBy = function(item){
       return $scope.filter[item.status] || noFilter($scope.filter);
     };
 
     $scope.expanding_property = {
-      field: 'code',
+      field:         'code',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'code\')">{{expandingProperty.displayName || expandingProperty.field}}</button>' +
-        '<span class="sortorder" ng-show="propertyName === \'code\'" ng-class="{reverse: reverse}"></span>',
-      colspan: "node.__children__.length > 0 ? 2 : 1",
-      firstStatus: true,
-      displayName: 'Шифр детали'
+                     '<span class="sortorder" ng-show="propertyName === \'code\'" ng-class="{reverse: reverse}"></span>',
+      colspan:       "node.__children__.length > 0 ? 2 : 1",
+      firstStatus:   true,
+      displayName:   'Шифр детали'
     };
 
-    var filesTemplate = function () {
+    var filesTemplate = function(){
       return '<span ng-if="node.__children__.length == 0 && node[col.field].length == null"> --- </span>' +
-          '<a ng-if="node[col.field].length == 1" class="btn btn-primary btn-xs" href="/files/{{node[col.field][0].id}}/{{node[col.field][0].name}}" download="">' +
-            '{{node[col.field][0].name}}' +
-          '</a>' +
-          '<div ng-if="node[col.field].length > 1" class="dropdown">' +
-            '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>' +
-            '<ul class="dropdown-menu">' +
-              '<li ng-repeat="file in node[col.field]"><a href="/files/{{file.id}}/{{file.name}}" download="{{file.name}}">{{file.name}}</a></li>' +
-            '</ul>' +
-          '</div>';
+             '<a ng-if="node[col.field].length == 1" class="btn btn-primary btn-xs" href="/files/{{node[col.field][0].id}}/{{node[col.field][0].name}}" download="">' +
+             '{{node[col.field][0].name}}' +
+             '</a>' +
+             '<div ng-if="node[col.field].length > 1" class="dropdown">' +
+             '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>' +
+             '<ul class="dropdown-menu">' +
+             '<li ng-repeat="file in node[col.field]"><a href="/files/{{file.id}}/{{file.name}}" download="{{file.name}}">{{file.name}}</a></li>' +
+             '</ul>' +
+             '</div>';
     };
 
-    var imagesTemplate = function () {
+    var imagesTemplate = function(){
       return '<span ng-if="node.__children__.length == 0 && node[col.field].length == null"> --- </span>' +
-          '<a ng-if="node[col.field].length == 1" class="btn btn-primary btn-xs" href ng-click="openGallery(node.id)">' +
-            '{{node[col.field][0].name}}' +
-          '</a>' +
-          '<div ng-if="node[col.field].length > 1" class="dropdown">' +
-            '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>' +
-            '<ul class="dropdown-menu">' +
-              '<li ng-repeat="(key, file) in node[col.field]"><a href ng-click="openGallery(node.id, key)">{{file.name}}</a></li>' +
-            '</ul>' +
-          '</div>';
+             '<a ng-if="node[col.field].length == 1" class="btn btn-primary btn-xs" href ng-click="openGallery(node.id)">' +
+             '{{node[col.field][0].name}}' +
+             '</a>' +
+             '<div ng-if="node[col.field].length > 1" class="dropdown">' +
+             '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Файлы<span class="caret"></span></button>' +
+             '<ul class="dropdown-menu">' +
+             '<li ng-repeat="(key, file) in node[col.field]"><a href ng-click="openGallery(node.id, key)">{{file.name}}</a></li>' +
+             '</ul>' +
+             '</div>';
     };
 
     $scope.defaults = [{
-      field: 'name',
+      field:         'name',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'name\')">{{col.displayName || col.field}}</button>' +
-        '<span class="sortorder" ng-show="propertyName === \'name\'" ng-class="{reverse: reverse}"></span>',
-      colspan: "node.__children__.length > 0 ? 0 : 1",
-      displayName: 'Наименование детали'
+                     '<span class="sortorder" ng-show="propertyName === \'name\'" ng-class="{reverse: reverse}"></span>',
+      colspan:       "node.__children__.length > 0 ? 0 : 1",
+      displayName:   'Наименование детали'
     }, {
-      field: 'orderCode',
+      field:         'orderCode',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'orderCode\')">{{col.displayName || col.field}}</button>' +
-        '<span class="sortorder" ng-show="propertyName === \'orderCode\'" ng-class="{reverse: reverse}"></span>',
-      hidden: !$scope.showOrder,
-      displayName: 'Шифр заказа'
+                     '<span class="sortorder" ng-show="propertyName === \'orderCode\'" ng-class="{reverse: reverse}"></span>',
+      hidden:        !$scope.showOrder,
+      displayName:   'Шифр заказа'
     }, {
-      field: 'pattern',
+      field:         'pattern',
       titleTemplate: '<button class="btn btn-link" disabled="disabled">{{col.displayName || col.field}}</button>',
-      cellTemplate: imagesTemplate(),
-      displayName: 'Чертеж'
+      cellTemplate:  imagesTemplate(),
+      displayName:   'Чертеж'
     }, {
-      field: 'model',
+      field:         'model',
       titleTemplate: '<button class="btn btn-link" disabled="disabled">{{col.displayName || col.field}}</button>',
-      cellTemplate: filesTemplate(),
-      displayName: 'Модель'
+      cellTemplate:  filesTemplate(),
+      displayName:   'Модель'
     }, {
-      field: 'project',
+      field:         'project',
       titleTemplate: '<button class="btn btn-link" disabled="disabled">{{col.displayName || col.field}}</button>',
-      cellTemplate: filesTemplate(),
-      displayName: 'Проект'
+      cellTemplate:  filesTemplate(),
+      displayName:   'Проект'
     }, {
-      field: 'dateCreation',
+      field:         'dateCreation',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'dateCreation\')">{{col.displayName || col.field}}</button>' +
-        '<span class="sortorder" ng-show="propertyName === \'dateCreation\'" ng-class="{reverse: reverse}"></span>',
-      cellTemplate: '<div>{{node.dateCreation ? (node.dateCreation | date: "dd MMMM yyyy, EEEE") : "---"}}</div>',
-      displayName: 'Дата создания'
+                     '<span class="sortorder" ng-show="propertyName === \'dateCreation\'" ng-class="{reverse: reverse}"></span>',
+      cellTemplate:  '<div>{{node.dateCreation ? (node.dateCreation | date: "dd MMMM yyyy, EEEE") : "---"}}</div>',
+      displayName:   'Дата создания'
     }, {
-      field: 'dateEnd',
+      field:         'dateEnd',
       titleTemplate: '<button class="btn btn-link" ng-click="sortBy(\'dateEnd\')">{{col.displayName || col.field}}</button>' +
-        '<span class="sortorder" ng-show="propertyName === \'dateEnd\'" ng-class="{reverse: reverse}"></span>',
-      cellTemplate: '<div>{{node.dateEnd ? (node.dateEnd | date: "dd MMMM yyyy, EEEE") : "---"}}</div>',
-      displayName: 'Дата исполнения'
+                     '<span class="sortorder" ng-show="propertyName === \'dateEnd\'" ng-class="{reverse: reverse}"></span>',
+      cellTemplate:  '<div>{{node.dateEnd ? (node.dateEnd | date: "dd MMMM yyyy, EEEE") : "---"}}</div>',
+      displayName:   'Дата исполнения'
     }, {
       cellTemplate: '<a ng-if="node.id" ui-sref="nomenclature-detail-edit({id: node.id})" class="btn btn-xs btn-primary">Деталь</a>'
     }];
 
-    $scope.addDetail = function () {
+    $scope.addDetail = function(){
       $state.go('nomenclature-detail-add');
     };
 
     $scope.showGallery = false;
     $scope.galleries = [];
-    $scope.openGallery = function (id, index) {
-      if (isNull(index)) {
+    $scope.openGallery = function(id, index){
+      if (isNull(index)){
         index = 0;
       }
-      if (!isNull($scope.galleries[id])) {
+      if (!isNull($scope.galleries[id])){
         $rootScope.gallery.images = $scope.galleries[id];
         $rootScope.gallery.methods.open(index);
       }
     };
 
-    function addGalleryItem(item, addMain) {
-      angular.forEach(item.pattern, function (image, key) {
-        if (addMain) {
+    function addGalleryItem(item, addMain){
+      angular.forEach(item.pattern, function(image, key){
+        if (addMain){
           $scope.galleries.main.push({
-            image: {
-              id: image.id,
+            image:   {
+              id:   image.id,
               name: image.name
             },
-            url: '/files/h/950/' + image.id + '/' + image.name,
-            extUrl: '/files/' + image.id + '/' + image.name,
+            url:     '/files/h/950/' + image.id + '/' + image.name,
+            extUrl:  '/files/' + image.id + '/' + image.name,
             desText: item.code
           });
         }
         $scope.galleries[item.id].push({
-          url: '/files/h/950/' + image.id + '/' + image.name,
+          url:    '/files/h/950/' + image.id + '/' + image.name,
           extUrl: '/files/' + image.id + '/' + image.name
         });
       });
     }
 
-    $scope.orderGallery = function () {
+    $scope.orderGallery = function(){
       var $modal = $('#modalGallery');
-      if ($modal.length) {
-        if ($modal.find('img[data-src]').length) {
-          $modal.on('shown.bs.modal', function (e) {
-            $(this).find('img[data-src]').each(function (key, value) {
+      if ($modal.length){
+        if ($modal.find('img[data-src]').length){
+          $modal.on('shown.bs.modal', function(e){
+            $(this).find('img[data-src]').each(function(key, value){
               $(value).attr('src', $(value).data('src')).removeAttr('data-src');
             });
             $(e.currentTarget).unbind('shown.bs.modal');
@@ -192,45 +192,46 @@
       }
     };
 
-    $scope.refreshData = function () {
+    $scope.refreshData = function(){
       $scope.loading = true;
-      if ($stateParams.id == null) {
+      if ($stateParams.id == null){
         $scope.order = null;
       }
 
-      var $url = ($stateParams.id == null) ? "/api/nomenclature/tree" : "/api/nomenclature/get-by-order-tree/" + $stateParams.id;
-      $http.post($url).then(function successCallback(response) {
+      var $url = ($stateParams.id == null) ? "/api/nomenclature/tree" : "/api/nomenclature/get-by-order-tree/" +
+                                                                        $stateParams.id;
+      $http.post($url).then(function successCallback(response){
         var data = response.data;
-        if (data.error) {
+        if (data.error){
           console.log(data);
         } else {
           $scope.list = $filter('orderBy')(data.data, $scope.propertyName, $scope.reverse);
           $scope.loading = false;
           $scope.galleries = [];
-          if (!isNull(data.order)) {
+          if (!isNull(data.order)){
             $scope.galleries.main = [];
             $scope.order = data.order;
           }
-          angular.forEach($scope.list, function (detail, key) {
-            if (isNull(detail['__children__'])) {
-              if (!isNull(detail.pattern)) {
+          angular.forEach($scope.list, function(detail, key){
+            if (isNull(detail['__children__'])){
+              if (!isNull(detail.pattern)){
                 $scope.galleries[detail.id] = [];
                 addGalleryItem(detail, !isNull(data.order));
               }
             } else {
-              angular.forEach(detail['__children__'], function (detail, key) {
-                if (!isNull(detail.pattern)) {
+              angular.forEach(detail['__children__'], function(detail, key){
+                if (!isNull(detail.pattern)){
                   $scope.galleries[detail.id] = [];
                   addGalleryItem(detail, !isNull(data.order));
                 }
               });
             }
           });
-          if (!isNull(data.order) && $scope.galleries.main.length) {
+          if (!isNull(data.order) && $scope.galleries.main.length){
             $scope.actions = [$scope.actionVariants.openGallery, $scope.actionVariants.default[0], $scope.actionVariants.default[1]];
           }
         }
-      }, function errorCallback(response) {
+      }, function errorCallback(response){
         console.log(response.statusText);
       });
     };

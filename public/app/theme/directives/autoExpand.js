@@ -1,14 +1,14 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme')
       .directive('autoExpand', autoExpand);
 
   /** @ngInject */
-  function autoExpand() {
+  function autoExpand(){
     return {
       restrict: 'A',
-      link: function ($scope, elem) {
-        elem.bind('keydown', function ($event) {
+      link:     function($scope, elem){
+        elem.bind('keydown', function($event){
           var element = $event.target;
           $(element).height(0);
           var height = $(element)[0].scrollHeight;
@@ -17,7 +17,7 @@
         });
 
         // Expand the textarea as soon as it is added to the DOM
-        setTimeout(function () {
+        setTimeout(function(){
           var element = elem;
           $(element).height(0);
           var height = $(element)[0].scrollHeight;

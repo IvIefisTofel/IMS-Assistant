@@ -1,13 +1,13 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.pages.clients')
       .directive('clientsList', clientsList);
 
   /** @ngInject */
-  function clientsList() {
+  function clientsList(){
     return {
-      restrict: 'E',
-      controller: 'ClientsListCtrl',
+      restrict:    'E',
+      controller:  'ClientsListCtrl',
       templateUrl: 'app/pages/clients/clientsList/clientsList.html'
     };
   }

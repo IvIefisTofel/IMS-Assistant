@@ -1,13 +1,13 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme')
       .directive('includeWithScope', includeWithScope);
 
   /** @ngInject */
-  function includeWithScope() {
+  function includeWithScope(){
     return {
-      restrict: 'AE',
-      templateUrl: function(ele, attrs) {
+      restrict:    'AE',
+      templateUrl: function(ele, attrs){
         return attrs.includeWithScope;
       }
     };

@@ -1,14 +1,14 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme.components')
       .directive('msgCenter', msgCenter);
 
   /** @ngInject */
-  function msgCenter() {
+  function msgCenter(){
     return {
-      restrict: 'E',
+      restrict:    'E',
       templateUrl: 'app/theme/components/msgCenter/msgCenter.html',
-      controller: 'MsgCenterCtrl'
+      controller:  'MsgCenterCtrl'
     };
   }
 })();

@@ -1,27 +1,28 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme.components')
-    .controller('BaSidebarCtrl', BaSidebarCtrl);
+      .controller('BaSidebarCtrl', BaSidebarCtrl);
 
   /** @ngInject */
-  function BaSidebarCtrl($scope, baSidebarService, $rootScope) {
+  function BaSidebarCtrl($scope, baSidebarService, $rootScope){
 
     $scope.menuItems = baSidebarService.getMenuItems();
     $scope.defaultSidebarState = $scope.menuItems[0].stateRef;
 
     $scope.filterBy = function(item){
-        return !item.permissionsRequired || (item.permissionsRequired && item.permissionsRequired == $rootScope.$getPermissions());
+      return !item.permissionsRequired ||
+             (item.permissionsRequired && item.permissionsRequired == $rootScope.$getPermissions());
     };
 
-    $scope.hoverItem = function ($event) {
+    $scope.hoverItem = function($event){
       $scope.showHoverElem = true;
-      $scope.hoverElemHeight =  $event.currentTarget.clientHeight;
+      $scope.hoverElemHeight = $event.currentTarget.clientHeight;
       var menuTopValue = 66;
       $scope.hoverElemTop = $event.currentTarget.getBoundingClientRect().top - menuTopValue;
     };
 
-    $scope.$on('$stateChangeSuccess', function () {
-      if (baSidebarService.canSidebarBeHidden()) {
+    $scope.$on('$stateChangeSuccess', function(){
+      if (baSidebarService.canSidebarBeHidden()){
         baSidebarService.setMenuCollapsed(true);
       }
     });

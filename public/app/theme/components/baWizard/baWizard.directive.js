@@ -1,16 +1,16 @@
-(function() {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme.components')
-    .directive('baWizard', baWizard);
+      .directive('baWizard', baWizard);
 
   /** @ngInject */
-  function baWizard() {
+  function baWizard(){
     return {
-      restrict: 'E',
-      transclude: true,
-      templateUrl: 'app/theme/components/baWizard/baWizard.html',
+      restrict:     'E',
+      transclude:   true,
+      templateUrl:  'app/theme/components/baWizard/baWizard.html',
       controllerAs: '$baWizardController',
-      controller: 'baWizardCtrl'
+      controller:   'baWizardCtrl'
     }
   }
 })();

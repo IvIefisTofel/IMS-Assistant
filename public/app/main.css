@@ -6597,3 +6597,6 @@ a.change-user {
     .timeline-loading.loading i { display: block; }
 .table-dropdown { display: inline-table; }
 .empty-nomenclature { text-align: center; margin: 9px 0; }
+.editable-wrap.full-width { margin: 0; width: 100%; }
+img.user-list { width: 30px; height: 30px; border-radius: 50%; }
+img.user-edit { border-radius: 50%; }

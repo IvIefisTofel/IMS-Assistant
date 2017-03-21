@@ -1,12 +1,12 @@
-(function () {
+(function(){
   'use strict';
   angular.module('BlurAdmin.theme')
-    .service('preloader', preloader);
+      .service('preloader', preloader);
 
   /** @ngInject */
-  function preloader($q) {
+  function preloader($q){
     return {
-      loadImg: function (src) {
+      loadImg:      function(src){
         var d = $q.defer();
         var img = new Image();
         img.src = src;
@@ -15,7 +15,7 @@
         };
         return d.promise;
       },
-      loadAmCharts : function(){
+      loadAmCharts: function(){
         var d = $q.defer();
         AmCharts.ready(function(){
           d.resolve();

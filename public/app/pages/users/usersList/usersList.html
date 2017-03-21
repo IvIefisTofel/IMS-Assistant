@@ -1,20 +1,85 @@
+<content-actions></content-actions>
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-primary with-search animated fadeInUp">
             <div class="panel-heading">
                 <div class="row">
-                    <div class="col-md-12 hidden-sm hidden-xs">
+                    <div class="col-md-6 col-lg-8 hidden-sm hidden-xs">
                         <h3>
                             Пользователи <a href="javascript:window.history.back(-1)" class="pull-right">Назад</a>
                         </h3>
                     </div>
+                    <div class="col-md-6 col-lg-4 col-sm-12 col-xs-12">
+                        <input ng-model="search.$" type="text" class="form-control" placeholder="Поиск..."/>
+                    </div>
                 </div>
             </div>
             <div class="panel-body">
-                <div class="no-data">
+                <div ng-show="loading" class="no-data">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+                <div ng-show="!loading && !users.length > 0" class="no-data">
                     <i class="fa fa-exclamation-triangle"></i>
                     Нет данных
                 </div>
+                <div class="switches">
+                    <switch color="success" ng-model="active">Активный</switch>
+                </div>
+                <table ng-show="!loading && users.length > 0" class="table table-bordered table-hover table-text-center table-with-labels">
+                    <thead>
+                    <tr class="black-muted-bg">
+                        <td style="width: 70px">
+                            <button class="btn btn-link" disabled="disabled">Аватар</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-link" ng-click="sortBy('name')">Уникальное имя</button>
+                            <span class="sortorder" ng-show="propertyName === 'name'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td ng-hide="clientName != null">
+                            <button class="btn btn-link" ng-click="sortBy('fullName')">ФИО</button>
+                            <span class="sortorder" ng-show="propertyName === 'fullName'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td>
+                            <button class="btn btn-link" ng-click="sortBy('email')">Email</button>
+                            <span class="sortorder" ng-show="propertyName === 'email'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td>
+                            <button class="btn btn-link" ng-click="sortBy('active')">Активный</button>
+                            <span class="sortorder" ng-show="propertyName === 'active'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td>
+                            <button class="btn btn-link" ng-click="sortBy('registrationDate')">Дата регистрации</button>
+                            <span class="sortorder" ng-show="propertyName === 'registrationDate'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td width="150px"></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="(key, user) in users" class="no-top-border">
+                        <td><img ng-src="{{user.grAvatar}}" class="user-list"></td>
+                        <td>
+                            <span>{{user.name}}</span>
+                        </td>
+                        <td>
+                            <span>{{user.fullName}}</span>
+                        </td>
+                        <td>
+                            <span>{{user.email}}</span>
+                        </td>
+                        <td>
+                            <span><i class="fa" ng-class="user.active ? 'fa-check-square-o' : 'fa-square-o'" style="color: #209e91;"></i></span>
+                        </td>
+                        <td>
+                            <span>{{user.registrationDate != null ? (user.registrationDate | date:"dd MMMM yyyy г.") : '---'}}</span>
+                        </td>
+                        <td class="align-right">
+                            <span>
+                                <button type="button" class="btn btn-xs btn-no-transform btn-primary" ng-click="edit(user)">Редактировать</button>
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
