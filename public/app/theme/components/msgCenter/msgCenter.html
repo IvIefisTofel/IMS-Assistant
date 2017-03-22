@@ -1,5 +1,5 @@
 <ul class="al-msg-center clearfix">
-  <li uib-dropdown ng-show="hotOrders.length > 0 || ($getPermissions() && (errors | filter: {read: false}) > 0)">
+  <li uib-dropdown ng-show="hotOrders.length > 0 || ($getPermissions() && (errors | filter: {read: false}).length > 0)">
     <a href uib-dropdown-toggle>
       <i class="fa fa-bell-o"></i><span>{{hotOrders.length + ($getPermissions() ? (errors | filter: {read: false}).length : 0)}}</span>
       <div class="notification-ring"></div>
@@ -10,6 +10,7 @@
 
       <div class="header clearfix">
         <strong>Уведомления</strong>
+        <a href ng-click="update()">Обновить</a>
       </div>
       <div class="msg-list">
         <a href class="clearfix" ng-repeat="err in errors | filter: {read: false} | orderBy:'date':true " ng-click="showError(err.id)" ng-show="$getPermissions()">

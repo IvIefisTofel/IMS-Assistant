@@ -11,7 +11,7 @@
     $scope.showErrors = false;
 
     $scope.reLogin = function(){
-      $scope.modalActions.close();
+      modalInstance.dismiss('close');
       var form = new FormData();
       form.append('assistant_name', $scope.modalActions.user);
       form.append('assistant_password', $scope.modalActions.password ? $scope.modalActions.password : '');
@@ -53,7 +53,7 @@
       user:     null,
       password: null,
       reLogin:  function(){
-        if (modalInstance == null){
+        if (modalInstance != null){
           modalInstance.dismiss('close');
         }
         $scope.modalActions.user = $scope.user.name;
@@ -70,7 +70,7 @@
         })
       },
       editUser: function(){
-        if (modalInstance == null){
+        if (modalInstance != null){
           modalInstance.dismiss('close');
         }
         $scope.editable = angular.copy($scope.user);

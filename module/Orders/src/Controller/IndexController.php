@@ -72,11 +72,11 @@ class IndexController extends MCmsController
                         $order->setClientId($clientId);
                         $edited = true;
                     }
-                    if (($dateCreation = $postData['order']['dateCreation']) != $order->getDateCreation(false)) {
+                    if (($dateCreation = $postData['order']['dateCreation']) != $order->getDateCreation()) {
                         $order->setDateCreation($dateCreation);
                         $edited = true;
                     }
-                    if (($dateStart = isset($postData['order']['dateStart']) ? $postData['order']['dateStart'] : null) != $order->getDateStart(false)) {
+                    if (($dateStart = isset($postData['order']['dateStart']) ? $postData['order']['dateStart'] : null) != $order->getDateStart()) {
                         $event = new Event();
                         $event->setUserId($this->identity()->getId());
                         if ($order->getDateStart() == null && $dateStart != null) {
@@ -92,7 +92,7 @@ class IndexController extends MCmsController
                         }
                         $order->setDateStart($dateStart);
                     }
-                    if (($dateEnd = isset($postData['order']['dateEnd']) ? $postData['order']['dateEnd'] : null) != $order->getDateEnd(false)) {
+                    if (($dateEnd = isset($postData['order']['dateEnd']) ? $postData['order']['dateEnd'] : null) != $order->getDateEnd()) {
                         $event = new Event();
                         $event->setUserId($this->identity()->getId());
                         if ($order->getDateEnd(false) == null && $dateEnd != null) {
@@ -110,8 +110,9 @@ class IndexController extends MCmsController
                                 $flush[] = $event;
                             }
                         }
+                        $order->setDateEnd($dateEnd);
                     }
-                    if (($dateDeadLine = isset($postData['order']['dateDeadline']) ? $postData['order']['dateDeadline'] : null) != $order->getDateDeadline(false)) {
+                    if (($dateDeadLine = isset($postData['order']['dateDeadline']) ? $postData['order']['dateDeadline'] : null) != $order->getDateDeadline()) {
                         $order->setDateDeadline($dateDeadLine);
                         $edited = true;
                     }
@@ -432,16 +433,18 @@ class IndexController extends MCmsController
                         $this->entityManager->persist($item);
                     }
                     $this->entityManager->flush();
-                    foreach ($events as $eventDetail) {
-                        /* @var $detail \Nomenclature\Entity\Details */
-                        $detail = $eventDetail['detail'];
-                        foreach ($eventDetail['events'] as $event) {
-                            /* @var $event \MCms\Entity\Events */
-                            $event->setEntityId($detail->getId());
-                            $this->entityManager->persist($event);
+                    if (count($events)) {
+                        foreach ($events as $eventDetail) {
+                            /* @var $detail \Nomenclature\Entity\Details */
+                            $detail = $eventDetail['detail'];
+                            foreach ($eventDetail['events'] as $event) {
+                                /* @var $event \MCms\Entity\Events */
+                                $event->setEntityId($detail->getId());
+                                $this->entityManager->persist($event);
+                            }
                         }
+                        $this->entityManager->flush();
                     }
-                    $this->entityManager->flush();
                     if (isset($add)) {
                         $data = $order;
                     } else {
