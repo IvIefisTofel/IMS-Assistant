@@ -4,8 +4,8 @@ class AssetsGenerator
 {
     const cssCoreName = 'cssCore.css';
     const cssLibsName = 'cssLibs.css';
-    const jsCoreName  = 'jsCore,js';
-    const jsLibsName  = 'jsLibs,js';
+    const jsCoreName  = 'jsCore.js';
+    const jsLibsName  = 'jsLibs.js';
 
     const cssCorePath = './public/core/css';
     const jsCorePath  = './public/core/js';

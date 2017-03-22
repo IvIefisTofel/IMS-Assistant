@@ -42,7 +42,7 @@ return [
 
             "/app/pages/timeline/timeLine/TimelineCtrl.js",
             "/app/pages/timeline/timeLine/timeline.directive.js",
-            "/app/pages/timeline/timeLine.module.js",
+            "/app/pages/timeline/timeline.module.js",
 
             "/app/pages/users/usersList/UsersListCtrl.js",
             "/app/pages/users/usersList/usersList.directive.js",
