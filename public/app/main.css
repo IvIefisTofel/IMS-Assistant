@@ -6212,6 +6212,10 @@ label.todo-checkbox {
   .weather-wrapper .font-x3 {
     font-size: 3em; }
 
+div.no-data-container {
+  position: relative;
+  margin-top: 50px;
+}
 div.no-data {
   position: absolute;
   text-align: center;

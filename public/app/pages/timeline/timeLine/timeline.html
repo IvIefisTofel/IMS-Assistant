@@ -157,9 +157,11 @@
             </div>
         </div>
     </div>
-    <div ng-show="!loading && list == 0" class="no-data">
-        <i class="fa fa-exclamation-triangle"></i>
-        Нет данных
+    <div class="no-data-container">
+        <div ng-show="!loading && list == 0" class="no-data">
+            <i class="fa fa-exclamation-triangle"></i>
+            Нет данных
+        </div>
     </div>
 </div>
 <div class="timeline-loading" ng-class="loading ? 'loading' : ''" ng-if="!allData"><i class="fa fa-spinner fa-spin"></i></div>
