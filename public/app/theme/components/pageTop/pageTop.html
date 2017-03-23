@@ -15,7 +15,7 @@
       <ul class="top-dropdown-menu profile-dropdown" uib-dropdown-menu>
         <li><i class="dropdown-arr"></i></li>
         <li><span>{{user.name}}</span></li>
-        <li><a href ng-click="modalActions.editUser()"><i class="fa fa-user"></i>Редактировать</a></li>
+        <li><a href ng-click="userEdit()"><i class="fa fa-user"></i>Редактировать</a></li>
       </ul>
     </div>
     <a class="pull-right change-user" href ng-click="modalActions.reLogin()" ng-class="$getPermissions() ? 'admin' : ''"><i class="fa fa-sign-in"></i></a>

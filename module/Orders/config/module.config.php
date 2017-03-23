@@ -31,7 +31,7 @@ return [
     ],
     'controller_plugins' => [
         'invokables' => [
-            'OrdersPlugin' => Controller\Plugin\OrdersPlugin::class,
+            'orders' => Controller\Plugin\OrdersPlugin::class,
         ],
     ],
 

@@ -182,7 +182,7 @@ class IndexController extends MCmsController
                         }
                     }
 
-                    $newCollectionId = $this->plugin('FilesPlugin')->getLastCollectionId() + 1;
+                    $newCollectionId = $this->plugin('files')->getLastCollectionId() + 1;
 
                     try {
                         $form->setData($data);
@@ -203,7 +203,7 @@ class IndexController extends MCmsController
                                                 $dropVersions[] = array_shift($versions)->getId();
                                             }
                                             if (count($dropVersions)) {
-                                                $this->plugin('FilesPlugin')->dropVersions($dropVersions);
+                                                $this->plugin('files')->dropVersions($dropVersions);
                                             }
 
                                             $version = new Version();
@@ -294,7 +294,7 @@ class IndexController extends MCmsController
                                                 $dropVersions[] = array_shift($versions)->getId();
                                             }
                                             if (count($dropVersions)) {
-                                                $this->plugin('FilesPlugin')->dropVersions($dropVersions);
+                                                $this->plugin('files')->dropVersions($dropVersions);
                                             }
 
                                             $version = new Version();
@@ -448,7 +448,7 @@ class IndexController extends MCmsController
                                         $dropVersions[] = array_shift($versions)->getId();
                                     }
                                     if (count($dropVersions)) {
-                                        $this->plugin('FilesPlugin')->dropVersions($dropVersions);
+                                        $this->plugin('files')->dropVersions($dropVersions);
                                     }
 
                                     $version = new Version();
@@ -562,7 +562,7 @@ class IndexController extends MCmsController
                 $tree = false;
                 $data = null;
                 $opts = ['withOrders' => true, 'withFiles' => false];
-                $result['clients'] = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
+                $result['clients'] = $this->plugin('clients')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
             break;
             case "get-with-parents": case "getwithparents": case "getWithParents":
                 if ($id === null)
@@ -571,7 +571,7 @@ class IndexController extends MCmsController
                     $tree = false;
                     $data = $this->entityManager->getRepository(DetailsView::class)->find($id);
                     $opts = ['withOrders' => true, 'withFiles' => false];
-                    $result['clients'] = $this->plugin('ClientsPlugin')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
+                    $result['clients'] = $this->plugin('clients')->toArray($this->entityManager->getRepository('Clients\Entity\Clients')->findBy([], ['name' => 'ASC']), $opts);
                 }
                 break;
             case "get":
@@ -601,7 +601,7 @@ class IndexController extends MCmsController
         }
 
         if ($tree) {
-            $details = $this->plugin('DetailsPlugin')->toArray($data, ['allVersions' => $allVersions]);
+            $details = $this->plugin('details')->toArray($data, ['allVersions' => $allVersions]);
             $data = [];
             $id = 0;
             foreach ($details as $item) {
@@ -640,7 +640,7 @@ class IndexController extends MCmsController
             }
             $result['data'] = array_values($data);
         } else {
-            $result['data'] = $this->plugin('DetailsPlugin')->toArray($data, ['allVersions' => $allVersions, 'onlyNames' => $onlyNames]);
+            $result['data'] = $this->plugin('details')->toArray($data, ['allVersions' => $allVersions, 'onlyNames' => $onlyNames]);
         }
 
         if (!$onlyNames) {
@@ -655,7 +655,7 @@ class IndexController extends MCmsController
             $result = ["error" => $error];
         }
         if ($dev) {
-            var_dump($result);
+            print_r($result);
             exit;
         } else {
             return new JsonModel($result);

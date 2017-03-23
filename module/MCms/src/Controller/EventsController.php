@@ -40,7 +40,7 @@ class EventsController extends MCmsController
             $tree = (bool)$this->params()->fromPost('tree', true);
             if ($tree) { $opts['tree'] = $tree; }
 
-            $eventsPlugin = $this->plugin('EventsPlugin');
+            $eventsPlugin = $this->plugin('events');
             /* @var $eventsPlugin  \MCms\Controller\Plugin\EventsPlugin */
             $events = $eventsPlugin->findBy($opts, ['date' => 'DESC'], $limit, $offset);
             foreach ($events as $key => $event) {
@@ -104,7 +104,7 @@ class EventsController extends MCmsController
             $result['count'] = $limit;
         }
         if ($dev) {
-            var_dump($result);
+            print_r($result);
             exit;
         } else {
             return new JsonModel($result);

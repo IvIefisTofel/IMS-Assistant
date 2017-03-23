@@ -32,7 +32,7 @@ return [
 
     'controller_plugins' => [
         'invokables' => [
-            'DetailsPlugin' => Controller\Plugin\DetailsPlugin::class,
+            'details' => Controller\Plugin\DetailsPlugin::class,
         ],
     ],
 

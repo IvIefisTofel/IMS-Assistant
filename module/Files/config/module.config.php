@@ -32,7 +32,7 @@ return [
     ],
     'controller_plugins' => [
         'invokables' => [
-            'FilesPlugin' => Controller\Plugin\FilesPlugin::class,
+            'files' => Controller\Plugin\FilesPlugin::class,
         ],
     ],
 

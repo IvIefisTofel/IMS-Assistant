@@ -57,7 +57,7 @@ class ClientsPlugin extends MCmsPlugin
             }
 
             if ($withFiles) {
-                $collectionFiles = $this->controller->plugin('FilesPlugin')->getFiles(array_keys($collections), $allVersions);
+                $collectionFiles = $this->controller->plugin('files')->getFiles(array_keys($collections), $allVersions);
                 foreach ($result as $key => $client) {
                     if ($result[$key]['additions'] && isset($collectionFiles[$client['additions']])) {
                         $result[$key]['additions'] = array_values($collectionFiles[$client['additions']]);

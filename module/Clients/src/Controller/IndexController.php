@@ -75,7 +75,7 @@ class IndexController extends MCmsController
                             $client->setName($formData['clientName']);
                             if (isset($formData[Form::ADDONS]) || isset($formData[Form::NEW_ADDONS])) {
                                 if ($client->getAdditions() == null) {
-                                    $client->setAdditions($this->plugin('FilesPlugin')->getLastCollectionId() + 1);
+                                    $client->setAdditions($this->plugin('files')->getLastCollectionId() + 1);
                                 }
 
                                 if (isset($formData[Form::NEW_ADDONS])) {
@@ -130,7 +130,7 @@ class IndexController extends MCmsController
                                         }
                                     }
                                     if (count($dropVersions)) {
-                                        $this->plugin('FilesPlugin')->dropVersions($dropVersions);
+                                        $this->plugin('files')->dropVersions($dropVersions);
                                     }
                                 }
                                 foreach ($flush as $item) {
@@ -162,7 +162,7 @@ class IndexController extends MCmsController
                     $data = $this->entityManager->getRepository('Clients\Entity\Clients')->findAll();
                     break;
             }
-            $data = $this->plugin('ClientsPlugin')->toArray($data, ['onlyNames' => $onlyNames]);
+            $data = $this->plugin('clients')->toArray($data, ['onlyNames' => $onlyNames]);
         } catch (\Exception $e) {
             $error = $e->getMessage();
         }
@@ -173,7 +173,7 @@ class IndexController extends MCmsController
             $result = $data;
         }
         if ($dev) {
-            var_dump($result);
+            print_r($result);
             exit;
         } else {
             return new JsonModel($result);

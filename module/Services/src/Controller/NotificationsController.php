@@ -24,6 +24,7 @@ class NotificationsController extends MCmsController
         }
 
         $error = false;
+        $data = [];
         $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
 
         $request = $this->getRequest();
@@ -34,8 +35,8 @@ class NotificationsController extends MCmsController
 
         try {
             $data = [
-                'hotOrders' => $this->plugin('OrdersPlugin')->toArray(self::getHotOrders()),
-                'errors' => $this->plugin('ErrorsPlugin')->toArray($this->entityManager->getRepository('MCms\Entity\Errors')->findByRead(false, ['date' => 'DESC'])),
+                'hotOrders' => $this->plugin('orders')->toArray(self::getHotOrders()),
+                'errors' => $this->plugin('errors')->toArray($this->entityManager->getRepository(\MCms\Entity\Errors::class)->findByRead(false, ['date' => 'DESC'])),
             ];
         } catch (\Exception $e) {
             $error = $e->getMessage();
@@ -47,7 +48,7 @@ class NotificationsController extends MCmsController
             $result = $data;
         }
         if ($dev) {
-            var_dump($result);
+            print_r($result);
             exit;
         } else {
             return new JsonModel($result);

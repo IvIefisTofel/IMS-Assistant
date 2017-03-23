@@ -1,24 +1,27 @@
-<div class="modal-content">
+<div id="user-edit" class="modal-content">
     <div class="modal-header">
         <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
             <em class="ion-ios-close-empty sn-link-close"></em>
         </button>
-        <h4 class="modal-title" id="pattern-modal-label">{{isNull(editable.id) ? 'Добавить пользователя': 'Редактировать пользователя "' + editable.name + '"'}}</h4>
+        <h4 ng-init="userName = editable.name" class="modal-title" id="pattern-modal-label">{{isNull(editable.id) ? 'Добавить пользователя':
+            'Редактировать пользователя "' + userName + '"'}}</h4>
     </div>
     <div class="modal-body">
         <div class="row">
             <div class="col-md-12">
-                <div class="form-horizontal">
+                <div class="form-horizontal" ng-form name="userForm">
                     <div class="form-group">
                         <label class="col-md-4 control-label">Аватар</label>
                         <div class="col-md-8">
-                            <a href="http://ru.gravatar.com/" target="_blank"><img class="user-edit" ng-src="{{ editable.grAvatar }}"></a>
+                            <a href="http://ru.gravatar.com/" target="_blank"><img class="user-edit"
+                                                                                   ng-src="{{ editable.grAvatar }}"></a>
                         </div>
                     </div>
                     <div class="form-group" ng-class="{ 'has-error': showErrors && isNull(editable.name) }">
                         <label for="name" class="col-md-4 control-label">Уникальное имя</label>
                         <div class="col-md-8">
-                            <input id="name" type="text" class="form-control" ng-model="editable.name" placeholder="Уникальное имя">
+                            <input id="name" type="text" class="form-control" ng-model="editable.name"
+                                   placeholder="Уникальное имя">
                             <div class="help-block" ng-show="showErrors && isNull(editable.name)">
                                 <p>Поле обязательно к заполнению.</p>
                             </div>
@@ -27,53 +30,103 @@
                     <div class="form-group" ng-class="{ 'has-error': showErrors && isNull(editable.fullName) }">
                         <label for="fullName" class="col-md-4 control-label">ФИО</label>
                         <div class="col-md-8">
-                            <input id="fullName" type="text" class="form-control" ng-model="editable.fullName" placeholder="ФИО">
+                            <input id="fullName" type="text" class="form-control" ng-model="editable.fullName"
+                                   placeholder="ФИО">
                             <div class="help-block" ng-show="showErrors && isNull(editable.fullName)">
                                 <p>Поле обязательно к заполнению.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group" ng-class="{ 'has-error': showErrors && isNull(editable.email) }">
+                    <div class="form-group" ng-class="{ 'has-error': showErrors && (isNull(editable.email) || userForm.email.$error.email ) }">
                         <label for="email" class="col-md-4 control-label">Email</label>
                         <div class="col-md-8">
-                            <input id="email" type="email" class="form-control" ng-model="editable.email" placeholder="Email">
-                            <div class="help-block" ng-show="showErrors && isNull(editable.email)">
-                                <p>Поле обязательно к заполнению.</p>
+                            <input id="email" type="email" name="email" class="form-control" ng-model="editable.email"
+                                   placeholder="Email" required="required">
+                            <div class="help-block" ng-show="showErrors && (isNull(editable.email) || userForm.email.$error.email)">
+                                <p ng-show="userForm.email.$error.required">Поле обязательно к заполнению.</p>
+                                <p ng-show="userForm.email.$error.email">Не верный Email</p>
                             </div>
                         </div>
                     </div>
-
-                    <div ng-if="currentUserId == editable.id" class="form-group"
-                         ng-class="{ 'has-error': showErrors && (isNull(editable.password) && !isNull(editable.newPassword)) }">
+                    <div class="form-group" ng-class="{ 'has-error': showErrors && (isNull(editable.password) || editable.errPassword == true) }">
                         <label for="password" class="col-md-4 control-label">Текущий пароль</label>
                         <div class="col-md-8">
-                            <input id="password" type="password" class="form-control" ng-model="editable.password" placeholder="Текущий пароль">
-                            <div class="help-block" ng-show="showErrors && isNull(editable.email)">
+                            <div class="input-group">
+                                <input id="password" type="password" class="form-control passwd" ng-model="editable.password"
+                                       placeholder="{{currentUserId == editable.id ? 'Текущий пароль' : 'Введите пароль от вашего пользователя' }}">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-no-transform view-password" type="button">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="help-block" ng-show="showErrors && (isNull(editable.password) || editable.errPassword == true)">
                                 <p ng-show="isNull(editable.password)">Поле обязательно к заполнению.</p>
-                                <p ng-show="!isNull(editable.password) && editable.passwordError">Не верный пароль.</p>
+                                <p ng-show="editable.errPassword == true">Не верный пароль.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{ 'has-error': showErrors && ((!isNull(editable.newPassword) && !isNull(editable.confirmPassword) && editable.newPassword != editable.confirmPassword)
+                            || (isNull(editable.newPassword) && !isNull(editable.confirmPassword)))}">
+                        <label for="newPassword" class="col-md-4 control-label">Новый пароль</label>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input id="newPassword" type="password" class="form-control passwd"
+                                       ng-model="editable.newPassword" placeholder="Новый пароль">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-no-transform view-password" type="button">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="help-block" ng-show="showErrors && ((!isNull(editable.newPassword) && !isNull(editable.confirmPassword) && editable.newPassword != editable.confirmPassword)
+                                    || (isNull(editable.newPassword) && !isNull(editable.confirmPassword)))">
+                                <p ng-show="isNull(editable.newPassword) && !isNull(editable.confirmPassword)">Поле обязательно к заполнению.</p>
+                                <p ng-show="!isNull(editable.newPassword) && !isNull(editable.confirmPassword) && editable.newPassword != editable.confirmPassword">
+                                    Пароли не совпадпют.
+                                </p>
+                                <p ng-show="!isNull(errorMessages.newPassword)">{{ errorMessages.newPassword }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{ 'has-error': showErrors && (!isNull(editable.newPassword) && isNull(editable.confirmPassword)) }">
+                        <label for="confirmPassword" class="col-md-4 control-label">Подтверждение пароля</label>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input id="confirmPassword" type="password" class="form-control passwd"
+                                       ng-model="editable.confirmPassword" placeholder="Подтверждение пароля">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-no-transform view-password" type="button">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="help-block" ng-show="showErrors && !isNull(editable.newPassword) && isNull(editable.confirmPassword)">
+                                <p>Поле обязательно к заполнению.</p>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="newPassword" class="col-md-4 control-label">Новый пароль</label>
-                        <div class="col-md-8">
-                            <input id="newPassword" type="password" class="form-control" ng-model="editable.newPassword" placeholder="Новый пароль">
-                            <div class="help-block" ng-show="showErrors && isNull(editable.email)">
-                                <p>Поле обязательно к заполнению.</p>
-                            </div>
+                        <label for="roleId" class="col-md-4 control-label">Уровень прав</label>
+                        <div class="col-md-8"
+                             ng-init="editable.roleId = {key: editable.roleId, value: roles[editable.roleId]}">
+                            <ui-select ng-model="editable.roleId" ng-if="currentUserId != editable.id">
+                                <ui-select-match id="roleId" placeholder="Клиент...">{{$select.selected.value}}
+                                </ui-select-match>
+                                <ui-select-choices
+                                        repeat="role.value as (key, role) in roles | filter: {$: $select.search}">
+                                    <span ng-bind-html="role.value | highlight: $select.search"></span>
+                                </ui-select-choices>
+                                <ui-select-no-choice>
+                                    <div class="no-found">
+                                        По этому запросу ничего не найдено.
+                                    </div>
+                                </ui-select-no-choice>
+                            </ui-select>
+                            <p class="form-control-static" ng-if="currentUserId == editable.id"
+                               ng-bind-html="editable.roleId.value"></p>
                         </div>
                     </div>
-                    <div class="form-group" ng-class="{ 'has-error': showErrors && (isNull(editable.confirmPassword) && !isNull(editable.newPassword)) }">
-                        <label for="confirmPassword" class="col-md-4 control-label">Подтверждение пароля</label>
-                        <div class="col-md-8">
-                            <input id="confirmPassword" type="password" class="form-control" ng-model="editable.confirmPassword" placeholder="Подтверждение пароля">
-                            <div class="help-block" ng-show="showErrors && isNull(editable.email)">
-                                <p ng-show="isNull(editable.confirmPassword)">Поле обязательно к заполнению.</p>
-                                <p ng-show="!isNull(editable.confirmPassword) && editable.newPassword != editable.confirmPassword">Пароли не совпадпют.</p>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="form-group">
                         <label for="active" class="col-md-4 control-label">Активный</label>
                         <div class="col-md-8">
@@ -85,7 +138,8 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label">Дата регистрации</label>
                         <div class="col-md-8">
-                            <p class="form-control-static">{{ editable.registrationDate != null ? (editable.registrationDate | date:"dd MMMM yyyy г.") : '---' }}</p>
+                            <p class="form-control-static">{{ editable.registrationDate != null ?
+                                (editable.registrationDate | date:"dd MMMM yyyy г.") : '---' }}</p>
                         </div>
                     </div>
                 </div>
@@ -93,7 +147,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Сохранить</button>
+        <button type="button" class="btn btn-primary" ng-click="userModal.save()">Сохранить</button>
         <button type="button" class="btn btn-danger" ng-click="$dismiss()">Отмена</button>
     </div>
 </div>

@@ -53,7 +53,7 @@ class DetailsPlugin extends MCmsPlugin
             }
 
             if (!$onlyNames) {
-                $collectionFiles = $this->controller->plugin('FilesPlugin')->getFiles(array_keys($collections), $allVersions);
+                $collectionFiles = $this->controller->plugin('files')->getFiles(array_keys($collections), $allVersions);
 
                 foreach ($result as $key => $detail) {
                     if ($detail['pattern'] && isset($collectionFiles[$detail['pattern']])) {
@@ -181,7 +181,7 @@ GROUP BY f.fileId
             foreach ($deleteFiles as $file) {
                 $this->entityManager->remove($file);
             }
-            $this->controller->plugin('FilesPlugin')->dropVersions($deleteVersions);
+            $this->controller->plugin('files')->dropVersions($deleteVersions);
         }
     }
 }

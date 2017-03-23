@@ -46,7 +46,7 @@ return [
     ],
     'controller_plugins' => [
         'invokables' => [
-            'ClientsPlugin' => Controller\Plugin\ClientsPlugin::class,
+            'clients' => Controller\Plugin\ClientsPlugin::class,
         ],
     ],
 

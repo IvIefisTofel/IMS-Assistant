@@ -279,23 +279,9 @@
     $scope.ordersObj = {
       client: {
         change: function(){
-          if (!isEmpty($scope.selected.client)){
+          if (!isEmpty($scope.selected.client) && !isEmpty($scope.selected.order)
+              && $scope.selected.client.id != $scope.selected.order.clientId){
             $scope.selected.order = undefined;
-          }
-        }
-      },
-      order:  {
-        change: function(){
-          if (!isEmpty($scope.selected.order) && isEmpty($scope.selected.client)){
-            var next = true;
-            angular.forEach($scope.clients, function(client, key){
-              if (next){
-                if ($scope.selected.order.clientId == client.id){
-                  $scope.selected.client = $scope.clients[$scope.selected.order.clientId];
-                  next = false;
-                }
-              }
-            });
           }
         }
       },

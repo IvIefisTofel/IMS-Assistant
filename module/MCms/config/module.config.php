@@ -48,9 +48,9 @@ return [
     ],
     'controller_plugins' => [
         'invokables' => [
-            'HelperPlugin' => Controller\Plugin\HelperPlugin::class,
-            'ErrorsPlugin' => Controller\Plugin\ErrorsPlugin::class,
-            'EventsPlugin' => Controller\Plugin\EventsPlugin::class,
+            'cmsHelper' => Controller\Plugin\HelperPlugin::class,
+            'errors' => Controller\Plugin\ErrorsPlugin::class,
+            'events' => Controller\Plugin\EventsPlugin::class,
         ],
     ],
 

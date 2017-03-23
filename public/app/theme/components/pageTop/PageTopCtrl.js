@@ -10,6 +10,23 @@
     $scope.editable = {};
     $scope.showErrors = false;
 
+    var userModalInstance = null;
+    $scope.userSaved = function(response){
+      var user = response.data;
+      if (user.id == $scope.user.id) {
+        $scope.user = user;
+        var scope = angular.element($('div[ui-view]').children()).scope();
+        if (!isNull(scope.scopeName) && scope.scopeName == "UserList"){
+          scope.saved(response, true);
+        }
+      }
+    };
+    $scope.userModal = $rootScope.userEdit(userModalInstance, $scope, $scope.userSaved);
+    $scope.userEdit = function(){
+      $scope.editable = $scope.user;
+      $scope.userModal.open();
+    };
+
     $scope.reLogin = function(){
       modalInstance.dismiss('close');
       var form = new FormData();
@@ -68,24 +85,6 @@
         modalInstance.closed.then(function(){
           modalInstance = null;
         })
-      },
-      editUser: function(){
-        if (modalInstance != null){
-          modalInstance.dismiss('close');
-        }
-        $scope.editable = angular.copy($scope.user);
-        modalInstance = $uibModal.open({
-          animation:   true,
-          templateUrl: 'app/pages/users/modal/editUser.html',
-          size:        'md',
-          backdrop:    'static',
-          scope:       $scope
-        });
-        modalInstance.closed.then(function(){
-          modalInstance = null;
-          $scope.editable = {};
-          $scope.showErrors = false;
-        });
       }
     };
   }

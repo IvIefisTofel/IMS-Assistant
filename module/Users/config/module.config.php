@@ -29,6 +29,11 @@ return [
             'Users\Controller\Index' => Controller\IndexController::class,
         ],
     ],
+    'controller_plugins' => [
+        'invokables' => [
+            'users' => Controller\Plugin\UsersPlugin::class,
+        ],
+    ],
 
     'acl' => [
         'resources' => [

@@ -4,7 +4,8 @@
       .controller('UsersListCtrl', UsersListCtrl);
 
   /** @ngInject */
-  function UsersListCtrl($scope, $rootScope, $state, $http, $filter, $uibModal){
+  function UsersListCtrl($scope, $rootScope, $state, $http, $filter){
+    $scope.scopeName = "UserList";
     if (!$rootScope.$getPermissions()){
       window.history.back(-1);
     }
@@ -75,35 +76,36 @@
 
     $scope.edit = function(user){
       $scope.editable = angular.copy(user);
-      $scope.modal.open();
+      $scope.userModal.open();
     };
 
     $scope.add = function(){
       $scope.editable = {
         grAvatar:         'http://ru.gravatar.com/avatar/?d=mm',
         registrationDate: Date.now(),
-        active:           true
+        active:           true,
+        roleId:           3
       };
-      $scope.modal.open();
+      $scope.userModal.open();
     };
 
+    $scope.passwordType = $scope.newPasswordType = $scope.confirmPasswordType = 'password';
     var modalInstance = null;
-    $scope.modal = {
-      open: function(){
-        modalInstance = $uibModal.open({
-          animation:   true,
-          templateUrl: 'app/pages/users/modal/editUser.html',
-          size:        'md',
-          backdrop:    'static',
-          scope:       $scope
-        });
-        modalInstance.closed.then(function(){
-          modalInstance = null;
-          $scope.editable = {};
-          $scope.showErrors = false;
-        });
+    $scope.saved = function(response, fromPageTop){
+      var user = response.data;
+      if (isNull($scope.editable.id) && fromPageTop != true) {
+        $scope.usersOriginal.push(user);
+      } else {
+        for (var i = 0; i < $scope.usersOriginal.length; i++) {
+          if ($scope.usersOriginal[i].id == user.id) {
+            $scope.usersOriginal[i] = user;
+            break;
+          }
+        }
       }
+      filter();
     };
+    $scope.userModal = $rootScope.userEdit(modalInstance, $scope, $scope.saved);
 
     $scope.refreshData = function(){
       $scope.loading = true;
@@ -126,5 +128,8 @@
     };
 
     $scope.refreshData();
+    $scope.test = function(asd) {
+      asd = 'text';
+    }
   }
 })();

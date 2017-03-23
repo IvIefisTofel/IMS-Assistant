@@ -2,9 +2,9 @@
 
 namespace Orders\Controller\Plugin;
 
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use MCms\Controller\Plugin\MCmsPlugin;
 
-class OrdersPlugin extends AbstractPlugin
+class OrdersPlugin extends MCmsPlugin
 {
     public function toArray($orders = null, $options = [])
     {
@@ -47,7 +47,7 @@ class OrdersPlugin extends AbstractPlugin
             }
 
             if ($withDetails && !$onlyNames) {
-                $details = $this->getController()->plugin('DetailsPlugin')
+                $details = $this->getController()->plugin('details')
                     ->toArray($this->entityManager->getRepository('Nomenclature\Entity\DetailsView')->findByOrderId($orderKeys, ['dateCreation' => 'DESC']), $allVersions);
                 foreach ($details as $detail) {
                     $result[$detail['orderId']]['details'][] = $detail;

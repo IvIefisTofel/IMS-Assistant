@@ -11,7 +11,7 @@
           template:    '<clients-list></clients-list>',
           title:       'Клиенты',
           sidebarMeta: {
-            icon:  'fa fa-handshake-o',
+            icon:  'fa fa-users',
             order: 0
           }
         });

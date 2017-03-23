@@ -194,6 +194,15 @@ class Users extends  MCmsEntity
     }
 
     /**
+     * Validate input password
+     * @return bool
+     */
+    public function validPassword($password)
+    {
+        return (bool)($this->password == md5($password));
+    }
+
+    /**
      * Get user Password
      * @return string
      */
@@ -205,13 +214,16 @@ class Users extends  MCmsEntity
     /**
      * Set user Role
      * @param integer $role
-     * @return Users
+     * @return Users | false
      */
     public function setRoleID($role)
     {
-        $this->role = $role;
-
-        return $this;
+        if (isset(self::$ROLE_NAME[$role])) {
+            $this->role = $role;
+            return $this;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -248,7 +260,7 @@ class Users extends  MCmsEntity
      */
     public function setActive($active)
     {
-        $this->active = $active;
+        $this->active = (bool)$active;
 
         return $this;
     }

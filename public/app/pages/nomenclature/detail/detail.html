@@ -75,7 +75,7 @@
                                         </ui-select>
                                     </div>
                                     <div class="col-md-4">
-                                        <ui-select allow-clear on-select="ordersObj.order.change()" ng-model="selected.order">
+                                        <ui-select allow-clear ng-model="selected.order">
                                             <ui-select-match placeholder="Заказ...">{{$select.selected.code}}</ui-select-match>
                                             <ui-select-choices repeat="item in (orders | filter:filterBy) | filter: $select.search">
                                                 <span ng-bind-html="item.code | highlight: $select.search"></span>

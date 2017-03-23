@@ -70,10 +70,8 @@ class Module implements ConsoleUsageProviderInterface
         require_once ('Libs/Console.php');
 
         $imagePlugin = new \ImagePlugin();
-        $litHelper = new \LitHelperPlugin();
         $sm = $e->getApplication()->getServiceManager();
         $sm->setService('imagePlugin', $imagePlugin);
-        $sm->setService('litHelper', $litHelper);
         if (isset($this->assets) && $this->assets != null) {
             $sm->setService('assets', $this->assets);
         }

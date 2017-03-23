@@ -72,7 +72,7 @@ class ErrorsController extends MCmsController
             }
 
             if (count($data)) {
-                $result['data'] = $this->plugin('ErrorsPlugin')->toArray($data);
+                $result['data'] = $this->plugin('errors')->toArray($data);
             }
         } catch (\Exception $e) {
             $errMsg = $e->getMessage();
@@ -84,7 +84,7 @@ class ErrorsController extends MCmsController
             $result['status'] = true;
         }
         if ($dev) {
-            var_dump($result);
+            print_r($result);
             exit;
         } else {
             return new JsonModel($result);

@@ -33,8 +33,8 @@
         ],
         "clearCache": [
             "find data/cache -mindepth 1 ! -name '.gitignore' -delete",
-            "find public/css/core -mindepth 1 ! -name '.gitignore' -delete",
-            "find public/js/core -mindepth 1 ! -name '.gitignore' -delete"
+            "find public/core/css -mindepth 1 ! -name '.gitignore' -delete",
+            "find public/core/js -mindepth 1 ! -name '.gitignore' -delete"
         ],
         "compile-mo": "php ./public/index.php compile-mo"
     }

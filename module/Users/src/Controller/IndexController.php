@@ -4,6 +4,7 @@ namespace Users\Controller;
 
 use MCms\Controller\MCmsController;
 use Zend\View\Model\JsonModel;
+use Users\Entity\Users;
 
 class IndexController extends MCmsController
 {
@@ -25,54 +26,103 @@ class IndexController extends MCmsController
         $task   = $this->params()->fromRoute('task', null);
         $id     = $this->params()->fromRoute('id', null);
 
+        $onlyNames = false;
+
         $data = [];
-        /* @var $user \Users\Entity\Users */
+        /* @var $user Users */
         switch ($task) {
-            case "get-identity": case "getidentity": case "getIdentity":
-                $data = $this->identity()->toArray();
-                $data['currentRole'] = $this->identity()->getCurrentRole();
-                $data['grAvatar'] = $this->identity()->getGrAvatar();
-                break;
-            case "get-name-list": case "getnamelist": case "getNameList":
-                $data = $this->entityManager->getRepository('Users\Entity\Users')->findBy([], ['name' => 'ASC']);
-                foreach ($data as $key => $user) {
-                    $data[$key] = $user->getName();
+            case 'add':
+                $user = new Users();
+                goto user;
+            case 'edit':
+                if ($id === null)
+                    $error = self::INVALID_ID;
+                else {
+                    $user = $this->entityManager->getRepository(Users::class)->find($id);
+                    user:
+                    if ($user) {
+                        $postData = $request->getPost()->toArray();
+                        $edited = false;
+
+                        if (!isset($postData['password']) || !$this->identity()->validPassword($postData['password'])) {
+                            $error = true;
+                            $messages['password'] = 'Не верный пароль';
+                        } else {
+                            if ($postData['name'] != $user->getName()) {
+                                $user->setName($postData['name']);
+                                $edited = true;
+                            }
+                            if ($postData['fullName'] != $user->getFullName()) {
+                                $user->setFullName($postData['fullName']);
+                                $edited = true;
+                            }
+                            if ($postData['email'] != $user->getEmail()) {
+                                $user->setEmail($postData['email']);
+                                $edited = true;
+                            }
+                            if (isset($postData['newPassword'])) {
+                                $confirmPassword = isset($postData['confirmPassword']) ? $postData['confirmPassword'] : null;
+                                if ($postData['newPassword'] != $confirmPassword) {
+                                    $error = true;
+                                    $messages['newPassword'] = 'Пароли не совпадают.';
+                                } else {
+                                    $user->setPassword($postData['newPassword']);
+                                    $edited = true;
+                                }
+                            }
+                            if ($user->getId() != $this->identity()->getId() && $postData['roleId'] != $user->getRoleID()) {
+                                if ($user->setRoleID($postData['roleId'])) {
+                                    $edited = true;
+                                }
+                            }
+                            if ($postData['active'] != $user->getActive()) {
+                                $user->setActive($postData['active']);
+                                $edited = true;
+                            }
+                        }
+
+                        if (!$error && !isset($messages) && $edited) {
+                            $this->entityManager->persist($user);
+                            $this->entityManager->flush();
+                        }
+                        $data = $user;
+                    }
                 }
                 break;
-//                case 'get-only'
+            case "get-identity": case "getidentity": case "getIdentity":
+                $data = $this->identity();
+                break;
             case "get":
                 if ($id === null)
                     $error = self::INVALID_ID;
                 else {
-                    $data = $this->entityManager->getRepository('Users\Entity\Users')->find($id);
+                    $data = $this->entityManager->getRepository(Users::class)->find($id);
                 }
                 break;
+            case "get-name-list": case "getnamelist": case "getNameList":
+                $onlyNames = true;
             default:
-                $data = $this->entityManager->getRepository('Users\Entity\Users')->findBy([], ['name' => 'ASC']);
+                $data = $this->entityManager->getRepository(Users::class)->findBy([], ['name' => 'ASC']);
                 break;
         }
 
-        if (!is_array($data)) {
-            $data = [$data];
-        }
-
-        foreach ($data as $key => $user) {
-            if ($user instanceof \Users\Entity\Users) {
-                $data[$key] = $user->toArray();
-                $data[$key]['registrationDate'] = $user->getRegistrationDateFormat('Y-m-d');
-                $data[$key]['grAvatar'] = $user->getGrAvatar();
+        $result = [];
+        if ($error) {
+            $result["error"] = $error;
+            if (isset($messages)) {
+                $result['messages'] = $messages;
+            }
+        } else {
+            if (isset($data)) {
+                $data = $this->plugin('users')->toArray($data, ['onlyNames' => $onlyNames]);
+                if (is_array($data) && count($data) == 1) {
+                    $data = array_shift($data);
+                }
+                $result['data'] = $data;
             }
         }
-
-        if ($error) {
-            $result = ["error" => $error];
-        } else {
-            $result = [
-                "data" => $data,
-            ];
-        }
         if ($dev) {
-            var_dump($result);
+            print_r($result);
             exit;
         } else {
             return new JsonModel($result);

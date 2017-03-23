@@ -6604,3 +6604,9 @@ a.change-user {
 .editable-wrap.full-width { margin: 0; width: 100%; }
 img.user-list { width: 30px; height: 30px; border-radius: 50%; }
 img.user-edit { border-radius: 50%; }
+.modal .modal-dialog .has-error .input-group .btn {
+  border-bottom-color: #ed7878 !important;
+  border-top-color: #ed7878 !important;
+  border-right-color: #ed7878 !important;
+  color: #a24c4c }
+.modal .modal-dialog .has-error .input-group .form-control:focus { border-right-color: #e7e7e7 !important; }

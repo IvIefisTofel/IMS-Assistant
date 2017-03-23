@@ -51,7 +51,7 @@ class IndexController extends MCmsController
                 /* @var $order Order */
                 $order = $this->entityManager->getRepository('\Orders\Entity\Orders')->find($id);
                 if (isset($postData['dropDetails'])) {
-                    $this->plugin('DetailsPlugin')->drop($postData['dropDetails']);
+                    $this->plugin('details')->drop($postData['dropDetails']);
                 }
                 goto order;
             case "add":
@@ -214,7 +214,7 @@ class IndexController extends MCmsController
                     }
 
                     //-------------------------------------------Import-------------------------------------------------
-                    $newCollectionId = $this->plugin('FilesPlugin')->getLastCollectionId() + 1;
+                    $newCollectionId = $this->plugin('files')->getLastCollectionId() + 1;
                     if (isset($postData['details']['import'])) {
                         $detailIDs = [];
                         foreach ($postData['details']['import'] as $id => $detail) {
@@ -489,7 +489,7 @@ class IndexController extends MCmsController
                 $result['clientName'] = $clientName;
             }
             if (isset($data)) {
-                $data = $this->plugin('OrdersPlugin')->toArray($data, ['onlyNames' => $onlyNames]);
+                $data = $this->plugin('orders')->toArray($data, ['onlyNames' => $onlyNames]);
                 if (is_array($data) && count($data) == 1) {
                     $data = array_shift($data);
                 }
@@ -500,7 +500,7 @@ class IndexController extends MCmsController
             }
         }
         if ($dev) {
-            var_dump($result);
+            print_r($result);
             exit;
         } else {
             return new JsonModel($result);
