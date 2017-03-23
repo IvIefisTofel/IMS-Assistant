@@ -32,6 +32,26 @@ class AssetsGenerator
             'fonts/ionicons.ttf' => './bower_components/Ionicons/fonts/ionicons.ttf',
             'fonts/ionicons.woff' => './bower_components/Ionicons/fonts/ionicons.woff',
         ],
+        'map' => [
+            'pdfmake.min.js.map' => './bower_components/amcharts/dist/amcharts/plugins/export/libs/pdfmake/pdfmake.min.js.map',
+            'responsive.min.js.map' => './bower_components/amcharts/dist/amcharts/plugins/responsive/responsive.min.js.map',
+            'angular.min.js.map' => './bower_components/angular/angular.min.js.map',
+            'angular-animate.min.js.map' => './bower_components/angular-animate/angular-animate.min.js.map',
+            'angular-chart.min.js.map' => './bower_components/angular-chart.js/dist/angular-chart.min.js.map',
+            'angular-route.min.js.map' => './bower_components/angular-route/angular-route.min.js.map',
+            'smart-table.min.js.map' => './bower_components/angular-smart-table/dist/smart-table.min.js.map',
+            'angular-touch.min.js.map' => './bower_components/angular-touch/angular-touch.min.js.map',
+            'ng-tree-dnd.min.js.map' => './bower_components/angular-tree-dnd/dist/ng-tree-dnd.min.js.map',
+            'select.min.css.map' => './bower_components/angular-ui-select/dist/select.min.css.map',
+            'bootstrap-select.js.map' => './bower_components/bootstrap-select/dist/js/bootstrap-select.js.map',
+            'bootstrap-tagsinput.min.js.map' => './bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js.map',
+            'bootstrap-tagsinput-angular.min.js.map' => './bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput-angular.min.js.map',
+            'jquery.min.map' => './bower_components/jquery/dist/jquery.min.map',
+            'sizzle.min.map' => './bower_components/jquery/src/sizzle/dist/sizzle.min.map',
+            'angular-idle.map' => './bower_components/ng-idle/angular-idle.map',
+            'chartist.min.js.map' => './bower_components/chartist/dist/chartist.min.js.map',
+            'toastr.js.map' => './bower_components/toastr/toastr.js.map',
+        ],
     ];
 
     private static $staticProduction = [
