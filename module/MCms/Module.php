@@ -87,12 +87,16 @@ class Module implements ConsoleUsageProviderInterface
             $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefixExt);
         }
 
-        if (PHP_SAPI !== 'cli' && !($e->getRequest() instanceof \Zend\Console\Request)) {
+        $assetManager   = $sm->get('AssetManager\Service\AssetManager');
+        $request        = $e->getRequest();
+
+        if (PHP_SAPI !== 'cli' && !($e->getRequest() instanceof \Zend\Console\Request) && !$assetManager->resolvesToAsset($request)) {
             /** @var \Zend\EventManager\EventManagerInterface $eventManager */
             $eventManager = $e->getTarget()->getEventManager();
-            $eventManager->attach(MvcEvent::EVENT_RENDER_ERROR, [$this, 'exceptionHandler']);
-            $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, [$this, 'exceptionHandler']);
-            $eventManager->attach(MvcEvent::EVENT_RENDER, [$this, 'exceptionHandler']);
+            $callback     = [$this, 'exceptionHandler'];
+            $eventManager->attach(MvcEvent::EVENT_RENDER_ERROR, $callback);
+            $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, $callback);
+            $eventManager->attach(MvcEvent::EVENT_RENDER, $callback);
         }
     }
 
