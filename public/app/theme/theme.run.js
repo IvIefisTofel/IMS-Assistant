@@ -30,9 +30,11 @@
     $rootScope.$baSidebarService = baSidebarService;
 
     $rootScope.roles = {
-      1: 'Администратор',
-      2: 'Модератор',
-      3: 'Пользователь'
+      7: 'Администратор',
+      6: 'Контролер',
+      5: 'Начальник КТБ',
+      4: 'Конструктор',
+      3: 'Технолог'
     };
 
     $rootScope.user = null;

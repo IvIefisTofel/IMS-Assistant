@@ -24,23 +24,24 @@ class Users extends  MCmsEntity
         }
     */
 
-    const ADMIN_ROLE     = 1;
-    const MODERATOR_ROLE = 2;
-    const USER_ROLE      = 3;
-    const GUEST_ROLE     = 4;
-
     public static $ROLE_NAME = array(
-        1 => 'Admin',
-        2 => 'Moderator',
-        3 => 'User',
-        4 => 'Guest',
+        7 => 'Admin',
+        6 => 'Inspector',
+        5 => 'Supervisor',
+        4 => 'Constructor',
+        3 => 'Technologist',
+        2 => 'User',
+        1 => 'Guest',
     );
 
     public static $ROLE_LABEL = array(
-        1 => 'Администратор',
-        2 => 'Модератор',
-        3 => 'Пользователь',
-        4 => 'Гость',
+        7 => 'Администратор',
+        6 => 'Контролер',
+        5 => 'Начальник КТБ',
+        4 => 'Конструктор',
+        3 => 'Технолог',
+        2 => 'Пользователь',
+        1 => 'Гость',
     );
 
     /**
@@ -102,7 +103,7 @@ class Users extends  MCmsEntity
     /**
      * @var int
      */
-    private $currentRole = self::GUEST_ROLE;
+    private $currentRole = \AuthDoctrine\Acl\Acl::DEFAULT_ROLE;
 
     public function __construct()
     {

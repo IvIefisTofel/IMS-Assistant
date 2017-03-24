@@ -1,9 +1,12 @@
 <?php
 
-define('ADMIN_ROLE', 1);
-define('MODERATOR_ROLE', 2);
-define('USER_ROLE', 3);
-define('GUEST_ROLE', 4);
+define('ADMIN_ROLE', 7);
+define('INSPECTOR_ROLE', 6);
+define('SUPERVISOR_ROLE', 5);
+define('CONSTRUCTOR_ROLE', 4);
+define('TECHNOLOGIST_ROLE', 3);
+define('USER_ROLE', 2);
+define('GUEST_ROLE', 1);
 
 return [
     'modules' => require __DIR__ . '/modules.config.php',

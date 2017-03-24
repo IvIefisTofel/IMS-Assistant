@@ -44,6 +44,10 @@
                             <span class="sortorder" ng-show="propertyName === 'email'" ng-class="{reverse: reverse}"></span>
                         </td>
                         <td>
+                            <button class="btn btn-link" ng-click="sortBy('roleId')">Уровень доступа</button>
+                            <span class="sortorder" ng-show="propertyName === 'roleId'" ng-class="{reverse: reverse}"></span>
+                        </td>
+                        <td>
                             <button class="btn btn-link" ng-click="sortBy('active')">Активный</button>
                             <span class="sortorder" ng-show="propertyName === 'active'" ng-class="{reverse: reverse}"></span>
                         </td>
@@ -57,25 +61,14 @@
                     <tbody>
                     <tr ng-repeat="(key, user) in users" class="no-top-border">
                         <td><img ng-src="{{user.grAvatar}}" class="user-list"></td>
-                        <td>
-                            <span>{{user.name}}</span>
-                        </td>
-                        <td>
-                            <span>{{user.fullName}}</span>
-                        </td>
-                        <td>
-                            <span>{{user.email}}</span>
-                        </td>
-                        <td>
-                            <span><i class="fa" ng-class="user.active ? 'fa-check-square-o' : 'fa-square-o'" style="color: #209e91;"></i></span>
-                        </td>
-                        <td>
-                            <span>{{user.registrationDate != null ? (user.registrationDate | date:"dd MMMM yyyy г.") : '---'}}</span>
-                        </td>
+                        <td><span>{{user.name}}</span></td>
+                        <td><span>{{user.fullName}}</span></td>
+                        <td><span>{{user.email}}</span></td>
+                        <td><span>{{roles[user.roleId]}}</span></td>
+                        <td><span><i class="fa" ng-class="user.active ? 'fa-check-square-o' : 'fa-square-o'" style="color: #209e91;"></i></span></td>
+                        <td><span>{{user.registrationDate != null ? (user.registrationDate | date:"dd MMMM yyyy г.") : '---'}}</span></td>
                         <td class="align-right">
-                            <span>
-                                <button type="button" class="btn btn-xs btn-no-transform btn-primary" ng-click="edit(user)">Редактировать</button>
-                            </span>
+                            <span><button type="button" class="btn btn-xs btn-no-transform btn-primary" ng-click="edit(user)">Редактировать</button></span>
                         </td>
                     </tr>
                     </tbody>

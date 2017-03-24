@@ -11,7 +11,7 @@ class Acl extends ZendAcl {
     /**
      * Default Role
      */
-    const DEFAULT_ROLE = Users::GUEST_ROLE;
+    const DEFAULT_ROLE = GUEST_ROLE;
     /**
      * md5 (Ural_SM_Assistant)
     */
