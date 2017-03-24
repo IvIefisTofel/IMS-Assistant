@@ -6,6 +6,7 @@
   /** @ngInject */
   function PageTopCtrl($scope, $rootScope, $http, Idle, $uibModal){
     $scope.user = $rootScope.$user();
+    $scope.USER_ROLE = USER_ROLE;
     $scope.currentUserId = $scope.user.id;
     $scope.editable = {};
     $scope.showErrors = false;
@@ -38,7 +39,7 @@
         headers:          {'Content-Type': undefined}
       }).then(function successCallback(response){
         if (response.data.auth){
-          if (response.data.permissions){
+          if (response.data.permissions > USER_ROLE){
             Idle.watch();
           } else {
             Idle.unwatch();

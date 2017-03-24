@@ -9,11 +9,7 @@ class EventsController extends MCmsController
 {
     public function indexAction()
     {
-        if (!$this->identity()){
-            return $this->redirect()->toRoute('login');
-        }
-
-        $errMsg = false;
+        $error = false;
         $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
 
         $request = $this->getRequest();
@@ -92,11 +88,14 @@ class EventsController extends MCmsController
             }
             $result = ['data' => $events];
         } catch (\Exception $e) {
-            $errMsg = $e->getMessage();
+            $error = $e->getMessage();
         }
 
-        if ($errMsg) {
-            $result = ["error" => $errMsg];
+        if ($error) {
+            $result = [
+                'error' => 'true',
+                'message' => $error,
+            ];
         } else {
             if (!isset($result)) {
                 $result['status'] = true;

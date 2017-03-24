@@ -12,6 +12,7 @@ class Acl extends ZendAcl {
      * Default Role
      */
     const DEFAULT_ROLE = GUEST_ROLE;
+    const ACCESS_DENIED = 'Не достаточно прав для выполнения данной операции.';
     /**
      * md5 (Ural_SM_Assistant)
     */

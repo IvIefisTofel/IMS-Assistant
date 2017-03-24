@@ -2,18 +2,15 @@
 
 namespace MCms\Controller;
 
+use AuthDoctrine\Acl\Acl;
 use Zend\View\Model\JsonModel;
 
 class ErrorsController extends MCmsController
 {
     public function indexAction()
     {
-        if (!$this->identity()){
-            return $this->redirect()->toRoute('login');
-        }
-
         $errMsg = false;
-        $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
+        $dev = $this->params()->fromQuery('dev_code', null) == Acl::DEV_CODE;
 
         $request = $this->getRequest();
         if (!$request->isXmlHttpRequest() && !$request->isPost() && !$dev) {
@@ -79,9 +76,12 @@ class ErrorsController extends MCmsController
         }
 
         if ($errMsg) {
-            $result = ["error" => $errMsg];
+            $result = [
+                'error' => 'true',
+                'message' => $errMsg,
+            ];
         } elseif (!isset($result)) {
-            $result['status'] = true;
+            $result['data'] = [];
         }
         if ($dev) {
             print_r($result);

@@ -16,26 +16,44 @@
     };
 
     $scope.actions = [];
+    $scope.actionArr = [];
     $scope.actionVariants = [
       {
-        text:      "Добавить",
-        class:     "btn-success",
-        iconClass: "fa fa-user-plus",
-        action:    'addClient'
+        text:                "Добавить",
+        class:               "btn-success",
+        iconClass:           "fa fa-user-plus",
+        action:              'addClient',
+        permissionsRequired: SUPERVISOR_ROLE
       },
       {
-        text:      "Редактировать",
-        class:     "btn-primary",
-        iconClass: "fa fa-pencil",
-        action:    'updateClient'
+        text:                "Редактировать",
+        class:               "btn-primary",
+        iconClass:           "fa fa-pencil",
+        action:              'updateClient',
+        permissionsRequired: SUPERVISOR_ROLE
       },
       {
-        text:      "Обновить",
-        class:     "btn-info",
-        iconClass: "fa fa-refresh",
-        action:    'refreshData'
+        text:                "Обновить",
+        class:               "btn-info",
+        iconClass:           "fa fa-refresh",
+        action:              'refreshData',
+        permissionsRequired: USER_ROLE
       }
     ];
+    function filterActions(){
+      $scope.actions = $filter('filter')($scope.actionArr, function(item){
+        return item.permissionsRequired <= $rootScope.$getPermissions();
+      });
+    }
+    $scope.$watch(function(){
+      var actions = '';
+      angular.forEach($scope.actionArr, function(val){ actions = actions + ' ' + val.action });
+      return $rootScope.$getPermissions() + actions;
+    }, function(newVal, oldVal){
+      if (newVal != oldVal){
+        filterActions();
+      }
+    });
 
     var modalInstance = null;
     $scope.modal = {
@@ -66,10 +84,10 @@
             transformRequest: angular.identity,
             headers:          {'Content-Type': undefined}
           }).then(function successCallback(response){
-            if (response.data.error){
-              console.log(response.data.error);
-            } else {
-              var data = response.data[0];
+            var data = response.data;
+            if (data.error || data.status){ $rootScope.showMessage(data); }
+            if (isNull(data.error) || !data.error){
+              data = data.data[0];
               data.editName = data.name;
               data.editDescription = data.description;
               if (!$scope.modal.add){
@@ -107,29 +125,33 @@
     }
 
     $scope.addClient = function(){
-      $scope.modal.add = true;
-      $scope.modal.client = $scope.newClient;
-      modalInstance = $uibModal.open({
-        animation:   true,
-        templateUrl: 'app/pages/clients/modals/updateClient.html',
-        size:        'lg',
-        backdrop:    'static',
-        scope:       $scope
-      });
-      modalInstance.rendered.then(function(){modalRendered()});
-      modalInstance.closed.then(function(){modalClose()});
+      if (SUPERVISOR_ROLE <= $rootScope.$getPermissions()){
+        $scope.modal.add = true;
+        $scope.modal.client = $scope.newClient;
+        modalInstance = $uibModal.open({
+          animation:   true,
+          templateUrl: 'app/pages/clients/modals/updateClient.html',
+          size:        'lg',
+          backdrop:    'static',
+          scope:       $scope
+        });
+        modalInstance.rendered.then(function(){modalRendered()});
+        modalInstance.closed.then(function(){modalClose()});
+      }
     };
     $scope.updateClient = function(){
-      $scope.modal.add = false;
-      modalInstance = $uibModal.open({
-        animation:   true,
-        templateUrl: 'app/pages/clients/modals/updateClient.html',
-        size:        'lg',
-        backdrop:    'static',
-        scope:       $scope
-      });
-      modalInstance.rendered.then(function(){modalRendered()});
-      modalInstance.closed.then(function(){modalClose()});
+      if (SUPERVISOR_ROLE <= $rootScope.$getPermissions()){
+        $scope.modal.add = false;
+        modalInstance = $uibModal.open({
+          animation:   true,
+          templateUrl: 'app/pages/clients/modals/updateClient.html',
+          size:        'lg',
+          backdrop:    'static',
+          scope:       $scope
+        });
+        modalInstance.rendered.then(function(){modalRendered()});
+        modalInstance.closed.then(function(){modalClose()});
+      }
     };
     $scope.files = {
       add:    function(event){
@@ -192,17 +214,17 @@
     $scope.$watch("search", function(){
       $scope.filtred = $filter('orderBy')($filter('filter')($scope.clients, {name: $scope.search}), 'name');
       if (isNull($scope.filtred) || $scope.current == null){
-        $scope.actions = [$scope.actionVariants[0], $scope.actionVariants[2]];
+        $scope.actionArr = [$scope.actionVariants[0], $scope.actionVariants[2]];
       } else {
-        $scope.actions = $scope.actionVariants;
+        $scope.actionArr = $scope.actionVariants;
       }
     });
     $scope.$watch('current', function(newVal, oldVal){
       if (newVal != oldVal){
         if (newVal == null){
-          $scope.actions = [$scope.actionVariants[0], $scope.actionVariants[2]];
+          $scope.actionArr = [$scope.actionVariants[0], $scope.actionVariants[2]];
         } else {
-          $scope.actions = $scope.actionVariants;
+          $scope.actionArr = $scope.actionVariants;
         }
       }
     });
@@ -212,10 +234,9 @@
 
       $http.post('/api/clients', null).then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
-          $scope.clients = data;
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
+          $scope.clients = data.data;
           $scope.filtred = $filter('orderBy')($filter('filter')($scope.clients, {name: $scope.search}), 'name');
           angular.forEach($scope.clients, function(client, key){
             client.editName = client.name;
@@ -229,17 +250,14 @@
           } else {
             $scope.current = null;
           }
-
-          $scope.loading = false;
         }
+        $scope.loading = false;
       }, function errorCallback(response){
         console.log(response.statusText);
       });
     };
 
+    filterActions();
     $scope.refreshData();
-    $scope.test = function(k){
-      $scope.current = k;
-    }
   }
 })();

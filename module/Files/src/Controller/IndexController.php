@@ -10,7 +10,7 @@ class IndexController extends MCmsController
 {
     public function indexAction()
     {
-        if (!$this->identity()){
+        if (!$this->identity() || $this->identity()->getCurrentRole() < USER_ROLE){
             $this->getResponse()->setStatusCode(404);
             return;
         }

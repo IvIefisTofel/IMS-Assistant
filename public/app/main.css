@@ -6479,7 +6479,7 @@ a.change-user {
   margin: 10px 30px 0 0;
   font-size: 20px;
   color: #fff; }
-  a.change-user.admin {
+  a.change-user.assigned {
     color: #e85656;
   }
   a.change-user:hover {

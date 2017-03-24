@@ -188,7 +188,7 @@
                         </td>
                         <td class="align-right">
                             <span ng-hide="listEdit[item.id]">
-                                <div class="dropdown table-dropdown">
+                                <div class="dropdown table-dropdown" ng-if="canEdit">
                                     <button class="btn btn-xs btn-no-transform btn-info dropdown-toggle" type="button" data-toggle="dropdown"><i class="ng-scope fa fa-pencil"></i></button>
                                     <ul class="dropdown-menu">
                                         <li class="dropdown-header">Редактировать</li>

@@ -198,19 +198,18 @@
         headers:          {'Content-Type': undefined}
       }).then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
           data = data.data;
           for (var i = 0; i < data.length; i++){
             data[i].date = Date.parse(data[i].date);
             $scope.list.push(data[i]);
           }
-          $scope.loading = false;
           if (data.length < response.data.count){
             $scope.allData = true;
           }
         }
+        $scope.loading = false;
       }, function errorCallback(response){
         console.log(response.statusText);
       });
@@ -224,9 +223,8 @@
 
     $http.post('api/users/get-name-list').then(function successCallback(response){
       var data = response.data;
-      if (data.error){
-        console.log(data);
-      } else {
+      if (data.error || data.status){ $rootScope.showMessage(data); }
+      if (isNull(data.error) || !data.error){
         $scope.entities.users = data.data;
       }
     }, function errorCallback(response){
@@ -234,9 +232,8 @@
     });
     $http.post('api/clients/only-names').then(function successCallback(response){
       var data = response.data;
-      if (data.error){
-        console.log(data);
-      } else {
+      if (data.error || data.status){ $rootScope.showMessage(data); }
+      if (isNull(data.error) || !data.error){
         $scope.entities.clients = data;
       }
     }, function errorCallback(response){
@@ -244,9 +241,8 @@
     });
     $http.post('api/orders/only-names').then(function successCallback(response){
       var data = response.data;
-      if (data.error){
-        console.log(data);
-      } else {
+      if (data.error || data.status){ $rootScope.showMessage(data); }
+      if (isNull(data.error) || !data.error){
         data.data.unshift({
           id:       -1,
           clientId: null,
@@ -259,9 +255,8 @@
     });
     $http.post('/api/nomenclature/only-names-archive').then(function successCallback(response){
       var data = response.data;
-      if (data.error){
-        console.log(data);
-      } else {
+      if (data.error || data.status){ $rootScope.showMessage(data); }
+      if (isNull(data.error) || !data.error){
         $scope.entities.details = data.data;
       }
     }, function errorCallback(response){

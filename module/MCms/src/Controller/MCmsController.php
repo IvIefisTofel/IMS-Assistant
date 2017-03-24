@@ -30,4 +30,12 @@ abstract class MCmsController extends AbstractActionController
         $this->getResponse()->setStatusCode(404);
         return;
     }
+
+    /**
+     * @return \Users\Entity\Users
+    */
+    public function identity()
+    {
+        return parent::identity();
+    }
 }

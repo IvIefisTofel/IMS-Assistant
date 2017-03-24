@@ -60,9 +60,8 @@
           $scope.current = i;
           $http.post('/api/errors/set-read/' + id, null).then(function successCallback(response){
             var data = response.data;
-            if (data.error){
-              console.log(data);
-            } else {
+            if (data.error || data.status){ $rootScope.showMessage(data); }
+            if (isNull(data.error) || !data.error){
               $scope.errors[i].read = true;
             }
           }, function errorCallback(response){
@@ -165,9 +164,8 @@
           headers:          {'Content-Type': undefined}
         }).then(function successCallback(response){
           var data = response.data;
-          if (data.error){
-            console.log(data);
-          } else {
+          if (data.error || data.status){ $rootScope.showMessage(data); }
+          if (isNull(data.error) || !data.error){
             var setRead = null;
             switch (task) {
               case "del-error":
@@ -217,15 +215,14 @@
 
       $http.post('/api/errors', null).then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
           $scope.errors = $scope.filtred = data.data;
           angular.forEach($scope.errors, function(error, key){
             error.date = new Date(error.date);
           });
-          $scope.loading = false;
         }
+        $scope.loading = false;
       }, function errorCallback(response){
         console.log(response.statusText);
       });

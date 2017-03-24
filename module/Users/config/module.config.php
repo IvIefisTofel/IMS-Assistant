@@ -6,9 +6,9 @@ return [
     'router' => [
         'routes' => [
             'users' => [
-                'type'    => 'Segment',
+                'type' => 'Segment',
                 'options' => [
-                    'route'    => '/api/users[/][/:task[/][/:id[/]]]',
+                    'route' => '/api/users[/][/:task[/][/:id[/]]]',
                     'constraints' => [
                         'task'  => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id'    => '[0-9]+',
@@ -17,6 +17,36 @@ return [
                         '__NAMESPACE__' => 'Users\Controller',
                         'controller'    => 'Index',
                         'action'        => 'index',
+                    ],
+                ],
+                'may_terminate' => true,
+            ],
+            'users-list' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/api/users/:task[/]',
+                    'constraints' => [
+                        'task' => 'get-name-list|getnamelist|getNameList|get-Name-List',
+                    ],
+                    'defaults' => [
+                        '__NAMESPACE__' => 'Users\Controller',
+                        'controller'    => 'Index',
+                        'action'        => 'nameList',
+                    ],
+                ],
+                'may_terminate' => true,
+            ],
+            'current-user' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/api/users/:task[/]',
+                    'constraints' => [
+                        'task' => 'get-identity|getidentity|getIdentity|get-Identity',
+                    ],
+                    'defaults' => [
+                        '__NAMESPACE__' => 'Users\Controller',
+                        'controller'    => 'Index',
+                        'action'        => 'identity',
                     ],
                 ],
                 'may_terminate' => true,
@@ -39,7 +69,9 @@ return [
         'resources' => [
             'allow' => [
                 'Users\Controller\Index' => [
-                    GUEST_ROLE,
+                    'index'    => SUPERVISOR_ROLE,
+                    'nameList' => USER_ROLE,
+                    'identity' => USER_ROLE,
                 ],
             ],
         ],

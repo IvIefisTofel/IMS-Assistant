@@ -5,7 +5,7 @@
 
   /** @ngInject */
   function themeRun($timeout, $rootScope, layoutPaths, preloader, $q, baSidebarService, themeLayoutSettings, Idle,
-                    $http, $uibModal){
+                    $http, $uibModal, toastr, toastrConfig){
     var whatToWait = [
       preloader.loadAmCharts(),
       $timeout(3000)
@@ -29,13 +29,14 @@
 
     $rootScope.$baSidebarService = baSidebarService;
 
-    $rootScope.roles = {
-      7: 'Администратор',
-      6: 'Контролер',
-      5: 'Начальник КТБ',
-      4: 'Конструктор',
-      3: 'Технолог'
-    };
+    $rootScope.roles = {};
+    $rootScope.roles[ADMIN_ROLE] = 'Администратор';
+    $rootScope.roles[INSPECTOR_ROLE] = 'Контролер';
+    $rootScope.roles[SUPERVISOR_ROLE] = 'Начальник КТБ';
+    $rootScope.roles[CONSTRUCTOR_ROLE] = 'Конструктор';
+    $rootScope.roles[TECHNOLOGIST_ROLE] = 'Технолог';
+    $rootScope.roles[USER_ROLE] = 'Пользователь';
+    $rootScope.roles[GUEST_ROLE] = 'Гость';
 
     $rootScope.user = null;
     $rootScope.$user = function(async){
@@ -123,19 +124,20 @@
               transformRequest: angular.identity,
               headers:          {'Content-Type': undefined}
             }).then(function successCallback(response){
-              if (response.data.error){
-                if (!isNull(response.data.messages)) {
-                  console.log(response.data.messages);
-                  if (!isNull(response.data.messages.password)) {
+              var data = response.data;
+              if (data.error){
+                if (!isNull(data.messages)){
+                  console.log(data.messages);
+                  if (!isNull(data.messages.password)){
+                    delete data.messages.password;
                     scope.showErrors = true;
                     scope.editable.errPassword = true;
                   }
-                } else {
-                  console.log(response.data.error);
                 }
               } else {
                 callBack(response.data);
                 modal.dismiss('close');
+                if (data.error || data.status){ $rootScope.showMessage(data); }
               }
             });
           }
@@ -143,11 +145,12 @@
       };
     };
 
-    $rootScope.$getPermissions = function(r){
-      var matches = document.cookie.match(new RegExp(
-          "(?:^|; )rights=([^;]*)"
-      ));
-      return matches ? decodeURIComponent(matches[1]) === 'true' : false;
+    $rootScope.$getPermissions = function(){
+      if (isNull($rootScope.user)){
+        return $rootScope.$user().currentRole;
+      } else {
+        return $rootScope.user.currentRole;
+      }
     };
 
     $rootScope.previousState = null;
@@ -170,8 +173,16 @@
         headers:          {'Content-Type': undefined}
       }).then(function successCallback(response){
         if (response.data.auth){
-          if (!response.data.permissions){
+          if (response.data.permissions <= USER_ROLE){
             Idle.unwatch();
+            angular.extend(toastrConfig, { positionClass: 'toast-top-full-width' });
+            toastr.warning('Вы отсутствовали в течении <b>15-ти минут</b>.<br>В целях безопасности права пользователя ' +
+                           'были сброшены до <b>"Только просмотр"</b>.<br>Для возврата прав редактирования, ' +
+                           'пожалуйста, авторизуйтесь заново.', '<h5>Предупреждение</h5>', {
+              timeOut: 0,
+              extendedTimeOut: 0
+            });
+            angular.extend(toastrConfig, { positionClass:   'toast-top-right' });
           }
         } else {
           console.log(response.data);
@@ -181,7 +192,7 @@
       });
     });
 
-    if ($rootScope.$getPermissions()){
+    if ($rootScope.$getPermissions() > USER_ROLE){
       Idle.watch();
     }
 
@@ -224,5 +235,36 @@
 
       return res;
     };
+
+    $rootScope.showMessage = function(data){
+      var type = 'info', header = 'Информация', message = '';
+      if (!isNull(data.error)){
+        type = 'error';
+        header = 'Ошибка!';
+        message = 'Произошла ошибка во время выполнения операции.';
+      }
+      if (!isNull(data.status)){
+        if (!data.status){
+          type = 'warning';
+          header = 'Предупреждение';
+        } else {
+          type = 'success';
+          header = 'Успешно';
+        }
+      }
+      if (isNull(data.messages)) {
+        if (!isNull(data.msgHeader)){ header = data.msgHeader; }
+        if (!isNull(data.message)){ message = data.message; }
+        toastr[type](message, header);
+      } else {
+        angular.forEach(data.messages, function(msg){
+          var thisHeader = header, thisType = type, thisMessage = message;
+          if (!isNull(msg.type)){ thisType = msg.type; }
+          if (!isNull(msg.header)){ thisHeader = msg.header; }
+          if (!isNull(msg.message)){ thisMessage = msg.message; }
+          toastr[thisType](thisMessage, thisHeader);
+        });
+      }
+    }
   }
 })();

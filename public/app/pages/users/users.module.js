@@ -11,7 +11,7 @@
           template:    '<users-list></users-list>',
           title:       'Пользователи',
           sidebarMeta: {
-            permissionsRequired: true,
+            permissionsRequired: SUPERVISOR_ROLE,
             icon:                'fa fa-users',
             order:               100
           }

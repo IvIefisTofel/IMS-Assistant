@@ -112,16 +112,15 @@
 
       $http.post('api/users/').then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
           $scope.usersOriginal = data.data;
           angular.forEach($scope.usersOriginal, function(user, key){
             user.registrationDate = (user.registrationDate) ? Date.parse(user.registrationDate) : null;
           });
           filter();
-          $scope.loading = false;
         }
+        $scope.loading = false;
       }, function errorCallback(response){
         console.log(response.statusText);
       });

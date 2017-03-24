@@ -105,6 +105,8 @@ return [
                 'credential_callable' => function(Users $user, $passwordGiven) {
                     if ($user->getPassword() == md5($passwordGiven) && $user->getActive()) {
                         $user->setCurrentRole($user->getRoleID());
+                    } else {
+                        $user->setCurrentRole(USER_ROLE);
                     }
                     return $user->getActive();
                 },

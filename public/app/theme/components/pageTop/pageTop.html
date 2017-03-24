@@ -14,11 +14,11 @@
       </a>
       <ul class="top-dropdown-menu profile-dropdown" uib-dropdown-menu>
         <li><i class="dropdown-arr"></i></li>
-        <li><span>{{user.name}}</span></li>
+        <li><span>{{user.fullName}}</span></li>
         <li><a href ng-click="userEdit()"><i class="fa fa-user"></i>Редактировать</a></li>
       </ul>
     </div>
-    <a class="pull-right change-user" href ng-click="modalActions.reLogin()" ng-class="$getPermissions() ? 'admin' : ''"><i class="fa fa-sign-in"></i></a>
+    <a class="pull-right change-user" href ng-click="modalActions.reLogin()" ng-class="$getPermissions() > USER_ROLE ? 'assigned' : ''"><i class="fa fa-sign-in"></i></a>
     <msg-center></msg-center>
   </div>
 </div>

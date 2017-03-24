@@ -10,8 +10,7 @@
     $scope.defaultSidebarState = $scope.menuItems[0].stateRef;
 
     $scope.filterBy = function(item){
-      return !item.permissionsRequired ||
-             (item.permissionsRequired && item.permissionsRequired == $rootScope.$getPermissions());
+      return (item.permissionsRequired <= $rootScope.$getPermissions());
     };
 
     $scope.hoverItem = function($event){

@@ -4,7 +4,7 @@
       .config(config);
 
   /** @ngInject */
-  function config(baConfigProvider, $locationProvider, $httpProvider, uiSelectConfig, IdleProvider){
+  function config(baConfigProvider, $locationProvider, $httpProvider, uiSelectConfig, IdleProvider, toastrConfig){
     $locationProvider.html5Mode(false);
     $locationProvider.hashPrefix('');
 
@@ -14,6 +14,19 @@
 
     IdleProvider.idle(60 * 15); // 15 minutes
     IdleProvider.timeout(0);
+
+    angular.extend(toastrConfig, {
+      autoDismiss:     false,
+      positionClass:   'toast-top-right',
+      timeOut:         5000,
+      extendedTimeOut: 3000,
+      allowHtml:       true,
+      closeButton:     false,
+      tapToDismiss:    true,
+      progressBar:     true,
+      maxOpened:       0,
+      target:          'body'
+    });
 
     //baConfigProvider.changeTheme({blur: true});
     //

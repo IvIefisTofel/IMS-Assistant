@@ -54,10 +54,7 @@ return [
         'resources' => [
             'allow' => [
                 'Clients\Controller\Index' => [
-                    GUEST_ROLE,
-                ],
-                'Clients\Controller\Forms' => [
-                    GUEST_ROLE,
+                    USER_ROLE,
                 ],
             ],
         ],

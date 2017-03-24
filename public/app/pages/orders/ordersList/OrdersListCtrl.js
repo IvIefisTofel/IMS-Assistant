@@ -4,32 +4,50 @@
       .controller('OrdersListCtrl', OrdersListCtrl);
 
   /** @ngInject */
-  function OrdersListCtrl($scope, $stateParams, $http, $uibModal, $filter){
+  function OrdersListCtrl($scope, $rootScope, $stateParams, $http, $uibModal, $filter){
     $scope.search = {clientId: $stateParams.id};
     $scope.clientName = null;
     $scope.defList = [];
     $scope.list = [];
     $scope.loading = true;
     $scope.orderEdit = false;
+    $scope.canEdit = false;
 
     $scope.filter = {1: true, 2: true, 3: false};
     $scope.propertyName = 'code';
     $scope.reverse = false;
 
-    $scope.actions = [
+    $scope.actions = [];
+    $scope.actionVariants = [
       {
-        text:      "Добавить",
-        class:     "btn-success",
-        iconClass: "fa fa-plus",
-        action:    'addOrder'
+        text:                "Добавить",
+        class:               "btn-success",
+        iconClass:           "fa fa-plus",
+        action:              'addOrder',
+        permissionsRequired: SUPERVISOR_ROLE
       },
       {
-        text:      "Обновить",
-        class:     "btn-info",
-        iconClass: "fa fa-refresh",
-        action:    'refreshData'
+        text:                "Обновить",
+        class:               "btn-info",
+        iconClass:           "fa fa-refresh",
+        action:              'refreshData',
+        permissionsRequired: USER_ROLE
       }
     ];
+
+    function filterActions(){
+      $scope.actions = $filter('filter')($scope.actionVariants, function(item){
+        return item.permissionsRequired <= $rootScope.$getPermissions();
+      });
+      $scope.canEdit = SUPERVISOR_ROLE <= $rootScope.$getPermissions();
+    }
+
+    $scope.$watch(function(){ return $rootScope.$getPermissions(); }, function(newVal, oldVal){
+      if (newVal != oldVal){
+        filterActions();
+      }
+    });
+
     var statuses = {
       1: 'Заказ',
       2: 'В работе',
@@ -56,19 +74,19 @@
     };
 
     $scope.selected = {
-      client:     null,
-      change:     {
+      client: null,
+      change: {
         client: null,
         order:  null,
         detail: null
       },
-      details:    {
+      details: {
         new:     {},
         showNew: false,
         import:  []
       },
-      new:        {
-        add:    function(event){
+      new: {
+        add: function(event){
           $scope.selected.details.showNew = false;
           for (var i = 0; i < event.files.length; i++){
             var file = event.files[i], indStart, indEnd,
@@ -154,8 +172,8 @@
           }
         }
       },
-      import:     {
-        add:    function(){
+      import: {
+        add: function(){
           if (!isNull($scope.selected.change.detail)){
             $scope.selected.change.detail.viewCode = $scope.selected.change.detail.code;
             $scope.selected.change.detail.viewName = $scope.selected.change.detail.name;
@@ -179,7 +197,7 @@
         }
         $scope.listEdit.editable[key].drop = !$scope.listEdit.editable[key].drop;
       },
-      save:       function(){
+      save: function(){
         var send = new FormData();
         if (isNull($scope.orderEdit)){
           if (isNull($scope.listEdit.editable.code) || isNull($scope.selected.client)){
@@ -224,10 +242,10 @@
               transformRequest: angular.identity,
               headers:          {'Content-Type': undefined}
             }).then(function successCallback(response){
-              if (response.data.error){
-                console.log(response.data.message);
-              } else {
-                var data = response.data.data;
+              var data = response.data;
+              if (data.error || data.status){ $rootScope.showMessage(data); }
+              if (isNull(data.error) || !data.error){
+                data = data.data;
                 data.dateCreation = !isNull(data.dateCreation) ? Date.parse(data.dateCreation) : null;
                 data.dateStart = !isNull(data.dateStart) ? Date.parse(datadata.dateStart) : null;
                 data.dateEnd = !isNull(data.dateEnd) ? Date.parse(data.dateEnd) : null;
@@ -275,14 +293,12 @@
               transformRequest: angular.identity,
               headers:          {'Content-Type': undefined}
             }).then(function successCallback(response){
-              if (response.data.error){
-                console.log(response.data.message);
-              } else {
-                if (response.data.status){
-                  modalInstance.dismiss();
-                  modalInstance = null;
-                  $scope.refreshAddData();
-                }
+              var data = response.data;
+              if (data.error || data.status){ $rootScope.showMessage(data); }
+              if (data.status){
+                modalInstance.dismiss();
+                modalInstance = null;
+                $scope.refreshAddData();
               }
             });
           }
@@ -296,7 +312,7 @@
       dateStart:    {options: {startingDay: 1}},
       dateEnd:      {options: {startingDay: 1}},
       dateDeadline: {options: {startingDay: 1}},
-      init:         function(){
+      init: function(){
         $scope.calendar.dateStart.options.minDate = $scope.listEdit.editable.dateCreation;
         $scope.calendar.dateDeadline.options.minDate = $scope.listEdit.editable.dateCreation;
         if ($scope.listEdit.editable.dateStart != null){
@@ -305,7 +321,7 @@
           $scope.calendar.dateEnd.options.minDate = $scope.calendar.dateStart.options.minDate;
         }
       },
-      checkDate:    function(state, minDate){
+      checkDate: function(state, minDate){
         if (!isNull(minDate)){
           minDate = getCropDate(minDate);
         } else {
@@ -338,7 +354,7 @@
             }
         }
       },
-      today:        function(model){
+      today: function(model){
         var now = getCropDate(Date.now());
         if (model === $scope.calendar.dateCreation){
           $scope.listEdit.editable.dateCreation = now;
@@ -353,7 +369,7 @@
           $scope.listEdit.editable.dateDeadline = now;
         }
       },
-      clear:        function(model){
+      clear: function(model){
         if (model === $scope.calendar.dateStart){
           $scope.listEdit.editable.dateStart = null;
           $scope.listEdit.editable.dateEnd = null;
@@ -369,60 +385,65 @@
     $scope.listEdit = {editable: {}};
     var lastEditId = null;
     $scope.editItem = function(item){
-      if (isNull(lastEditId)){
-        lastEditId = item.id;
-      } else {
-        $scope.listEdit[lastEditId] = false;
-        lastEditId = item.id;
+      if ($scope.canEdit){
+        if (isNull(lastEditId)){
+          lastEditId = item.id;
+        } else {
+          $scope.listEdit[lastEditId] = false;
+          lastEditId = item.id;
+        }
+        $scope.listEdit.editable = angular.copy(item);
+        $scope.calendar.init();
+        $scope.selected.client = $scope.clients[item.clientId];
+        $scope.listEdit[item.id] = true;
       }
-      $scope.listEdit.editable = angular.copy(item);
-      $scope.calendar.init();
-      $scope.selected.client = $scope.clients[item.clientId];
-      $scope.listEdit[item.id] = true;
     };
     $scope.saveItem = function(item){
-      var send = new FormData();
-      item.code = $scope.listEdit.editable.code;
-      send.append('order[code]', item.code);
-      if ($scope.clientName == null && $scope.selected.client != null){
-        item.clientId = $scope.selected.client.id;
-        item.clientName = $scope.selected.client.name;
-      }
-      send.append('order[clientId]', item.clientId);
-      item.dateCreation = $scope.listEdit.editable.dateCreation;
-      send.append('order[dateCreation]', $filter('date')(item.dateCreation, "dd.MM.yyyy"));
-      item.dateStart = $scope.listEdit.editable.dateStart;
-      if (!isNull(item.dateStart)){
-        send.append('order[dateStart]', $filter('date')(item.dateStart, "dd.MM.yyyy"));
-      }
-      item.dateEnd = $scope.listEdit.editable.dateEnd;
-      if (!isNull(item.dateEnd)){
-        send.append('order[dateEnd]', $filter('date')(item.dateEnd, "dd.MM.yyyy"));
-      }
-      item.dateDeadline = $scope.listEdit.editable.dateDeadline;
-      if (!isNull(item.dateDeadline)){
-        send.append('order[dateDeadline]', $filter('date')(item.dateDeadline, "dd.MM.yyyy"));
-      }
-      if (!isNull(item.dateEnd)){
-        item.statusCode = 3;
-      } else if (!isNull(item.dateStart)){
-        item.statusCode = 2;
-      } else {
-        item.statusCode = 1;
-      }
-      send.append('order[statusCode]', item.statusCode);
+      if ($scope.canEdit){
+        var send = new FormData();
 
-      $http.post("/api/orders/update/" + item.id, send, {
-        transformRequest: angular.identity,
-        headers:          {'Content-Type': undefined}
-      }).then(function successCallback(response){
-        if (response.data.error){
-          console.log(response.data.message);
-        } else {
-          $scope.listEdit[item.id] = false;
-          item.status = statuses[item.statusCode];
+        send.append('order[code]', $scope.listEdit.editable.code);
+        send.append('order[clientId]', $scope.selected.client.id);
+        send.append('order[dateCreation]', $filter('date')($scope.listEdit.editable.dateCreation, "dd.MM.yyyy"));
+        if (!isNull($scope.listEdit.editable.dateStart)){
+          send.append('order[dateStart]', $filter('date')($scope.listEdit.editable.dateStart, "dd.MM.yyyy"));
         }
-      });
+        if (!isNull($scope.listEdit.editable.dateEnd)){
+          send.append('order[dateEnd]', $filter('date')($scope.listEdit.editable.dateEnd, "dd.MM.yyyy"));
+        }
+        if (!isNull($scope.listEdit.editable.dateDeadline)){
+          send.append('order[dateDeadline]', $filter('date')($scope.listEdit.editable.dateDeadline, "dd.MM.yyyy"));
+        }
+        var status = 3;
+        if (!isNull(item.dateEnd)){
+          status = 3;
+        } else if (!isNull(item.dateStart)){
+          status = 2;
+        } else {
+          status = 1;
+        }
+        send.append('order[statusCode]', item.statusCode);
+
+        $http.post("/api/orders/update/" + item.id, send, {
+          transformRequest: angular.identity,
+          headers:          {'Content-Type': undefined}
+        }).then(function successCallback(response){
+          var data = response.data;
+          if (data.error || data.status){ $rootScope.showMessage(data); }
+          if (isNull(data.error) || !data.error){
+            item.code = $scope.listEdit.editable.code;
+            item.clientId = $scope.selected.client.id;
+            item.clientName = $scope.selected.client.name;
+            item.dateCreation = $scope.listEdit.editable.dateCreation;
+            item.dateStart = $scope.listEdit.editable.dateStart;
+            item.dateEnd = $scope.listEdit.editable.dateEnd;
+            item.dateDeadline = $scope.listEdit.editable.dateDeadline;
+            item.statusCode = status;
+            item.status = statuses[status];
+          }
+          $scope.listEdit[item.id] = false;
+        });
+      }
     };
     $scope.abortItem = function(item){
       $scope.listEdit[item.id] = false;
@@ -449,20 +470,24 @@
       }
     };
     $scope.addOrder = function(){
-      if (!isNull(lastEditId)){
-        $scope.listEdit[lastEditId] = false;
+      if ($scope.canEdit){
+        if (!isNull(lastEditId)){
+          $scope.listEdit[lastEditId] = false;
+        }
+        $scope.listEdit.editable = {dateCreation: getCropDate(Date.now())};
+        $scope.calendar.init();
+        $scope.selected.client = isNull($stateParams.id) ? null : $scope.clients[$stateParams.id];
+        $scope.orderEdit = null;
+        $scope.modal.open();
       }
-      $scope.listEdit.editable = {dateCreation: getCropDate(Date.now())};
-      $scope.calendar.init();
-      $scope.selected.client = isNull($stateParams.id) ? null : $scope.clients[$stateParams.id];
-      $scope.orderEdit = null;
-      $scope.modal.open();
     };
     $scope.editOrder = function(item){
-      $scope.listEdit.editable = $filter('orderBy')($filter('filter')($scope.detailsOriginal, {orderId: item.id}),
-          'code');
-      $scope.orderEdit = item;
-      $scope.modal.open();
+      if ($scope.canEdit){
+        $scope.listEdit.editable = $filter('orderBy')($filter('filter')($scope.detailsOriginal, {orderId: item.id}),
+            'code');
+        $scope.orderEdit = item;
+        $scope.modal.open();
+      }
     };
 
     $scope.refreshData = function(){
@@ -475,9 +500,8 @@
       var $url = (isNull($stateParams.id)) ? "/api/orders" : "/api/orders/get-with-client/" + $stateParams.id;
       $http.post($url).then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
           $scope.list = data.data;
           $scope.orders = [
             {
@@ -503,17 +527,16 @@
           if (!isNull(data.clientName)){
             $scope.clientName = data.clientName;
           }
-          $scope.loading = false;
         }
+        $scope.loading = false;
       }, function errorCallback(response){
         console.log(response.statusText);
       });
       $http.post('api/clients/only-names').then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
-          $scope.clients = data;
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
+          $scope.clients = data.data;
         }
       }, function errorCallback(response){
         console.log(response.statusText);
@@ -524,9 +547,8 @@
     $scope.refreshAddData = function(){
       $http.post('/api/nomenclature/only-names-archive').then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
           $scope.details = data.data;
           $scope.detailsOriginal = angular.copy($scope.details);
         }
@@ -534,6 +556,8 @@
         console.log(response.statusText);
       });
     };
+
+    filterActions();
     $scope.refreshData();
   }
 })();

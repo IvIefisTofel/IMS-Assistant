@@ -10,10 +10,6 @@ class IndexController extends MCmsController
 {
     public function indexAction()
     {
-        if (!$this->identity()){
-            return $this->redirect()->toRoute('login');
-        }
-
         $error = false;
         $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
 
@@ -25,8 +21,6 @@ class IndexController extends MCmsController
 
         $task   = $this->params()->fromRoute('task', null);
         $id     = $this->params()->fromRoute('id', null);
-
-        $onlyNames = false;
 
         $data = [];
         /* @var $user Users */
@@ -89,9 +83,6 @@ class IndexController extends MCmsController
                     }
                 }
                 break;
-            case "get-identity": case "getidentity": case "getIdentity":
-                $data = $this->identity();
-                break;
             case "get":
                 if ($id === null)
                     $error = self::INVALID_ID;
@@ -99,8 +90,6 @@ class IndexController extends MCmsController
                     $data = $this->entityManager->getRepository(Users::class)->find($id);
                 }
                 break;
-            case "get-name-list": case "getnamelist": case "getNameList":
-                $onlyNames = true;
             default:
                 $data = $this->entityManager->getRepository(Users::class)->findBy([], ['name' => 'ASC']);
                 break;
@@ -108,18 +97,87 @@ class IndexController extends MCmsController
 
         $result = [];
         if ($error) {
-            $result["error"] = $error;
+            $result = [
+                'error' => true,
+            ];
             if (isset($messages)) {
+                $messages[] = $error;
                 $result['messages'] = $messages;
             }
         } else {
             if (isset($data)) {
-                $data = $this->plugin('users')->toArray($data, ['onlyNames' => $onlyNames]);
-                if (is_array($data) && count($data) == 1) {
-                    $data = array_shift($data);
-                }
+                $data = $this->plugin('users')->toArray($data);
                 $result['data'] = $data;
             }
+        }
+        if ($dev) {
+            print_r($result);
+            exit;
+        } else {
+            return new JsonModel($result);
+        }
+    }
+
+    public function nameListAction()
+    {
+        $error = false;
+        $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
+
+        $request = $this->getRequest();
+        if (!$request->isXmlHttpRequest() && !$request->isPost() && !$dev) {
+            $this->getResponse()->setStatusCode(404);
+            return;
+        }
+
+        $data = [];
+        try {
+            $data = $this->entityManager->getRepository(Users::class)->findBy([], ['name' => 'ASC']);
+            $data = $this->plugin('users')->toArray($data, ['onlyNames' => true]);
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+        }
+
+        if ($error !== false) {
+            $result = [
+                'error' => true,
+                'message' => $error,
+            ];
+        } else {
+            $result['data'] = $data;
+        }
+        if ($dev) {
+            print_r($result);
+            exit;
+        } else {
+            return new JsonModel($result);
+        }
+    }
+
+    public function identityAction()
+    {
+        $error = false;
+        $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
+
+        $request = $this->getRequest();
+        if (!$request->isXmlHttpRequest() && !$request->isPost() && !$dev) {
+            $this->getResponse()->setStatusCode(404);
+            return;
+        }
+
+        $data = [];
+        try {
+            $data = $this->plugin('users')->toArray($data = $this->identity());
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+        }
+
+        if ($error !== false) {
+            $result = [
+                'error' => true,
+                'message' => $error,
+            ];
+        } else {
+            $result['data'] = array_shift($data);
         }
         if ($dev) {
             print_r($result);

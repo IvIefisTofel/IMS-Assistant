@@ -11,7 +11,7 @@
           template:    '<time-line></time-line>',
           title:       'Список изменений',
           sidebarMeta: {
-            permissionsRequired: true,
+            permissionsRequired: INSPECTOR_ROLE,
             icon:                'fa fa-clock-o',
             order:               110
           }

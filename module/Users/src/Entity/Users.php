@@ -103,7 +103,7 @@ class Users extends  MCmsEntity
     /**
      * @var int
      */
-    private $currentRole = \AuthDoctrine\Acl\Acl::DEFAULT_ROLE;
+    private $currentRole = USER_ROLE;
 
     public function __construct()
     {

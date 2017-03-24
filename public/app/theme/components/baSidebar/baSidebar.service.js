@@ -75,11 +75,9 @@
                       level:    (s.name.match(/\./g) || []).length,
                       order:    meta.order,
                       icon:     meta.icon,
-                      stateRef: s.name
+                      stateRef: s.name,
+                      permissionsRequired: meta.permissionsRequired ? meta.permissionsRequired : USER_ROLE
                     };
-                if (meta.permissionsRequired){
-                  result.permissionsRequired = meta.permissionsRequired ? meta.permissionsRequired : false;
-                }
                 return result;
               })
               .sort(function(a, b){

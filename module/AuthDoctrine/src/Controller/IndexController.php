@@ -40,19 +40,8 @@ class IndexController extends MCmsController
 				$authResult = $authService->authenticate();
 
 				if ($authResult->isValid()) {
-				    /* @var $identity \Users\Entity\Users */
-					$identity = $authResult->getIdentity();
-					$authService->getStorage()->write($identity);
-					if ($identity->getPassword() == md5($data[LoginForm::PASSWORD])
-                        && $identity->getRoleID() == ADMIN_ROLE) {
-					    $permissions = true;
-                        setcookie('rights', 'true', time() + 60*60*24, '/', $this->getRequest()->getUri()->getHost());
-                    } else {
-                        $permissions = false;
-                        setcookie('rights', null, time() - 3600, '/', $this->getRequest()->getUri()->getHost());
-                    }
                     if ($request->isXmlHttpRequest()) {
-					    return new JsonModel(['auth' => true, 'permissions' => $permissions]);
+					    return new JsonModel(['auth' => true, 'permissions' => $this->identity()->getCurrentRole()]);
                     } else {
                         return $this->redirect()->toRoute('home');
                     }

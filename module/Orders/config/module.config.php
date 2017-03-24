@@ -39,7 +39,7 @@ return [
         'resources' => [
             'allow' => [
                 'Orders\Controller\Index' => [
-                    GUEST_ROLE,
+                    USER_ROLE,
                 ],
             ],
         ],

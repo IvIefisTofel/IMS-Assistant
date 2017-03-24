@@ -2,6 +2,7 @@
 
 namespace Clients\Controller;
 
+use AuthDoctrine\Acl\Acl;
 use MCms\Controller\MCmsController;
 use Zend\View\Model\JsonModel;
 use MCms\Entity\Events as Event;
@@ -15,12 +16,8 @@ class IndexController extends MCmsController
 {
     public function indexAction()
     {
-        if (!$this->identity()){
-            return $this->redirect()->toRoute('login');
-        }
-
         $error = false;
-        $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
+        $dev = $this->params()->fromQuery('dev_code', null) == Acl::DEV_CODE;
 
         $request = $this->getRequest();
         if (!$request->isXmlHttpRequest() && !$request->isPost() && !$dev) {
@@ -46,13 +43,28 @@ class IndexController extends MCmsController
             $event->setUserId($this->identity()->getId());
             switch ($task) {
                 case "add":
+                    if ($this->identity()->getCurrentRole() < SUPERVISOR_ROLE) {
+                        $error = Acl::ACCESS_DENIED;
+                        break;
+                    }
+                    $message = 'Клиент добавлен.';
                     $client = new Client();
-                    $id = true;
                     $event->setType(Event::E_CLIENT_CREATE);
+                    goto client;
                 case "update":
+                    if ($this->identity()->getCurrentRole() < SUPERVISOR_ROLE) {
+                        $error = Acl::ACCESS_DENIED;
+                        break;
+                    }
                     if ($id === null)
                         $error = self::INVALID_ID;
                     else {
+                        $message = 'Клиент изменен.';
+                        client:
+                        if ($this->identity()->getCurrentRole() < SUPERVISOR_ROLE) {
+                            $error = Acl::ACCESS_DENIED;
+                            break;
+                        }
                         $form = new Form('clientsUpload');
                         $post = array_merge($request->getPost()->toArray(), $request->getFiles()->toArray());
                         if (isset($post[Form::ADDONS])) {
@@ -148,6 +160,7 @@ class IndexController extends MCmsController
                             }
                             $this->entityManager->flush();
                             $data = $client;
+                            $status = true;
                         }
                     }
                     break;
@@ -155,6 +168,10 @@ class IndexController extends MCmsController
                     if ($id === null) {
                         $error = self::INVALID_ID;
                     } else {
+                        if ($this->identity()->getCurrentRole() < USER_ROLE) {
+                            $error = Acl::ACCESS_DENIED;
+                            break;
+                        }
                         $data = $this->entityManager->getRepository('Clients\Entity\Clients')->find($id);
                     }
                     break;
@@ -162,15 +179,24 @@ class IndexController extends MCmsController
                     $data = $this->entityManager->getRepository('Clients\Entity\Clients')->findAll();
                     break;
             }
-            $data = $this->plugin('clients')->toArray($data, ['onlyNames' => $onlyNames]);
         } catch (\Exception $e) {
             $error = $e->getMessage();
         }
 
+        $result = [];
         if ($error) {
-            $result = ["error" => $error];
+            $result = [
+                'error' => 'true',
+                'message' => $error,
+            ];
         } else {
-            $result = $data;
+            if (isset($data)) {
+                $result['data'] = $data = $this->plugin('clients')->toArray($data, ['onlyNames' => $onlyNames]);;
+            }
+            if (isset($status) && isset($message)) {
+                $result['status'] = $status;
+                $result['message'] = $message;
+            }
         }
         if ($dev) {
             print_r($result);

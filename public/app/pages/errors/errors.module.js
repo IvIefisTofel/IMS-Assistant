@@ -11,7 +11,7 @@
           template:    '<errors-list></errors-list>',
           title:       'Лог ошибок',
           sidebarMeta: {
-            permissionsRequired: true,
+            permissionsRequired: ADMIN_ROLE,
             icon:                'fa fa-bug',
             order:               120
           }

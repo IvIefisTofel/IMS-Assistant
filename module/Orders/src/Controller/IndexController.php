@@ -2,6 +2,7 @@
 
 namespace Orders\Controller;
 
+use AuthDoctrine\Acl\Acl;
 use MCms\Controller\MCmsController;
 use Zend\View\Model\JsonModel;
 use Orders\Form\OrdersUpload as Form;
@@ -16,10 +17,6 @@ class IndexController extends MCmsController
 {
     public function indexAction()
     {
-        if (!$this->identity()){
-            return $this->redirect()->toRoute('login');
-        }
-
         $error = false;
         $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
 
@@ -48,6 +45,11 @@ class IndexController extends MCmsController
         $events = [];
         switch ($task) {
             case "update":
+                if ($this->identity()->getCurrentRole() < SUPERVISOR_ROLE) {
+                    $error = Acl::ACCESS_DENIED;
+                    break;
+                }
+                $message = 'Заказ добавлен.';
                 /* @var $order Order */
                 $order = $this->entityManager->getRepository('\Orders\Entity\Orders')->find($id);
                 if (isset($postData['dropDetails'])) {
@@ -55,6 +57,11 @@ class IndexController extends MCmsController
                 }
                 goto order;
             case "add":
+                if ($this->identity()->getCurrentRole() < SUPERVISOR_ROLE) {
+                    $error = Acl::ACCESS_DENIED;
+                    break;
+                }
+                $message = 'Заказ изменен.';
                 $order = new Order();
                 $add = true;
                 order:
@@ -483,7 +490,10 @@ class IndexController extends MCmsController
 
         $result = [];
         if ($error) {
-            $result = ["error" => $error];
+            $result = [
+                'error' => 'true',
+                'message' => $error,
+            ];
         } else {
             if (isset($clientName) && $clientName != null) {
                 $result['clientName'] = $clientName;
@@ -495,8 +505,9 @@ class IndexController extends MCmsController
                 }
                 $result['data'] = $data;
             }
-            if (isset($status)) {
+            if (isset($status) && isset($message)) {
                 $result['status'] = $status;
+                $result['message'] = $message;
             }
         }
         if ($dev) {

@@ -61,10 +61,10 @@ return [
                     GUEST_ROLE,
                 ],
                 'MCms\Controller\Errors' => [
-                    GUEST_ROLE,
+                    ADMIN_ROLE,
                 ],
                 'MCms\Controller\Events' => [
-                    GUEST_ROLE,
+                    INSPECTOR_ROLE,
                 ]
             ],
         ],
