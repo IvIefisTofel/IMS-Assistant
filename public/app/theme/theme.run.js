@@ -5,7 +5,7 @@
 
   /** @ngInject */
   function themeRun($timeout, $rootScope, layoutPaths, preloader, $q, baSidebarService, themeLayoutSettings, Idle,
-                    $http, $uibModal, toastr, toastrConfig){
+                    $http, $uibModal, toastr, toastrConfig, $state){
     var whatToWait = [
       preloader.loadAmCharts(),
       $timeout(3000)
@@ -109,7 +109,7 @@
             send.append('name', scope.editable.name);
             send.append('fullName', scope.editable.fullName);
             send.append('email', scope.editable.email);
-            if (scope.currentUserId != scope.editable.id && !isNull(scope.editable.roleId)) {
+            if ($rootScope.user.id != scope.editable.id && !isNull(scope.editable.roleId)) {
               send.append('roleId', scope.editable.roleId.key);
             }
             send.append('active', scope.editable.active ? 1 : 0);
@@ -120,7 +120,10 @@
               send.append('confirmPassword', scope.editable.confirmPassword);
             }
 
-            $http.post(isNull(scope.editable.id) ? '/api/users/add' : '/api/users/edit/' + scope.editable.id, send, {
+            var url = isNull(scope.editable.id) ? '/api/users/add' :
+                (scope.editable.id != $rootScope.user.id) ? '/api/users/edit/' + scope.editable.id :
+                    '/api/users/edit-identity';
+            $http.post(url, send, {
               transformRequest: angular.identity,
               headers:          {'Content-Type': undefined}
             }).then(function successCallback(response){
@@ -153,15 +156,31 @@
       }
     };
 
-    $rootScope.previousState = null;
+    $rootScope.previousStates = [];
     $rootScope.$on('$stateChangeSuccess', function(event, to, toParams, from, fromParams){
-      if (from.abstract == undefined || from.abstract == false){
-        $rootScope.previousState = {
+      if (isNull(from.abstract) || from.abstract == false){
+        $rootScope.previousStates.unshift({
           state:  from,
           params: fromParams
-        };
+        });
+        if ($rootScope.previousStates.length > 20) {
+          $rootScope.previousStates.splice(20, 10);
+        }
       }
     });
+    $rootScope.backState = function(){
+      while ($rootScope.previousStates.length) {
+        var previousState = $rootScope.previousStates[0],
+            permissionsRequired = isNull(previousState.state.sidebarMeta.permissionsRequired) ? USER_ROLE
+                : previousState.state.sidebarMeta.permissionsRequired;
+        $rootScope.previousStates.splice(0, 1);
+        if (permissionsRequired <= $rootScope.user.currentRole) {
+          $state.go(previousState.state, previousState.params, {location: 'replace'});
+          return;
+        }
+      }
+      $state.go('clients', null, {location: 'replace'});
+    };
 
     $rootScope.$on('IdleStart', function(){
       var form = new FormData();
@@ -173,6 +192,7 @@
         headers:          {'Content-Type': undefined}
       }).then(function successCallback(response){
         if (response.data.auth){
+          $rootScope.$user();
           if (response.data.permissions <= USER_ROLE){
             Idle.unwatch();
             angular.extend(toastrConfig, { positionClass: 'toast-top-full-width' });

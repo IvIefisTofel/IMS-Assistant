@@ -5,17 +5,15 @@
 
   /** @ngInject */
   function PageTopCtrl($scope, $rootScope, $http, Idle, $uibModal){
-    $scope.user = $rootScope.$user();
     $scope.USER_ROLE = USER_ROLE;
-    $scope.currentUserId = $scope.user.id;
     $scope.editable = {};
     $scope.showErrors = false;
 
     var userModalInstance = null;
     $scope.userSaved = function(response){
-      var user = response.data;
-      if (user.id == $scope.user.id) {
-        $scope.user = user;
+      var user = response.data[0];
+      if (user.id == $rootScope.user.id) {
+        $rootScope.user = user;
         var scope = angular.element($('div[ui-view]').children()).scope();
         if (!isNull(scope.scopeName) && scope.scopeName == "UserList"){
           scope.saved(response, true);
@@ -24,7 +22,7 @@
     };
     $scope.userModal = $rootScope.userEdit(userModalInstance, $scope, $scope.userSaved);
     $scope.userEdit = function(){
-      $scope.editable = $scope.user;
+      $scope.editable = angular.copy($rootScope.user);
       $scope.userModal.open();
     };
 
@@ -39,12 +37,12 @@
         headers:          {'Content-Type': undefined}
       }).then(function successCallback(response){
         if (response.data.auth){
+          $rootScope.$user();
           if (response.data.permissions > USER_ROLE){
             Idle.watch();
           } else {
             Idle.unwatch();
           }
-          $scope.user = $rootScope.$user();
         } else {
           console.log(response.data);
         }
@@ -60,7 +58,7 @@
         console.log(data);
       } else {
         $scope.userList = data.data;
-        $scope.modalActions.user = $scope.user.name;
+        $scope.modalActions.user = $rootScope.user.name;
       }
     }, function errorCallback(response){
       console.log(response.statusText);
@@ -74,7 +72,7 @@
         if (modalInstance != null){
           modalInstance.dismiss('close');
         }
-        $scope.modalActions.user = $scope.user.name;
+        $scope.modalActions.user = $rootScope.user.name;
         $scope.modalActions.password = null;
         modalInstance = $uibModal.open({
           animation:   true,

@@ -186,4 +186,13 @@ class IndexController extends MCmsController
             return new JsonModel($result);
         }
     }
+
+    public function editIdentityAction()
+    {
+        return $this->forward()->dispatch('Users\Controller\Index', [
+            'action' => 'index',
+            'task' => 'edit',
+            'id' => $this->identity()->getId(),
+        ]);
+    }
 }

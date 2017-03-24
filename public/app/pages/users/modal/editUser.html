@@ -53,7 +53,7 @@
                         <div class="col-md-8">
                             <div class="input-group">
                                 <input id="password" type="password" class="form-control passwd" ng-model="editable.password"
-                                       placeholder="{{currentUserId == editable.id ? 'Текущий пароль' : 'Введите пароль от вашего пользователя' }}">
+                                       placeholder="{{user.id == editable.id ? 'Текущий пароль' : 'Введите пароль от вашего пользователя' }}">
                                 <span class="input-group-btn">
                                     <button class="btn btn-default btn-no-transform view-password" type="button">
                                         <i class="fa fa-eye"></i>
@@ -110,7 +110,7 @@
                         <label for="roleId" class="col-md-4 control-label">Уровень доступа</label>
                         <div class="col-md-8"
                              ng-init="editable.roleId = {key: editable.roleId, value: roles[editable.roleId]}">
-                            <ui-select ng-model="editable.roleId" ng-if="currentUserId != editable.id">
+                            <ui-select ng-model="editable.roleId" ng-if="user.id != editable.id">
                                 <ui-select-match id="roleId" placeholder="Клиент...">{{$select.selected.value}}
                                 </ui-select-match>
                                 <ui-select-choices
@@ -123,7 +123,7 @@
                                     </div>
                                 </ui-select-no-choice>
                             </ui-select>
-                            <p class="form-control-static" ng-if="currentUserId == editable.id"
+                            <p class="form-control-static" ng-if="user.id == editable.id"
                                ng-bind-html="editable.roleId.value"></p>
                         </div>
                     </div>

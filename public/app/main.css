@@ -1267,6 +1267,7 @@ label.custom-input-danger > span:hover:before {
   margin-bottom: 12px; }
 
 .dropdown-menu {
+  width: auto;
   border-radius: 5px; }
 
 .bootstrap-select.btn-group .btn.btn-default {
@@ -4229,7 +4230,6 @@ h1.al-title {
   margin: 0 0 0 6px; }
 
 .top-dropdown-menu {
-  width: 316px;
   left: auto;
   right: -47px;
   top: 26px; }
@@ -4329,7 +4329,6 @@ h1.al-title {
     .top-dropdown-menu > a:hover {
       color: #7d7d7d; }
   .top-dropdown-menu.profile-dropdown {
-    width: 145px;
     top: 55px;
     right: -25px; }
     .top-dropdown-menu.profile-dropdown a {

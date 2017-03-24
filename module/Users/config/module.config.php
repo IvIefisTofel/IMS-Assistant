@@ -51,6 +51,21 @@ return [
                 ],
                 'may_terminate' => true,
             ],
+            'edit-current-user' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/api/users/:task[/]',
+                    'constraints' => [
+                        'task' => 'edit-identity|editidentity|editIdentity|edit-Identity',
+                    ],
+                    'defaults' => [
+                        '__NAMESPACE__' => 'Users\Controller',
+                        'controller'    => 'Index',
+                        'action'        => 'editIdentity',
+                    ],
+                ],
+                'may_terminate' => true,
+            ],
         ],
     ],
 
@@ -69,9 +84,10 @@ return [
         'resources' => [
             'allow' => [
                 'Users\Controller\Index' => [
-                    'index'    => SUPERVISOR_ROLE,
-                    'nameList' => USER_ROLE,
-                    'identity' => USER_ROLE,
+                    'index'        => SUPERVISOR_ROLE,
+                    'nameList'     => USER_ROLE,
+                    'identity'     => USER_ROLE,
+                    'editIdentity' => USER_ROLE,
                 ],
             ],
         ],
