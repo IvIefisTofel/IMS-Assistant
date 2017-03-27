@@ -23,7 +23,7 @@
                 </div>
                 <div ng-if="!loading">
                     <div class="row">
-                        <div class="col-md-5" ng-show="edit" ng-class="edit ? 'animated fadeIn' : ''">
+                        <div class="col-md-5" ng-show="edit && user.currentRole >= SUPERVISOR_ROLE" ng-class="edit && user.currentRole >= SUPERVISOR_ROLE ? 'animated fadeIn' : ''">
                             <div class="form-horizontal">
                                 <div class="form-group" ng-class="{ 'has-error': showErrors && (detail.name == null || detail.name == '') }">
                                     <label for="usm_detail_name" class="col-md-3 control-label">Наименование</label>
@@ -162,7 +162,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3" ng-hide="edit" ng-class="edit ? '' : 'animated fadeIn'">
+                        <div class="col-md-3" ng-hide="edit && user.currentRole >= SUPERVISOR_ROLE" ng-class="edit && user.currentRole >= SUPERVISOR_ROLE ? '' : 'animated fadeIn'">
                             <div class="form-horizontal">
                                 <div class="form-group">
                                     <label class="col-md-5 control-label">Наименование</label>
@@ -206,13 +206,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div ng-class="edit ? 'col-md-7' : 'col-md-9'">
+                        <div ng-class="edit && user.currentRole >= SUPERVISOR_ROLE ? 'col-md-7' : 'col-md-9'">
                             <div ng-show="detail.pattern.length > 0 || edit || new.patterns.length > 0">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="file-collection">
                                             <h2>Чертежи</h2>
-                                            <button ng-show="edit" type="button" id="add-image" class="btn btn-primary btn-sm pull-right"
+                                            <button ng-show="edit && user.currentRole >= SUPERVISOR_ROLE" type="button" id="add-image" class="btn btn-primary btn-sm pull-right"
                                                  uib-tooltip="Добавить чертеж" tooltip-placement="left"
                                                  ng-click="modal()">
                                                 <i class="fa fa-plus"></i>
@@ -255,7 +255,7 @@
                                                                     </li>
                                                                 </ul>
                                                             </div>
-                                                            <div class="btn-group btn-block" ng-show="edit">
+                                                            <div class="btn-group btn-block" ng-show="edit && user.currentRole >= SUPERVISOR_ROLE">
                                                                 <button class="btn btn-info btn-image-action bi-checkbox">
                                                                     <i ng-class="new.update.patterns[file.id] ? 'fa-check-square-o' : 'fa-square-o'" class="fa"></i>
                                                                 </button>
@@ -276,7 +276,7 @@
                                     <div class="col-md-12">
                                         <div class="file-collection">
                                             <h2>Модели</h2>
-                                            <div ng-show="edit" class="btn btn-primary btn-sm btn-file pull-right"
+                                            <div ng-show="edit && user.currentRole >= CONSTRUCTOR_ROLE" class="btn btn-primary btn-sm btn-file pull-right"
                                                  uib-tooltip="Добавить модель" tooltip-placement="left">
                                                 <i class="fa fa-plus"></i>
                                                 <input id="add-model" name="models[]" type="file" multiple="multiple" onchange="angular.element(this).scope().change.add.model(this)">
@@ -299,7 +299,7 @@
                                                     <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu" uib-dropdown-menu role="menu">
-                                                    <li role="menuitem" ng-show="edit">
+                                                    <li role="menuitem" ng-show="edit && user.currentRole >= CONSTRUCTOR_ROLE">
                                                         <div class="btn-file">
                                                             Обновить файл<input type="file" name="file_id_{{model.id}}" data-id="{{model.id}}"
                                                                 onchange="angular.element(this).scope().change.update.model(this)">
@@ -319,7 +319,7 @@
                                     <div class="col-md-12">
                                         <div class="file-collection">
                                             <h2>Проекты</h2>
-                                            <div ng-show="edit" class="btn btn-primary btn-sm btn-file pull-right"
+                                            <div ng-show="edit && user.currentRole >= TECHNOLOGIST_ROLE" class="btn btn-primary btn-sm btn-file pull-right"
                                                  uib-tooltip="Добавить проект" tooltip-placement="left">
                                                 <i class="fa fa-plus"></i>
                                                 <input id="add-project" name="projects[]" type="file" multiple="multiple"
@@ -343,7 +343,7 @@
                                                     <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu" uib-dropdown-menu role="menu">
-                                                    <li role="menuitem" ng-show="edit">
+                                                    <li role="menuitem" ng-show="edit && user.currentRole >= TECHNOLOGIST_ROLE">
                                                         <div class="btn-file">
                                                             Обновить файл<input type="file" name="file_id_{{project.id}}" data-id="{{project.id}}"
                                                                 onchange="angular.element(this).scope().change.update.project(this)">
@@ -367,8 +367,7 @@
                     <div class="swap-container">
                         <div ng-animate-swap="actions" class="cell swap-animation">
                             <button ng-repeat="(key, item) in actions" type="button" class="btn" ng-class="item.class" ng-click="doAction(key)">
-                                <i ng-if="item.iconClass !== null" ng-class="item.iconClass"></i>
-                                {{item.text}}
+                                <i ng-if="item.iconClass !== null" ng-class="item.iconClass"></i> {{item.text}}
                             </button>
                         </div>
                     </div>

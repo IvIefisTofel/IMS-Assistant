@@ -5,6 +5,9 @@
 
   /** @ngInject */
   function DetailCtrl($scope, $rootScope, $state, $stateParams, $http, $window, $uibModal, $filter){
+    $scope.TECHNOLOGIST_ROLE = TECHNOLOGIST_ROLE;
+    $scope.CONSTRUCTOR_ROLE = CONSTRUCTOR_ROLE;
+    $scope.SUPERVISOR_ROLE = SUPERVISOR_ROLE;
     var cropper,
         currImgId = null,
         imgDef = {
@@ -47,43 +50,52 @@
         }
       }
     };
+    $scope.actions = [];
     $scope.actionVariants = {
-      view: [
-        {
-          text:      "Редактировать",
-          class:     "btn-primary",
-          iconClass: "fa fa-pencil",
-          action:    'switchEdit'
-        },
-        {
-          text:      "Обновить",
-          class:     "btn-info",
-          iconClass: "fa fa-refresh",
-          action:    'refreshData'
-        }
-      ],
-      edit: [
-        {
-          text:      "Сохранить",
-          class:     "btn-success",
-          iconClass: "fa fa-floppy-o",
-          action:    'saveData'
-        },
-        {
-          text:      "Отменить",
-          class:     "btn-danger",
-          iconClass: "fa fa-ban",
-          action:    'switchEdit'
-        },
-        {
-          text:      "Обновить",
-          class:     "btn-info",
-          iconClass: "fa fa-refresh",
-          action:    'refreshData'
-        }
-      ]
+      save: {
+        text:      "Сохранить",
+        class:     "btn-success",
+        iconClass: "fa fa-floppy-o",
+        action:    'saveData',
+        permissionsRequired: TECHNOLOGIST_ROLE
+      },
+      edit: {
+        text:      "Редактировать",
+        class:     "btn-primary",
+        iconClass: "fa fa-pencil",
+        action:    'switchEdit',
+        permissionsRequired: TECHNOLOGIST_ROLE
+      },
+      abort: {
+        text:      "Отменить",
+        class:     "btn-danger",
+        iconClass: "fa fa-ban",
+        action:    'switchEdit',
+        permissionsRequired: USER_ROLE
+      },
+      refresh: {
+        text:      "Обновить",
+        class:     "btn-info",
+        iconClass: "fa fa-refresh",
+        action:    'refreshData',
+        permissionsRequired: USER_ROLE
+      }
     };
-    $scope.actions = $scope.actionVariants.view;
+    $scope.actionArr = [$scope.actionVariants.edit, $scope.actionVariants.refresh];
+    function filterActions(){
+      $scope.actions = $filter('filter')($scope.actionArr, function(item){
+        return item.permissionsRequired <= $rootScope.$getPermissions();
+      });
+    }
+    $scope.$watch(function(){
+      var actions = '';
+      angular.forEach($scope.actionArr, function(val){ actions = actions + ' ' + val.text });
+      return $rootScope.$getPermissions() + actions;
+    }, function(newVal, oldVal){
+      if (newVal != oldVal){
+        filterActions();
+      }
+    });
 
     $scope.edit = false;
     $scope.edited = false;
@@ -371,7 +383,7 @@
       if ($scope.edit){
         $scope.edit = false;
         $scope.edited = false;
-        $scope.actions = $scope.actionVariants.view;
+        $scope.actionArr = [$scope.actionVariants.edit, $scope.actionVariants.refresh];
         if (angular.toJson($scope.detail) != angular.toJson($scope.preview.detail)){
           angular.forEach($scope.preview.detail, function(val, key){
             if ($scope.detail[key] != val){
@@ -399,7 +411,7 @@
         $scope.edit = true;
         $scope.edited = false;
         $scope.showErrors = false;
-        $scope.actions = $scope.actionVariants.edit;
+        $scope.actionArr = [$scope.actionVariants.save, $scope.actionVariants.abort, $scope.actionVariants.refresh];
       }
     };
 
@@ -523,7 +535,7 @@
         } else {
           $scope.edit = false;
           $scope.edited = true;
-          $scope.actions = [$scope.actionVariants.edit[0], $scope.actionVariants.view[0], $scope.actionVariants.view[1]];
+          $scope.actionArr = [$scope.actionVariants.save, $scope.actionVariants.edit, $scope.actionVariants.refresh];
         }
       } else {
         $scope.loading = true;
@@ -565,14 +577,17 @@
           transformRequest: angular.identity,
           headers:          {'Content-Type': undefined}
         }).then(function successCallback(response){
-          if (response.data.error){
-            console.log(response.data.message);
-          } else {
-            if (!isNull(response.data.id) && response.data.id == $stateParams.id){
-              $scope.actions = $scope.actionVariants.view;
+          var data = response.data;
+          if (data.error || data.status){
+            $rootScope.showMessage(data);
+            $scope.loading = false;
+          }
+          if (isNull(data.error) || !data.error){
+            if (!isNull(data.id) && data.id == $stateParams.id){
+              $scope.actionArr = [$scope.actionVariants.save, $scope.actionVariants.abort, $scope.actionVariants.refresh];
               $scope.refreshData();
             } else {
-              $state.go('nomenclature-detail-edit', {id: response.data.id}, {location: 'replace'});
+              $state.go('nomenclature-detail-edit', {id: data.id}, {location: 'replace'});
             }
           }
         });
@@ -588,15 +603,14 @@
         $scope.edit = false;
         $scope.edited = false;
         $scope.showErrors = false;
-        $scope.actions = $scope.actionVariants.view;
+        $scope.actionArr = [$scope.actionVariants.save, $scope.actionVariants.abort, $scope.actionVariants.refresh];
       }
 
       var $url = "/api/nomenclature/get-with-parents/" + $stateParams.id;
       $http.post($url, null, {headers: {'All-Versions': true}}).then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
           $scope.detail = data.data[0];
           $scope.clients = data.clients;
           $scope.orders = [];
@@ -648,14 +662,13 @@
     } else {
       $scope.loading = false;
       $scope.edit = true;
-      $scope.actions = [$scope.actionVariants.edit[0]];
+      $scope.actionArr = [$scope.actionVariants.save];
 
       var $url = "/api/nomenclature/get-only-parents";
       $http.post($url, null, {headers: {'All-Versions': true}}).then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
           $scope.clients = data.clients;
           $scope.groups = data.groups;
 
@@ -673,5 +686,6 @@
         console.log(response.statusText);
       });
     }
+    filterActions();
   }
 })();

@@ -2,6 +2,7 @@
 
 namespace Nomenclature\Controller;
 
+use AuthDoctrine\Acl\Acl;
 use MCms\Controller\MCmsController;
 use MCms\Entity\Events;
 use Zend\View\Model\JsonModel;
@@ -19,12 +20,8 @@ class IndexController extends MCmsController
 {
     public function indexAction()
     {
-        if (!$this->identity()){
-            return $this->redirect()->toRoute('login');
-        }
-
         $error = false;
-        $dev = $this->params()->fromQuery('dev_code', null) == \AuthDoctrine\Acl\Acl::DEV_CODE;
+        $dev = $this->params()->fromQuery('dev_code', null) == Acl::DEV_CODE;
 
         $request = $this->getRequest();
         if (!$request->isXmlHttpRequest() && !$request->isPost() && !$dev) {
@@ -62,16 +59,25 @@ class IndexController extends MCmsController
             }
         }
 
+        $identity = $this->identity();
         $events = [];
         $flush = [];
         switch ($task) {
             case "add":
+                if ($identity->getCurrentRole() < SUPERVISOR_ROLE) {
+                    $error = Acl::ACCESS_DENIED;
+                    break;
+                }
                 $data = $request->getPost()->toArray();
                 $detail = new Details();
                 
                 $id = true;
                 goto detail;
             case "update":
+                if ($identity->getCurrentRole() < TECHNOLOGIST_ROLE) {
+                    $error = Acl::ACCESS_DENIED;
+                    break;
+                }
                 /* @var $detail Details */
                 $detail = $this->entityManager->getRepository(Details::class)->find($id);
                 $update = true;
@@ -82,10 +88,16 @@ class IndexController extends MCmsController
                     $form = new Form('detailUpload');
                     $data = array_merge($request->getPost()->toArray(), $request->getFiles()->toArray());
                     if (isset($data[Form::MODELS])) {
-                        foreach ($data[Form::MODELS] as $key => $model) {
-                            $data[Form::MODELS][$key]['id'] = $key;
+                        if ($identity->getCurrentRole() < CONSTRUCTOR_ROLE) {
+                            $error = true;
+                            $messages[] = 'Не достаточно прав для редактирования моделей.';
+                            unset($data[Form::MODELS]);
+                        } else {
+                            foreach ($data[Form::MODELS] as $key => $model) {
+                                $data[Form::MODELS][$key]['id'] = $key;
+                            }
+                            $data[Form::MODELS] = array_values($data[Form::MODELS]);
                         }
-                        $data[Form::MODELS] = array_values($data[Form::MODELS]);
                     }
                     if (isset($data[Form::PROJECTS])) {
                         foreach ($data[Form::PROJECTS] as $key => $project) {
@@ -95,9 +107,15 @@ class IndexController extends MCmsController
                     }
 
                     if (isset($data['new'][Form::MODELS])) {
-                        foreach ($data['new'][Form::MODELS] as $model) {
-                            $model['id'] = null;
-                            $data[Form::MODELS][] = $model;
+                        if ($identity->getCurrentRole() < CONSTRUCTOR_ROLE) {
+                            $error = true;
+                            $messages[] = 'Не достаточно прав для добавления моделей.';
+                            unset($data['new'][Form::MODELS]);
+                        } else {
+                            foreach ($data['new'][Form::MODELS] as $model) {
+                                $model['id'] = null;
+                                $data[Form::MODELS][] = $model;
+                            }
                         }
                     }
 
@@ -108,6 +126,16 @@ class IndexController extends MCmsController
                         }
                     }
                     unset($data['new']);
+                    if (isset($data['patterns']) && $identity->getCurrentRole() < SUPERVISOR_ROLE) {
+                        $error = true;
+                        if (isset($data['patterns']['new'])) {
+                            $error = true;
+                            $messages[] = 'Не достаточно прав для добавления чертежей.';
+                            unset($data['patterns']['new']);
+                        }
+                        $messages[] = 'Не достаточно прав для редактирования чертежей.';
+                        unset($data['patterns']);
+                    }
 
                     $edited = false;
                     if ($detail->getOrderId() != $data['orderId']) {
@@ -132,7 +160,7 @@ class IndexController extends MCmsController
                     }
                     if (($dateEnd = (isset($data['dateEnd']) && $data['dateEnd'] != null) ? new \DateTime($data['dateEnd']) : null) != $detail->getDateEnd(false)) {
                         $event = new Event();
-                        $event->setUserId($this->identity()->getId());
+                        $event->setUserId($identity->getId());
                         if ($detail->getDateEnd(false) == null && $dateEnd != null) {
                             $event->setType(Event::E_DETAIL_END);
                         } elseif ($detail->getDateEnd(false) != null && $dateEnd == null) {
@@ -157,7 +185,7 @@ class IndexController extends MCmsController
                                         $flush[] = $order;
 
                                         $event = new Event();
-                                        $event->setUserId($this->identity()->getId());
+                                        $event->setUserId($identity->getId());
                                         $event->setType(EVENT::E_ORDER_RETURN);
                                         $event->setEntityId($order->getId());
                                         $flush[] = $event;
@@ -170,16 +198,24 @@ class IndexController extends MCmsController
                         $detail->setDateEnd($dateEnd);
                     }
                     if (!isset($update) || $edited) {
-                        $event = new Event();
-                        $event->setUserId($this->identity()->getId());
-                        if (isset($update)) {
-                            $event->setType(Event::E_DETAIL_UPDATE);
-                            $event->setEntityId($detail->getId());
-                            $flush[] = $event;
+                        if ($identity->getCurrentRole() < SUPERVISOR_ROLE) {
+                            $error = true;
+                            $messages[] = 'Не достаточно прав для редактирования информации о детали.';
                         } else {
-                            $event->setType(Event::E_DETAIL_CREATE);
-                            $events[] = $event;
+                            $event = new Event();
+                            $event->setUserId($identity->getId());
+                            if (isset($update)) {
+                                $event->setType(Event::E_DETAIL_UPDATE);
+                                $event->setEntityId($detail->getId());
+                                $flush[] = $event;
+                            } else {
+                                $event->setType(Event::E_DETAIL_CREATE);
+                                $events[] = $event;
+                            }
                         }
+                    }
+                    if ($error) {
+                        break;
                     }
 
                     $newCollectionId = $this->plugin('files')->getLastCollectionId() + 1;
@@ -212,7 +248,7 @@ class IndexController extends MCmsController
                                             $flush[] = $version;
 
                                             $event = new Events();
-                                            $event->setUserId($this->identity()->getId());
+                                            $event->setUserId($identity->getId());
                                             $event->setType(Event::E_MODEL_UPDATE);
                                             if (isset($update)) {
                                                 $event->setEntityId($detail->getId());
@@ -237,7 +273,7 @@ class IndexController extends MCmsController
                                             $flush[] = $collection;
 
                                             $event = new Events();
-                                            $event->setUserId($this->identity()->getId());
+                                            $event->setUserId($identity->getId());
                                             $event->setType(Event::E_MODEL_CREATE);
                                             if (isset($update)) {
                                                 $event->setEntityId($detail->getId());
@@ -267,7 +303,7 @@ class IndexController extends MCmsController
                                         $flush[] = $collection;
 
                                         $event = new Events();
-                                        $event->setUserId($this->identity()->getId());
+                                        $event->setUserId($identity->getId());
                                         $event->setType(Event::E_MODEL_CREATE);
                                         if (isset($update)) {
                                             $event->setEntityId($detail->getId());
@@ -303,7 +339,7 @@ class IndexController extends MCmsController
                                             $flush[] = $version;
 
                                             $event = new Events();
-                                            $event->setUserId($this->identity()->getId());
+                                            $event->setUserId($identity->getId());
                                             $event->setType(Event::E_PROJECT_UPDATE);
                                             if (isset($update)) {
                                                 $event->setEntityId($detail->getId());
@@ -328,7 +364,7 @@ class IndexController extends MCmsController
                                             $flush[] = $collection;
 
                                             $event = new Events();
-                                            $event->setUserId($this->identity()->getId());
+                                            $event->setUserId($identity->getId());
                                             $event->setType(Event::E_PROJECT_CREATE);
                                             if (isset($update)) {
                                                 $event->setEntityId($detail->getId());
@@ -358,7 +394,7 @@ class IndexController extends MCmsController
                                         $flush[] = $collection;
 
                                         $event = new Events();
-                                        $event->setUserId($this->identity()->getId());
+                                        $event->setUserId($identity->getId());
                                         $event->setType(Event::E_PROJECT_CREATE);
                                         if (isset($update)) {
                                             $event->setEntityId($detail->getId());
@@ -413,7 +449,7 @@ class IndexController extends MCmsController
                                         $flush[] = $collection;
 
                                         $event = new Events();
-                                        $event->setUserId($this->identity()->getId());
+                                        $event->setUserId($identity->getId());
                                         $event->setType(Event::E_PATTERN_CREATE);
                                         if (isset($update)) {
                                             $event->setEntityId($detail->getId());
@@ -457,7 +493,7 @@ class IndexController extends MCmsController
                                     $flush[] = $version;
 
                                     $event = new Events();
-                                    $event->setUserId($this->identity()->getId());
+                                    $event->setUserId($identity->getId());
                                     $event->setType(Event::E_PATTERN_UPDATE);
                                     if (isset($update)) {
                                         $event->setEntityId($detail->getId());
@@ -507,7 +543,7 @@ class IndexController extends MCmsController
                                     $flush[] = $collection;
 
                                     $event = new Events();
-                                    $event->setUserId($this->identity()->getId());
+                                    $event->setUserId($identity->getId());
                                     $event->setType(Event::E_PATTERN_CREATE);
                                     if (isset($update)) {
                                         $event->setEntityId($detail->getId());
@@ -544,7 +580,7 @@ class IndexController extends MCmsController
                             $this->entityManager->persist($order);
 
                             $event = new Event();
-                            $event->setUserId($this->identity()->getId());
+                            $event->setUserId($identity->getId());
                             $event->setType(Event::E_ORDER_END);
                             $event->setEntityId($order->getId());
                             $this->entityManager->persist($event);
@@ -600,59 +636,74 @@ class IndexController extends MCmsController
                 break;
         }
 
-        if ($tree) {
-            $details = $this->plugin('details')->toArray($data, ['allVersions' => $allVersions]);
-            $data = [];
-            $id = 0;
-            foreach ($details as $item) {
-                $group = $item['orderId'] . '-' . $item['group'];
-                $item['status'] = $item['dateEnd'] != null;
-                if ($item['group']) {
-                    if (!isset($data[$group])) {
-                        $data[$group] = [
-                            'treeId' => $id++,
-                            'status' => $item['status'],
-                            'name' => $item['group'],
-                            'orderCode' => $item['orderCode'],
-                            'dateCreation' => $item['dateCreation'],
-                            'dateEnd' => $item['dateEnd'],
-                        ];
+        if (!$error) {
+            if ($tree) {
+                $details = $this->plugin('details')->toArray($data, ['allVersions' => $allVersions]);
+                $data = [];
+                $id = 0;
+                foreach ($details as $item) {
+                    $group = $item['orderId'] . '-' . $item['group'];
+                    $item['status'] = $item['dateEnd'] != null;
+                    if ($item['group']) {
+                        if (!isset($data[$group])) {
+                            $data[$group] = [
+                                'treeId' => $id++,
+                                'status' => $item['status'],
+                                'name' => $item['group'],
+                                'orderCode' => $item['orderCode'],
+                                'dateCreation' => $item['dateCreation'],
+                                'dateEnd' => $item['dateEnd'],
+                            ];
 
+                        }
+                        $item['treeId'] = $id++;
+                        if (isset($data[$group]['dateCreation']) && new \DateTime($data[$group]['dateCreation']) > new \DateTime($item['dateCreation'])) {
+                            $data[$group]['dateCreation'] = $item['dateCreation'];
+                        }
+                        if (isset($data[$group]['dateEnd']) && new \DateTime($data[$group]['dateEnd']) < new \DateTime($item['dateEnd'])) {
+                            $data[$group]['dateEnd'] = $item['dateEnd'];
+                        }
+                        if (!$item['status']) {
+                            $data[$group]['status'] = false;
+                        }
+                        unset($item['group']);
+                        $data[$group]['__expanded__'] = false;
+                        $data[$group]['__children__'][] = $item;
+                    } else {
+                        $item['treeId'] = $id++;
+                        unset($item['group']);
+                        $data[] = $item;
                     }
-                    $item['treeId'] = $id++;
-                    if (isset($data[$group]['dateCreation']) && new \DateTime($data[$group]['dateCreation']) > new \DateTime($item['dateCreation'])) {
-                        $data[$group]['dateCreation'] = $item['dateCreation'];
-                    }
-                    if (isset($data[$group]['dateEnd']) && new \DateTime($data[$group]['dateEnd']) < new \DateTime($item['dateEnd'])) {
-                        $data[$group]['dateEnd'] = $item['dateEnd'];
-                    }
-                    if (!$item['status']) {
-                        $data[$group]['status'] = false;
-                    }
-                    unset($item['group']);
-                    $data[$group]['__expanded__'] = false;
-                    $data[$group]['__children__'][] = $item;
+                }
+                $result['data'] = array_values($data);
+            } else {
+                $result['data'] = $this->plugin('details')->toArray($data, ['allVersions' => $allVersions, 'onlyNames' => $onlyNames]);
+            }
+
+            if (!$onlyNames) {
+                $groups = $this->entityManager->getRepository('Nomenclature\Entity\Groups')->findAll();
+                foreach ($groups as $key => $group) {
+                    $groups[$key] = $group->toArray()['group'];
+                }
+                $result['groups'] = $groups;
+            }
+        } else {
+            $result = [ 'error' => 'true' ];
+            if (!isset($messages)) {
+                $result['message'] = $error;
+            } else {
+                if ($error !== true) {
+                    array_unshift($messages, $error);
+                }
+                if (count($messages) == 1) {
+                    $result['message'] = array_shift($messages);
                 } else {
-                    $item['treeId'] = $id++;
-                    unset($item['group']);
-                    $data[] = $item;
+                    foreach ($messages as $key => $message) {
+                        $messages[$key] = ['message' => $message];
+                    }
+                    $result['messages'] = $messages;
                 }
             }
-            $result['data'] = array_values($data);
-        } else {
-            $result['data'] = $this->plugin('details')->toArray($data, ['allVersions' => $allVersions, 'onlyNames' => $onlyNames]);
-        }
-
-        if (!$onlyNames) {
-            $groups = $this->entityManager->getRepository('Nomenclature\Entity\Groups')->findAll();
-            foreach ($groups as $key => $group) {
-                $groups[$key] = $group->toArray()['group'];
-            }
-            $result['groups'] = $groups;
-        }
-
-        if ($error) {
-            $result = ["error" => $error];
         }
         if ($dev) {
             print_r($result);

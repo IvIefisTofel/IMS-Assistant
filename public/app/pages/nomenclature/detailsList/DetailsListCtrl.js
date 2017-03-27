@@ -18,29 +18,47 @@
     $scope.treeControl = tree = {};
     $scope._filter = {};
 
+    $scope.actions = [];
     $scope.actionVariants = {
       openGallery: {
         text:      "Все чертежи",
         class:     "btn-primary",
         iconClass: "fa fa-picture-o",
-        action:    'orderGallery'
+        action:    'orderGallery',
+        permissionsRequired: USER_ROLE
       },
       default:     [
         {
           text:      "Добавить",
           class:     "btn-success",
           iconClass: "fa fa-plus",
-          action:    'addDetail'
+          action:    'addDetail',
+          permissionsRequired: SUPERVISOR_ROLE
         },
         {
           text:      "Обновить",
           class:     "btn-info",
           iconClass: "fa fa-refresh",
-          action:    'refreshData'
+          action:    'refreshData',
+          permissionsRequired: USER_ROLE
         }
       ]
     };
-    $scope.actions = $scope.actionVariants.default;
+    $scope.actionArr = $scope.actionVariants.default;
+    function filterActions(){
+      $scope.actions = $filter('filter')($scope.actionArr, function(item){
+        return item.permissionsRequired <= $rootScope.$getPermissions();
+      });
+    }
+    $scope.$watch(function(){
+      var actions = '';
+      angular.forEach($scope.actionArr, function(val){ actions = actions + ' ' + val.action });
+      return $rootScope.$getPermissions() + actions;
+    }, function(newVal, oldVal){
+      if (newVal != oldVal){
+        filterActions();
+      }
+    });
 
     $scope.sortBy = function(propertyName){
       if (propertyName.indexOf('date') != -1){
@@ -202,9 +220,8 @@
                                                                         $stateParams.id;
       $http.post($url).then(function successCallback(response){
         var data = response.data;
-        if (data.error){
-          console.log(data);
-        } else {
+        if (data.error || data.status){ $rootScope.showMessage(data); }
+        if (isNull(data.error) || !data.error){
           $scope.list = $filter('orderBy')(data.data, $scope.propertyName, $scope.reverse);
           $scope.loading = false;
           $scope.galleries = [];
@@ -228,8 +245,9 @@
             }
           });
           if (!isNull(data.order) && $scope.galleries.main.length){
-            $scope.actions = [$scope.actionVariants.openGallery, $scope.actionVariants.default[0], $scope.actionVariants.default[1]];
+            $scope.actionArr = [$scope.actionVariants.openGallery, $scope.actionVariants.default[0], $scope.actionVariants.default[1]];
           }
+          filterActions();
         }
       }, function errorCallback(response){
         console.log(response.statusText);
